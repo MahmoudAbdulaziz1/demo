@@ -1,0 +1,163 @@
+package com.taj.model;
+
+/**
+ * Created by User on 9/6/2018.
+ */
+public class CollectiveTenderBySchoolDto {
+
+    private int tender_id;
+    private String tender_logo;
+    private String tender_title;
+    private String tender_explain;
+    private long tender_display_date;
+    private long tender_expire_date;
+    private long tender_company_display_date;
+    private long tender_company_expired_date;
+    private int response_count;
+    private int view_count;
+    private String category_name;
+    private  double responsed_cost;
+    private String response_desc;
+
+    public CollectiveTenderBySchoolDto(int tender_id, String tender_logo, String tender_title, String tender_explain, long tender_display_date,
+                                       long tender_expire_date, long tender_company_display_date, long tender_company_expired_date,
+                                       int response_count, int view_count, String category_name, double responsed_cost, String response_desc) {
+        this.tender_id = tender_id;
+        this.tender_logo = tender_logo;
+        this.tender_title = tender_title;
+        this.tender_explain = tender_explain;
+        this.tender_display_date = tender_display_date;
+        this.tender_expire_date = tender_expire_date;
+        this.tender_company_display_date = tender_company_display_date;
+        this.tender_company_expired_date = tender_company_expired_date;
+        this.response_count = response_count;
+        this.view_count = view_count;
+        this.category_name = category_name;
+        this.responsed_cost = responsed_cost;
+        this.response_desc = response_desc;
+    }
+
+    public CollectiveTenderBySchoolDto(String tender_logo, String tender_title, String tender_explain, long tender_display_date,
+                                       long tender_expire_date, long tender_company_display_date, long tender_company_expired_date,
+                                       int response_count, int view_count, String category_name, double responsed_cost, String response_desc) {
+        this.tender_logo = tender_logo;
+        this.tender_title = tender_title;
+        this.tender_explain = tender_explain;
+        this.tender_display_date = tender_display_date;
+        this.tender_expire_date = tender_expire_date;
+        this.tender_company_display_date = tender_company_display_date;
+        this.tender_company_expired_date = tender_company_expired_date;
+        this.response_count = response_count;
+        this.view_count = view_count;
+        this.category_name = category_name;
+        this.responsed_cost = responsed_cost;
+        this.response_desc = response_desc;
+    }
+
+    public CollectiveTenderBySchoolDto() {
+    }
+
+    public int getTender_id() {
+        return tender_id;
+    }
+
+    public void setTender_id(int tender_id) {
+        this.tender_id = tender_id;
+    }
+
+    public String getTender_logo() {
+        return tender_logo;
+    }
+
+    public void setTender_logo(String tender_logo) {
+        this.tender_logo = tender_logo;
+    }
+
+    public String getTender_title() {
+        return tender_title;
+    }
+
+    public void setTender_title(String tender_title) {
+        this.tender_title = tender_title;
+    }
+
+    public String getTender_explain() {
+        return tender_explain;
+    }
+
+    public void setTender_explain(String tender_explain) {
+        this.tender_explain = tender_explain;
+    }
+
+    public long getTender_display_date() {
+        return tender_display_date;
+    }
+
+    public void setTender_display_date(long tender_display_date) {
+        this.tender_display_date = tender_display_date;
+    }
+
+    public long getTender_expire_date() {
+        return tender_expire_date;
+    }
+
+    public void setTender_expire_date(long tender_expire_date) {
+        this.tender_expire_date = tender_expire_date;
+    }
+
+    public long getTender_company_display_date() {
+        return tender_company_display_date;
+    }
+
+    public void setTender_company_display_date(long tender_company_display_date) {
+        this.tender_company_display_date = tender_company_display_date;
+    }
+
+    public long getTender_company_expired_date() {
+        return tender_company_expired_date;
+    }
+
+    public void setTender_company_expired_date(long tender_company_expired_date) {
+        this.tender_company_expired_date = tender_company_expired_date;
+    }
+
+    public int getResponse_count() {
+        return response_count;
+    }
+
+    public void setResponse_count(int response_count) {
+        this.response_count = response_count;
+    }
+
+    public int getView_count() {
+        return view_count;
+    }
+
+    public void setView_count(int view_count) {
+        this.view_count = view_count;
+    }
+
+    public String getCategory_name() {
+        return category_name;
+    }
+
+    public void setCategory_name(String category_name) {
+        this.category_name = category_name;
+    }
+
+    public double getResponsed_cost() {
+        return responsed_cost;
+    }
+
+    public void setResponsed_cost(double responsed_cost) {
+        this.responsed_cost = responsed_cost;
+    }
+
+    public String getResponse_desc() {
+        return response_desc;
+    }
+
+    public void setResponse_desc(String response_desc) {
+        this.response_desc = response_desc;
+    }
+}
