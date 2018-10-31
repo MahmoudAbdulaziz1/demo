@@ -3,6 +3,7 @@ package com.taj.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.taj.model.SchoolRequestCategoryModel;
+import com.taj.model.SchoolRequestCategoryModelEnglish;
 import com.taj.model.schoolCategoriesToWEBSITE;
 import com.taj.repository.SchoolRequestCategoryRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,21 +34,21 @@ public class SchoolRequestCategoryController {
      * @return list of company categories
      */
 
-    @GetMapping("/getAll")
+    @GetMapping("/getAll/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public List<SchoolRequestCategoryModel> getCategories() {
-        return repo.getSchoolRequestCategories();
+    public List<SchoolRequestCategoryModelEnglish> getCategories(@PathVariable int flag_ar) {
+        return repo.getSchoolRequestCategories(flag_ar);
     }
     @GetMapping("/getCat")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public List<schoolCategoriesToWEBSITE> getSchoolRequestCategoriesForWeb() {
-        return  repo.getSchoolRequestCategoriesForWeb();
+    public List<schoolCategoriesToWEBSITE> getSchoolRequestCategoriesForWebT(@RequestParam(value = "flag") int flag_ar) {
+        return  repo.getSchoolRequestCategoriesForWeb(flag_ar);
     }
 
-    @GetMapping("/getCat/{id}")
+    @GetMapping("/getCat/{id}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public List<schoolCategoriesToWEBSITE> getSchoolRequestCategoriesForWebByID(@PathVariable int id) {
-        return  repo.getSchoolRequestCategoriesForWebById(id);
+    public List<schoolCategoriesToWEBSITE> getSchoolRequestCategoriesForWebByID(@PathVariable int id, @PathVariable int flag_ar) {
+        return  repo.getSchoolRequestCategoriesForWebById(id, flag_ar);
     }
     /**
      * @param id
@@ -57,8 +58,8 @@ public class SchoolRequestCategoryController {
     @GetMapping("/getCategory/{id}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
 //    @PreAuthorize("hasAuthority('school') or hasAuthority('admin')")
-    public SchoolRequestCategoryModel getCategory(@PathVariable int id) {
-        return repo.getSchoolRequestCategory(id);
+    public SchoolRequestCategoryModelEnglish getCategory(@PathVariable int id, int flag_ar) {
+        return repo.getSchoolRequestCategory(id, flag_ar);
     }
 
 

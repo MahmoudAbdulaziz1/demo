@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.taj.model.CategoryModel;
+import com.taj.model.CategoryModelEnglish;
 import com.taj.repository.CategoryRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,10 +33,10 @@ public class CategoryController {
      * @return list of company categories
      */
 //    @PreAuthorize("hasAuthority('company') or hasAuthority('admin')")
-    @GetMapping("/getAll")
+    @GetMapping("/getAll/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public List<CategoryModel> getCategories() {
-        return repo.getCategories();
+    public List<CategoryModelEnglish> getCategories(@PathVariable int flag_ar) {
+        return repo.getCategories(flag_ar);
     }
 
     /**
@@ -43,10 +44,10 @@ public class CategoryController {
      * @return category by id
      */
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/get/{id}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public CategoryModel getCategory(@PathVariable int id) {
-        return repo.getCategory(id);
+    public CategoryModelEnglish getCategory(@PathVariable int id, @PathVariable int flag_ar) {
+        return repo.getCategory(id, flag_ar);
     }
 
 

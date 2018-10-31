@@ -124,17 +124,17 @@ public class TakatafTenderRequestController {
         return tener;
     }
 
-    @GetMapping("/category/{categoryId}/{companyId}")
+    @GetMapping("/category/{categoryId}/{companyId}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public List<CollectiveTenderBySchoolDto> getCollectiveTender(@PathVariable int categoryId, @PathVariable int companyId) {
-        return repo.getCollectiveTender(categoryId, companyId);
+    public List<CollectiveTenderBySchoolDto> getCollectiveTender(@PathVariable int categoryId, @PathVariable int companyId, @PathVariable int flag_ar) {
+        return repo.getCollectiveTender(categoryId, companyId, flag_ar);
     }
 
 
-    @GetMapping("/category/{categoryId}")
+    @GetMapping("/category/{categoryId}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public List<CollectiveTenderBySchoolDto2> getCollectiveTe(@PathVariable int categoryId) {
-        return repo.getCollective(categoryId);
+    public List<CollectiveTenderBySchoolDto2> getCollectiveTe(@PathVariable int categoryId, @PathVariable int flag_ar) {
+        return repo.getCollective(categoryId, flag_ar);
     }
 
 //    @GetMapping("/getAll")

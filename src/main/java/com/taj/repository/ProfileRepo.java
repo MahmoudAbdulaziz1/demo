@@ -45,8 +45,8 @@ public class ProfileRepo {
     public List<CompantProfileDto> getProfiles() {
 
         String sql = "SELECT company_id, company_name, company_logo_image, company_address, category_name, company_link_youtube, company_website_url, company_lng, company_lat, company_cover_image, " +
-                "company_phone_number, count(follow_id) AS follower_count, count(offer_id), company_desc AS order_count FROM (((efaz_company.efaz_company_profile AS profile LEFT JOIN " +
-                " efaz_company.efaz_organization_following AS follow ON profile.company_id = follow.follower_id) LEFT JOIN efaz_company_offer AS offer ON profile.company_id = offer.offer_company_id) INNER JOIN efaz_company_category AS cat" +
+                "company_phone_number, count(follow_id) AS follower_count, count(offer_id), company_desc AS order_count FROM (((efaz_company_profile AS profile LEFT JOIN " +
+                " efaz_organization_following AS follow ON profile.company_id = follow.follower_id) LEFT JOIN efaz_company_offer AS offer ON profile.company_id = offer.offer_company_id) INNER JOIN efaz_company_category AS cat" +
                 " ON profile.company_category_id = cat.category_id) GROUP BY profile.company_id;";
 
         return jdbcTemplate.query(sql,
@@ -71,8 +71,8 @@ public class ProfileRepo {
     public List<CompantProfileDto> getProfileByCategory(String id) {
 
         String sql = "SELECT company_id, company_name, company_logo_image, company_address, category_name, company_link_youtube, company_website_url, company_lng, company_lat, company_cover_image, " +
-                "                company_phone_number, count(follow_id) AS follower_count, count(offer_id) AS order_count, company_desc FROM (((efaz_company.efaz_company_profile AS profile LEFT JOIN " +
-                "                 efaz_company.efaz_organization_following AS follow ON profile.company_id = follow.follower_id) LEFT JOIN efaz_company_offer AS offer ON profile.company_id = offer.offer_company_id) INNER JOIN efaz_company_category AS cat" +
+                "                company_phone_number, count(follow_id) AS follower_count, count(offer_id) AS order_count, company_desc FROM (((efaz_company_profile AS profile LEFT JOIN " +
+                "                 efaz_organization_following AS follow ON profile.company_id = follow.follower_id) LEFT JOIN efaz_company_offer AS offer ON profile.company_id = offer.offer_company_id) INNER JOIN efaz_company_category AS cat" +
                 "                 ON profile.company_category_id = cat.category_id) WHERE  company_category_id=? GROUP BY profile.company_id;";
         int category = jdbcTemplate.queryForObject("SELECT category_id FROM efaz_company_category WHERE  category_name LIKE ?;",
                 Integer.class, "%" + id + "%");

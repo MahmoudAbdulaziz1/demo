@@ -132,9 +132,9 @@ public class SchoolRequestOfferRepo {
     }
 
     public int acceptSchoolRequestOffer(int response_id) {
-        int offer_id = jdbcTemplate.queryForObject("SELECT requsted_offer_id FROM efaz_company.efaz_school_request_offer WHERE request_id = ?;", new Object[]{response_id},
+        int offer_id = jdbcTemplate.queryForObject("SELECT requsted_offer_id FROM efaz_school_request_offer WHERE request_id = ?;", new Object[]{response_id},
                 Integer.class);
-        jdbcTemplate.update("UPDATE efaz_company.efaz_company_offer SET offer_deliver_date=? WHERE offer_id=?", new Timestamp(System.currentTimeMillis()), offer_id);
+        jdbcTemplate.update("UPDATE efaz_company_offer SET offer_deliver_date=? WHERE offer_id=?", new Timestamp(System.currentTimeMillis()), offer_id);
         return jdbcTemplate.update("UPDATE efaz_school_request_offer SET is_accepted=1 WHERE request_id=?", response_id);
     }
 

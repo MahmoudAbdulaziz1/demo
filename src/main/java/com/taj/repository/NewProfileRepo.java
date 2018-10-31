@@ -71,10 +71,10 @@ public class NewProfileRepo {
 
 
         for (int i = 0; i < category.size(); i++) {
-            int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company.efaz_company_category WHERE  category_name LIKE ?;",
+            int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
                     Integer.class, "%" + category.get(i).getCategory_name().trim() + "%");
 
-            jdbcTemplate.update("INSERT INTO efaz_company.efaz_company_profile_cats VALUES  (?,?,?)", null, profileID, categorys);
+            jdbcTemplate.update("INSERT INTO efaz_company_profile_cats VALUES  (?,?,?)", null, profileID, categorys);
         }
 
 
@@ -103,12 +103,12 @@ public class NewProfileRepo {
                 "FROM\n" +
                 "\t(\n" +
                 "\t\t(\n" +
-                "\t\t\t( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
                 "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
                 "\t\t)\n" +
-                "\t\tLEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
+                "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
                 "\t)\n" +
-                "\tLEFT JOIN efaz_company.efaz_login AS pc ON PROFILE.company_id = pc.login_id \n" +
+                "\tLEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id \n" +
                 "GROUP BY\n" +
                 "\tPROFILE.company_id;";
 
@@ -143,12 +143,12 @@ public class NewProfileRepo {
                 "FROM\n" +
                 "\t(\n" +
                 "\t\t(\n" +
-                "\t\t\t( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
                 "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
                 "\t\t)\n" +
-                "\t\tLEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
+                "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
                 "\t)\n" +
-                "\tLEFT JOIN efaz_company.efaz_login AS pc ON PROFILE.company_id = pc.login_id \n" +
+                "\tLEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id \n" +
                 "GROUP BY\n" +
                 "\tPROFILE.company_id;";
 
@@ -185,13 +185,13 @@ public class NewProfileRepo {
                 "FROM\n" +
                 "\t(\n" +
                 "\t\t(\n" +
-                "\t\t\t( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
                 "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
                 "\t\t)\n" +
-                "\t\tLEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
+                "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
                 "\t)\n" +
-                "\tLEFT JOIN efaz_company.efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
-                "\tLEFT JOIN efaz_company.efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id \n" +
+                "\tLEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
+                "\tLEFT JOIN efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id \n" +
                 "GROUP BY\n" +
                 "\tPROFILE.company_id,\n" +
                 "\tccat.category_id;";
@@ -229,14 +229,14 @@ public class NewProfileRepo {
                 "                FROM\n" +
                 "                (\n" +
                 "                (\n" +
-                "                ( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.organization_id )\n" +
+                "                ( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.organization_id )\n" +
                 "                LEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
                 "                )\n" +
-                "                LEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
+                "                LEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
                 "                )\n" +
-                "                LEFT JOIN efaz_company.efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
-                "                LEFT JOIN efaz_company.efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id\n" +
-                "                LEFT JOIN efaz_company.efaz_organization_following AS follow2 ON PROFILE.company_id = follow2.organization_id \n" +
+                "                LEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
+                "                LEFT JOIN efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id\n" +
+                "                LEFT JOIN efaz_organization_following AS follow2 ON PROFILE.company_id = follow2.organization_id \n" +
                 "                AND follow2.follower_id = ? \n" +
                 "                GROUP BY\n" +
                 "                company_id,\n" +
@@ -256,14 +256,14 @@ public class NewProfileRepo {
                 "FROM\n" +
                 "\t(\n" +
                 "\t\t(\n" +
-                "\t\t\t( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.organization_id )\n" +
+                "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.organization_id )\n" +
                 "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
                 "\t\t)\n" +
-                "\t\tLEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
+                "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
                 "\t)\n" +
-                "\tLEFT JOIN efaz_company.efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
-                "\tLEFT JOIN efaz_company.efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id\n" +
-                "\tLEFT JOIN efaz_company.efaz_organization_following AS follow2 ON PROFILE.company_id = follow2.organization_id \n" +
+                "\tLEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
+                "\tLEFT JOIN efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id\n" +
+                "\tLEFT JOIN efaz_organization_following AS follow2 ON PROFILE.company_id = follow2.organization_id \n" +
                 "\tAND follow2.follower_id = ? ;";
 
         return jdbcTemplate.queryForObject(sql, Integer.class, school_id);
@@ -295,14 +295,14 @@ public class NewProfileRepo {
                 "                FROM\n" +
                 "                (\n" +
                 "                (\n" +
-                "                ( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.organization_id )\n" +
+                "                ( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.organization_id )\n" +
                 "                LEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
                 "                )\n" +
-                "                LEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
+                "                LEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
                 "                )\n" +
-                "                LEFT JOIN efaz_company.efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
-                "                LEFT JOIN efaz_company.efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id\n" +
-                "                LEFT JOIN efaz_company.efaz_organization_following AS follow2 ON PROFILE.company_id = follow2.organization_id \n" +
+                "                LEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
+                "                LEFT JOIN efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id\n" +
+                "                LEFT JOIN efaz_organization_following AS follow2 ON PROFILE.company_id = follow2.organization_id \n" +
                 "                AND follow2.follower_id = ? \n" +
                 "                GROUP BY\n" +
                 "                company_id,\n" +
@@ -355,19 +355,19 @@ public class NewProfileRepo {
 
 
         String from = "FROM\n" +
-                "    (((efaz_company.efaz_company_profile AS PROFILE ";
-        String join1 = " LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.organization_id ";
+                "    (((efaz_company_profile AS PROFILE ";
+        String join1 = " LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.organization_id ";
         String close1 = ")";
         String join2 = " LEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id ";
         String close2 = ")";
-        String join3 = " LEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id ";
+        String join3 = " LEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id ";
         String close3 = ")";
         String join4 = " LEFT JOIN\n" +
-                "    efaz_company.efaz_login AS pc ON PROFILE.company_id = pc.login_id ";
+                "    efaz_login AS pc ON PROFILE.company_id = pc.login_id ";
         String join5 = " LEFT JOIN\n" +
-                "    efaz_company.efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id ";
+                "    efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id ";
         String join6 = "LEFT JOIN\n" +
-                "    efaz_company.efaz_organization_following AS follow2 ON PROFILE.company_id = follow2.organization_id\n" +
+                "    efaz_organization_following AS follow2 ON PROFILE.company_id = follow2.organization_id\n" +
                 "        AND follow2.follower_id = ?";
 
         String where = " WHERE  ";
@@ -497,14 +497,14 @@ public class NewProfileRepo {
                 "                FROM\n" +
                 "                (\n" +
                 "                (\n" +
-                "                ( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.organization_id )\n" +
+                "                ( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.organization_id )\n" +
                 "                LEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
                 "                )\n" +
-                "                LEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
+                "                LEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
                 "                )\n" +
-                "                LEFT JOIN efaz_company.efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
-                "                LEFT JOIN efaz_company.efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id\n" +
-                "                LEFT JOIN efaz_company.efaz_organization_following AS follow2 ON PROFILE.company_id = follow2.organization_id \n" +
+                "                LEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
+                "                LEFT JOIN efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id\n" +
+                "                LEFT JOIN efaz_organization_following AS follow2 ON PROFILE.company_id = follow2.organization_id \n" +
                 "                AND follow2.follower_id = ? \n" +
                 "                GROUP BY\n" +
                 "                company_id,\n" +
@@ -539,11 +539,11 @@ public class NewProfileRepo {
                 "FROM\n" +
                 "\t(\n" +
                 "\t\t(\n" +
-                "\t\t\t( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
                 "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
                 "\t\t)\n" +
-                "\t\tLEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id\n" +
-                "\t\tLEFT JOIN efaz_company.efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
+                "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id\n" +
+                "\t\tLEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
                 "\t\tINNER JOIN efaz_company_category AS category ON cats.company_cat_id = category.category_id \n" +
                 "\t) \n" +
                 "WHERE\n" +
@@ -581,11 +581,11 @@ public class NewProfileRepo {
                 "FROM\n" +
                 "\t(\n" +
                 "\t\t(\n" +
-                "\t\t\t( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
                 "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
                 "\t\t)\n" +
-                "\t\tLEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id\n" +
-                "\t\tLEFT JOIN efaz_company.efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
+                "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id\n" +
+                "\t\tLEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
                 "\t\tINNER JOIN efaz_company_category AS category ON cats.company_cat_id = category.category_id \n" +
                 "\t) \n" +
                 "WHERE\n" +
@@ -605,16 +605,16 @@ public class NewProfileRepo {
                              String companyLinkYoutube, String companyWebsiteUrl, float schoolLng,
                              float schoolLat, String companyCoverImage, String companyPhoneNumber, String companyDesc,
                              String city, String area, List<TakatfTenderCategoryPOJO> category) {
-        jdbcTemplate.update("DELETE FROM efaz_company.efaz_company_profile_cats WHERE company_profile_id=?;", companyId);
+        jdbcTemplate.update("DELETE FROM efaz_company_profile_cats WHERE company_profile_id=?;", companyId);
 
         for (int i = 0; i < category.size(); i++) {
-            int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company.efaz_company_category WHERE  category_name LIKE ?;",
+            int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
                     Integer.class, "%" + category.get(i).getCategory_name().trim() + "%");
 
-            jdbcTemplate.update("INSERT INTO efaz_company.efaz_company_profile_cats VALUES  (?,?,?)", null, companyId, categorys);
+            jdbcTemplate.update("INSERT INTO efaz_company_profile_cats VALUES  (?,?,?)", null, companyId, categorys);
         }
 
-        jdbcTemplate.update("update efaz_company.efaz_login set city=?," +
+        jdbcTemplate.update("update efaz_login set city=?," +
                 "area=?  " +
                 " where login_id=?;", city, area, companyId);
 
@@ -633,16 +633,16 @@ public class NewProfileRepo {
                               String companyLinkYoutube, String companyWebsiteUrl, float schoolLng,
                               float schoolLat, String companyCoverImage, String companyPhoneNumber, String companyDesc,
                               String city, String area, float lng, float lat, List<TakatfTenderCategoryPOJO> category) {
-        jdbcTemplate.update("DELETE FROM efaz_company.efaz_company_profile_cats WHERE company_profile_id=?;", companyId);
+        jdbcTemplate.update("DELETE FROM efaz_company_profile_cats WHERE company_profile_id=?;", companyId);
 
         for (int i = 0; i < category.size(); i++) {
-            int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company.efaz_company_category WHERE  category_name LIKE ?;",
+            int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
                     Integer.class, "%" + category.get(i).getCategory_name().trim() + "%");
 
-            jdbcTemplate.update("INSERT INTO efaz_company.efaz_company_profile_cats VALUES  (?,?,?)", null, companyId, categorys);
+            jdbcTemplate.update("INSERT INTO efaz_company_profile_cats VALUES  (?,?,?)", null, companyId, categorys);
         }
 
-        jdbcTemplate.update("update efaz_company.efaz_login set city=?," +
+        jdbcTemplate.update("update efaz_login set city=?," +
                 "area=?, lng=?, lat=?  " +
                 " where login_id=?;", city, area, lng, lat, companyId);
 
@@ -678,10 +678,10 @@ public class NewProfileRepo {
                 "FROM\n" +
                 "\t(\n" +
                 "\t\t(\n" +
-                "\t\t\t( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
                 "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id\n" +
-                "\t\t\tLEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id\n" +
-                "\t\t\tLEFT JOIN efaz_company.efaz_login AS pc ON PROFILE.company_id = pc.login_id \n" +
+                "\t\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id\n" +
+                "\t\t\tLEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id \n" +
                 "\t\t) \n" +
                 "\t) \n" +
                 "WHERE\n" +
@@ -719,10 +719,10 @@ public class NewProfileRepo {
                 "FROM\n" +
                 "\t(\n" +
                 "\t\t(\n" +
-                "\t\t\t( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
                 "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id\n" +
-                "\t\t\tLEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id\n" +
-                "\t\t\tLEFT JOIN efaz_company.efaz_login AS pc ON PROFILE.company_id = pc.login_id \n" +
+                "\t\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id\n" +
+                "\t\t\tLEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id \n" +
                 "\t\t) \n" +
                 "\t) \n" +
                 "WHERE\n" +
@@ -763,13 +763,13 @@ public class NewProfileRepo {
                 "FROM\n" +
                 "\t(\n" +
                 "\t\t(\n" +
-                "\t\t\t( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
                 "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
                 "\t\t)\n" +
-                "\t\tLEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
+                "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
                 "\t)\n" +
-                "\tLEFT JOIN efaz_company.efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
-                "\tLEFT JOIN efaz_company.efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id \n" +
+                "\tLEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
+                "\tLEFT JOIN efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id \n" +
                 "GROUP BY\n" +
                 "\tPROFILE.company_id,\n" +
                 "\tccat.category_id;";
@@ -787,13 +787,13 @@ public class NewProfileRepo {
                 "FROM\n" +
                 "\t(\n" +
                 "\t\t(\n" +
-                "\t\t\t( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
                 "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
                 "\t\t)\n" +
-                "\t\tLEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
+                "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
                 "\t)\n" +
-                "\tLEFT JOIN efaz_company.efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
-                "\tLEFT JOIN efaz_company.efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id";
+                "\tLEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
+                "\tLEFT JOIN efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id";
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
@@ -821,13 +821,13 @@ public class NewProfileRepo {
                 "FROM\n" +
                 "\t(\n" +
                 "\t\t(\n" +
-                "\t\t\t( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
                 "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
                 "\t\t)\n" +
-                "\t\tLEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
+                "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
                 "\t)\n" +
-                "\tLEFT JOIN efaz_company.efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
-                "\tLEFT JOIN efaz_company.efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id  " +
+                "\tLEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
+                "\tLEFT JOIN efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id  " +
                 "GROUP BY\n" +
                 "\tPROFILE.company_id,\n" +
                 "\tccat.category_id;";
@@ -868,16 +868,16 @@ public class NewProfileRepo {
                 "\tcategory_id,\n" +
                 "\tcategory_name \n";
 
-        String from = "FROM ((( efaz_company.efaz_company_profile AS PROFILE  ";
+        String from = "FROM ((( efaz_company_profile AS PROFILE  ";
 
-        String join1 = "LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id  ";
+        String join1 = "LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id  ";
         String close1 = " )";
         String join2 = " LEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id ";
         String close2 = " ) ";
-        String join3 = " LEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id ";
+        String join3 = " LEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id ";
         String close3 = " ) ";
-        String join4 = " LEFT JOIN efaz_company.efaz_login AS pc ON PROFILE.company_id = pc.login_id ";
-        String join5 = " LEFT JOIN efaz_company.efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id ";
+        String join4 = " LEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id ";
+        String join5 = " LEFT JOIN efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id ";
 
         String groupBy = "GROUP BY" +
                 "                PROFILE.company_id," +
@@ -997,16 +997,16 @@ public class NewProfileRepo {
                 "    category_name ";
 
         String from = "  FROM\n " +
-                "    (((efaz_company.efaz_company_profile AS PROFILE ";
+                "    (((efaz_company_profile AS PROFILE ";
 
-        String join1 = " LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id  ";
+        String join1 = " LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id  ";
         String close1 = " )";
         String join2 = " LEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id ";
         String close2 = " ) ";
-        String join3 = " LEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id ";
+        String join3 = " LEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id ";
         String close3 = " ) ";
-        String join4 = " LEFT JOIN efaz_company.efaz_login AS pc ON PROFILE.company_id = pc.login_id ";
-        String join5 = " LEFT JOIN efaz_company.efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id ";
+        String join4 = " LEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id ";
+        String join5 = " LEFT JOIN efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id ";
 
         String groupBy = " GROUP BY" +
                 "                PROFILE.company_id, " +
@@ -1118,13 +1118,13 @@ public class NewProfileRepo {
                 "FROM\n" +
                 "\t(\n" +
                 "\t\t(\n" +
-                "\t\t\t( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
                 "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
                 "\t\t)\n" +
-                "\t\tLEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
+                "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
                 "\t)\n" +
-                "\tLEFT JOIN efaz_company.efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
-                "\tLEFT JOIN efaz_company.efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id  " +
+                "\tLEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
+                "\tLEFT JOIN efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id  " +
                 " WHERE company_id != ? " +
                 "GROUP BY\n" +
                 "\tPROFILE.company_id,\n" +

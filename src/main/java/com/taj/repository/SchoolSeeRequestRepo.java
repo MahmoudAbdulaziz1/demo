@@ -1,7 +1,6 @@
 package com.taj.repository;
 
 import com.taj.model.SchoolSeeRequest;
-import com.taj.model.TakatafSchoolSeeTenderModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -42,7 +41,7 @@ public class SchoolSeeRequestRepo {
 
     public boolean isExistOrganizationAndOffer(int offer_id, int school_id) {
         Integer cnt = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM efaz_company.efaz_school_see_offer WHERE seen_offer_school_id=? AND seen_offer_id=?;",
+                "SELECT count(*) FROM efaz_school_see_offer WHERE seen_offer_school_id=? AND seen_offer_id=?;",
                 Integer.class, school_id, offer_id);
         return cnt != null && cnt > 0;
     }

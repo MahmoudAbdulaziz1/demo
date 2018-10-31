@@ -33,13 +33,13 @@ public class TenderRequestRepo {
                 " FROM " +
                 "    takatf_tender AS t " +
                 "        LEFT JOIN " +
-                "    efaz_company.takatf_request_tender AS req ON t.tender_id = req.request_tender_id " +
+                "    takatf_request_tender AS req ON t.tender_id = req.request_tender_id " +
                 "        LEFT JOIN " +
-                "    efaz_company.takataf_request_cat_count AS tr ON t.tender_id = tr.tend_id AND tr.count!=0" +
+                "    takataf_request_cat_count AS tr ON t.tender_id = tr.tend_id AND tr.count!=0" +
                 "        LEFT JOIN " +
-                "    efaz_company.efaz_school_profile sp ON tr.scool_id = sp.school_id " +
+                "    efaz_school_profile sp ON tr.scool_id = sp.school_id " +
                 "        LEFT JOIN " +
-                "    efaz_company.efaz_company_category AS ca ON tr.cat_id = category_id " +
+                "    efaz_company_category AS ca ON tr.cat_id = category_id " +
                 " WHERE " +
                 "    t.tender_id = ? " +
                 " GROUP BY tr.id, tender_id,tender_title,tender_explain,tender_display_date,tender_expire_date," +
@@ -61,10 +61,10 @@ public class TenderRequestRepo {
                 "\tIFNULL( school_logo_image, 0 ) AS school_logo_image \n" +
                 "FROM\n" +
                 "\ttakatf_tender AS t\n" +
-                "\tLEFT JOIN efaz_company.takatf_request_tender AS req ON t.tender_id = req.request_tender_id\n" +
-                "\tLEFT JOIN efaz_company.takataf_request_cat_count AS tr ON t.tender_id = tr.tend_id\n" +
-                "\tLEFT JOIN efaz_company.efaz_school_profile sp ON tr.scool_id = sp.school_id\n" +
-                "\tLEFT JOIN efaz_company.efaz_company_category AS ca ON tr.cat_id = category_id \n" +
+                "\tLEFT JOIN takatf_request_tender AS req ON t.tender_id = req.request_tender_id\n" +
+                "\tLEFT JOIN takataf_request_cat_count AS tr ON t.tender_id = tr.tend_id\n" +
+                "\tLEFT JOIN efaz_school_profile sp ON tr.scool_id = sp.school_id\n" +
+                "\tLEFT JOIN efaz_company_category AS ca ON tr.cat_id = category_id \n" +
                 "WHERE\n" +
                 "\tt.tender_id = ? \n" +
                 "GROUP BY\n" +
@@ -94,9 +94,9 @@ public class TenderRequestRepo {
                 "\tschool_logo_image \n" +
                 "FROM\n" +
                 "\ttakatf_tender AS t\n" +
-                "\tLEFT JOIN efaz_company.takataf_request_cat_count AS tr ON t.tender_id = tr.tend_id\n" +
-                "\tLEFT JOIN efaz_company.efaz_company_category AS ca ON tr.cat_id = category_id\n" +
-                "\tLEFT JOIN efaz_company.efaz_school_profile sp ON tr.scool_id = sp.school_id \n" +
+                "\tLEFT JOIN takataf_request_cat_count AS tr ON t.tender_id = tr.tend_id\n" +
+                "\tLEFT JOIN efaz_company_category AS ca ON tr.cat_id = category_id\n" +
+                "\tLEFT JOIN efaz_school_profile sp ON tr.scool_id = sp.school_id \n" +
                 "WHERE\n" +
                 "\tt.tender_id = ?;";
 
@@ -129,9 +129,9 @@ public class TenderRequestRepo {
                     "\tschool_logo_image \n" +
                     "FROM\n" +
                     "\ttakatf_tender AS t\n" +
-                    "\tLEFT JOIN efaz_company.takataf_request_cat_count AS tr ON t.tender_id = tr.tend_id\n" +
-                    "\tLEFT JOIN efaz_company.efaz_company_category AS ca ON tr.cat_id = category_id\n" +
-                    "\tLEFT JOIN efaz_company.efaz_school_profile sp ON tr.scool_id = sp.school_id \n" +
+                    "\tLEFT JOIN takataf_request_cat_count AS tr ON t.tender_id = tr.tend_id\n" +
+                    "\tLEFT JOIN efaz_company_category AS ca ON tr.cat_id = category_id\n" +
+                    "\tLEFT JOIN efaz_school_profile sp ON tr.scool_id = sp.school_id \n" +
                     "WHERE\n" +
                     "\tt.tender_id = ?;";
 
@@ -158,9 +158,9 @@ public class TenderRequestRepo {
                     "\tschool_logo_image \n" +
                     "FROM\n" +
                     "\ttakatf_tender AS t\n" +
-                    "\tLEFT JOIN efaz_company.takataf_request_cat_count AS tr ON t.tender_id = tr.tend_id\n" +
-                    "\tLEFT JOIN efaz_company.efaz_company_category AS ca ON tr.cat_id = category_id\n" +
-                    "\tLEFT JOIN efaz_company.efaz_school_profile sp ON tr.scool_id = sp.school_id \n" +
+                    "\tLEFT JOIN takataf_request_cat_count AS tr ON t.tender_id = tr.tend_id\n" +
+                    "\tLEFT JOIN efaz_company_category AS ca ON tr.cat_id = category_id\n" +
+                    "\tLEFT JOIN efaz_school_profile sp ON tr.scool_id = sp.school_id \n" +
                     "WHERE\n" +
                     "\tt.tender_id = ?;";
 

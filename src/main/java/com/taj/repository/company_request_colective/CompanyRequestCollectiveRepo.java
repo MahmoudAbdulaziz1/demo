@@ -27,28 +27,28 @@ public class CompanyRequestCollectiveRepo {
 
     public boolean isExistOffer(int company_id, int tender_id) {
         Integer cnt = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM efaz_company.takataf_company_request_tender WHERE response_takataf_company_id=? AND response_takataf_request_id=?;",
+                "SELECT count(*) FROM takataf_company_request_tender WHERE response_takataf_company_id=? AND response_takataf_request_id=?;",
                 Integer.class, company_id, tender_id);
         return cnt != null && cnt > 0;
     }
 
     public boolean isExistTender(int tender_id) {
         Integer cnt = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM efaz_company.takatf_tender WHERE tender_id=?;",
+                "SELECT count(*) FROM takatf_tender WHERE tender_id=?;",
                 Integer.class, tender_id);
         return cnt != null && cnt > 0;
     }
 
 
     public List<CompanyRequestCollectiveModel> getAllCompanyResponses() {
-        return jdbcTemplate.query("SELECT * FROM efaz_company.takataf_company_request_tender",
+        return jdbcTemplate.query("SELECT * FROM takataf_company_request_tender",
                 (resultSet, i) -> new CompanyRequestCollectiveModel(resultSet.getInt(1), resultSet.getInt(2),
                         resultSet.getInt(3), resultSet.getDouble(4), resultSet.getInt(5), resultSet.getTimestamp(6).getTime(),
                         resultSet.getInt(7), resultSet.getInt(8), resultSet.getString(9)));
     }
 
     public CompanyRequestCollectiveModel getCompanyResponse(int id) {
-        return jdbcTemplate.queryForObject("SELECT * FROM efaz_company.takataf_company_request_tender WHERE response_id=?", new Object[]{id},
+        return jdbcTemplate.queryForObject("SELECT * FROM takataf_company_request_tender WHERE response_id=?", new Object[]{id},
                 (resultSet, i) -> new CompanyRequestCollectiveModel(resultSet.getInt(1), resultSet.getInt(2),
                         resultSet.getInt(3), resultSet.getDouble(4), resultSet.getInt(5), resultSet.getTimestamp(6).getTime(),
                         resultSet.getInt(7), resultSet.getInt(8), resultSet.getString(9)));
@@ -71,9 +71,9 @@ public class CompanyRequestCollectiveRepo {
                 "\ttender_company_expired_date,\n" +
                 "\ttender_company_display_date\n" +
                 "FROM\n" +
-                "\tefaz_company.takataf_company_request_tender AS ct\n" +
-                "\tLEFT JOIN efaz_company.efaz_company_profile AS pro ON ct.response_takataf_company_id = pro.company_id\n" +
-                "\tLEFT JOIN efaz_company.takatf_tender AS tender ON tender.tender_id = ct.\tresponse_takataf_request_id\n" +
+                "\ttakataf_company_request_tender AS ct\n" +
+                "\tLEFT JOIN efaz_company_profile AS pro ON ct.response_takataf_company_id = pro.company_id\n" +
+                "\tLEFT JOIN takatf_tender AS tender ON tender.tender_id = ct.\tresponse_takataf_request_id\n" +
                 "\tWHERE company_id = ?;";
 
         return jdbcTemplate.query(sql, new Object[]{companyId},
@@ -101,9 +101,9 @@ public class CompanyRequestCollectiveRepo {
                 "\ttender_company_expired_date,\n" +
                 "\ttender_company_display_date\n" +
                 "FROM\n" +
-                "\tefaz_company.takataf_company_request_tender AS ct\n" +
-                "\tLEFT JOIN efaz_company.efaz_company_profile AS pro ON ct.response_takataf_company_id = pro.company_id\n" +
-                "\tLEFT JOIN efaz_company.takatf_tender AS tender ON tender.tender_id = ct.\tresponse_takataf_request_id\n" +
+                "\ttakataf_company_request_tender AS ct\n" +
+                "\tLEFT JOIN efaz_company_profile AS pro ON ct.response_takataf_company_id = pro.company_id\n" +
+                "\tLEFT JOIN takatf_tender AS tender ON tender.tender_id = ct.\tresponse_takataf_request_id\n" +
                 "\tWHERE tender_id = ?;";
 
         return jdbcTemplate.query(sql, new Object[]{tenderId},
@@ -117,7 +117,7 @@ public class CompanyRequestCollectiveRepo {
                                       int response_takataf_request_id, double responsed_cost, String response_desc) {
         if (isExistTender(response_takataf_request_id)) {
             if (isExistOffer(response_takataf_company_id, response_takataf_request_id)) {
-                return jdbcTemplate.update("UPDATE efaz_company.takataf_company_request_tender SET responsed_cost=? , response_desc=? WHERE" +
+                return jdbcTemplate.update("UPDATE takataf_company_request_tender SET responsed_cost=? , response_desc=? WHERE" +
                         " response_takataf_company_id=? AND  response_takataf_request_id=?;", responsed_cost, response_desc, response_takataf_company_id, response_takataf_request_id);
             } else {
                 return -1000;
@@ -135,7 +135,7 @@ public class CompanyRequestCollectiveRepo {
 
         if (isExistTender(response_takataf_request_id)) {
             if (isExistOffer(response_takataf_company_id, response_takataf_request_id)) {
-                return jdbcTemplate.update("UPDATE efaz_company.takataf_company_request_tender SET responsed_cost=? , response_desc=? WHERE" +
+                return jdbcTemplate.update("UPDATE takataf_company_request_tender SET responsed_cost=? , response_desc=? WHERE" +
                         " response_takataf_company_id=? AND  response_takataf_request_id=?;",
                         responsed_cost, response_desc, response_takataf_company_id, response_takataf_request_id);
             } else {

@@ -19,14 +19,14 @@ public class TakatafSchoolSeeTenderRepo {
 
     public boolean checkIfExist(int tenderr_id, int school_id){
         Integer cnt = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM  efaz_company.takatf_school_see_tender WHERE seen_tender_id=? AND seen_school_id=?;",
+                "SELECT count(*) FROM  takatf_school_see_tender WHERE seen_tender_id=? AND seen_school_id=?;",
                 Integer.class, tenderr_id, school_id);
         return cnt != null && cnt > 0;
     }
 
     public boolean isExistOrganizationAndOffer(int school_id) {
         Integer cnt = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM efaz_company.efaz_school_profile WHERE school_id=? ;",
+                "SELECT count(*) FROM efaz_school_profile WHERE school_id=? ;",
                 Integer.class, school_id);
         return cnt != null && cnt > 0;
     }
@@ -34,7 +34,7 @@ public class TakatafSchoolSeeTenderRepo {
 
     public boolean isExistTender(int tenderId) {
         Integer cnt = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM efaz_company.takatf_tender WHERE tender_id=? ;",
+                "SELECT count(*) FROM takatf_tender WHERE tender_id=? ;",
                 Integer.class, tenderId);
         return cnt != null && cnt > 0;
     }

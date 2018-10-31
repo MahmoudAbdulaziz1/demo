@@ -142,22 +142,23 @@ public class SchoolRequestNewController {
 //
 //    }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ResponseEntity<SchoolRequestWithImageByIdDto> getSchoolSingleRequestByImage(@PathVariable int id) {
+    public ResponseEntity<SchoolRequestWithImageByIdDto> getSchoolSingleRequestByImage(@PathVariable int id, @PathVariable int flag_ar) {
         if (repo.isExist(id)) {
-            return ResponseEntity.status(HttpStatus.OK).body(repo.getRequestByIDWithImage(id));
+            return ResponseEntity.status(HttpStatus.OK).body(repo.getRequestByIDWithImage(id, flag_ar));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
     }
 
-    @GetMapping("/{id}/{companyId}")
+    @GetMapping("/{id}/{companyId}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ResponseEntity<SchoolRequestWithImageByIdDto2> getSchoolSingleRequestByImageAndCompanyRequest(@PathVariable int id, @PathVariable int companyId) {
+    public ResponseEntity<SchoolRequestWithImageByIdDto2> getSchoolSingleRequestByImageAndCompanyRequest(@PathVariable int id, @PathVariable int companyId,
+                                                                                                         @PathVariable int flag_ar) {
         if (repo.isExist(id)) {
-            return ResponseEntity.status(HttpStatus.OK).body(repo.getRequestByIDWithImageAndCompanyRequest(id, companyId));
+            return ResponseEntity.status(HttpStatus.OK).body(repo.getRequestByIDWithImageAndCompanyRequest(id, companyId, flag_ar));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
@@ -204,7 +205,7 @@ public class SchoolRequestNewController {
     }
 
 
-    @PostMapping("/school/{id}/page/{page}/{pageSize}")
+    @PostMapping("/school/{id}/page/{page}/{pageSize}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
     public SchoolRequestNewDto2ModelPagination getSchoolRequestsBySchoolPagination(@PathVariable int id, @PathVariable int page,
                                                                                    @PathVariable int pageSize, @PathVariable int flag_ar,@RequestBody FilterModel filter) {
@@ -220,18 +221,18 @@ public class SchoolRequestNewController {
         } else if (filter.getDay_left() == 1) {
 
             if (filter.getName().equals(null) || filter.getName().isEmpty()) {
-                return repo.getRequestsBySchoolIDPaginationByMore(id, page, pageSize);
+                return repo.getRequestsBySchoolIDPaginationByMore(id, page, pageSize, flag_ar);
 
             } else {
-                return repo.getRequestsBySchoolIDPaginationByBothMore(id, page, pageSize, filter.getName());
+                return repo.getRequestsBySchoolIDPaginationByBothMore(id, page, pageSize, filter.getName(), flag_ar);
             }
 
         } else if (filter.getDay_left() == 2) {
 
             if (filter.getName().equals(null) || filter.getName().isEmpty()) {
-                return repo.getRequestsBySchoolIDPaginationByLess(id, page, pageSize);
+                return repo.getRequestsBySchoolIDPaginationByLess(id, page, pageSize, flag_ar);
             } else {
-                return repo.getRequestsBySchoolIDPaginationByBothLess(id, page, pageSize, filter.getName());
+                return repo.getRequestsBySchoolIDPaginationByBothLess(id, page, pageSize, filter.getName(), flag_ar);
             }
 
         } else {

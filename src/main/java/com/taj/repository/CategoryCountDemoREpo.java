@@ -16,7 +16,7 @@ public class CategoryCountDemoREpo {
 
 
     public int deleteCat(int id){
-        return jdbcTemplate.update("DELETE FROM efaz_company.takataf_request_cat_count where id=?;", id);
+        return jdbcTemplate.update("DELETE FROM takataf_request_cat_count where id=?;", id);
     }
 
 

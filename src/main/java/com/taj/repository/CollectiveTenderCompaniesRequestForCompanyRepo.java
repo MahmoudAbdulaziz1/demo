@@ -21,8 +21,8 @@ public class CollectiveTenderCompaniesRequestForCompanyRepo {
         String sql = "SELECT\n" +
                 "\tCOUNT( DISTINCT response_id ) \n" +
                 "FROM\n" +
-                "\tefaz_company.takataf_company_request_tender AS req\n" +
-                "\tLEFT JOIN efaz_company.efaz_company_profile AS PROFILE ON req.response_takataf_company_id = PROFILE.company_id \n" +
+                "\ttakataf_company_request_tender AS req\n" +
+                "\tLEFT JOIN efaz_company_profile AS PROFILE ON req.response_takataf_company_id = PROFILE.company_id \n" +
                 "WHERE\n" +
                 "\tresponse_takataf_request_id = ?;";
         return jdbcTemplate.queryForObject(sql, Integer.class, id);
@@ -48,8 +48,8 @@ public class CollectiveTenderCompaniesRequestForCompanyRepo {
                 "\tresponse_desc,\n" +
                 "\tis_aproved \n" +
                 "FROM\n" +
-                "\tefaz_company.takataf_company_request_tender AS req\n" +
-                "\tLEFT JOIN efaz_company.efaz_company_profile AS PROFILE ON req.response_takataf_company_id = PROFILE.company_id \n" +
+                "\ttakataf_company_request_tender AS req\n" +
+                "\tLEFT JOIN efaz_company_profile AS PROFILE ON req.response_takataf_company_id = PROFILE.company_id \n" +
                 "WHERE\n" +
                 "\tresponse_takataf_request_id = ? " +
                 " LIMIT ?,?;";
@@ -76,8 +76,8 @@ public class CollectiveTenderCompaniesRequestForCompanyRepo {
                 "\tresponse_desc,\n" +
                 "\tis_aproved \n" +
                 "FROM\n" +
-                "\tefaz_company.takataf_company_request_tender AS req\n" +
-                "\tLEFT JOIN efaz_company.efaz_company_profile AS PROFILE ON req.response_takataf_company_id = PROFILE.company_id \n" +
+                "\ttakataf_company_request_tender AS req\n" +
+                "\tLEFT JOIN efaz_company_profile AS PROFILE ON req.response_takataf_company_id = PROFILE.company_id \n" +
                 "WHERE\n" +
                 "\tresponse_takataf_request_id = ?;";
         return jdbcTemplate.query(sql, new Object[]{id},
@@ -87,12 +87,12 @@ public class CollectiveTenderCompaniesRequestForCompanyRepo {
     }
 
     public int approveRequest(int response_takataf_company_id, int response_takataf_request_id) {
-        return jdbcTemplate.update("UPDATE efaz_company.takataf_company_request_tender SET is_aproved=1 WHERE response_takataf_company_id=?" +
+        return jdbcTemplate.update("UPDATE takataf_company_request_tender SET is_aproved=1 WHERE response_takataf_company_id=?" +
                 " AND response_takataf_request_id=?", response_takataf_company_id, response_takataf_request_id);
     }
 
     public int cancelRequest(int response_takataf_company_id, int response_takataf_request_id) {
-        return jdbcTemplate.update("UPDATE efaz_company.takataf_company_request_tender SET is_aproved=0 WHERE response_takataf_company_id=?" +
+        return jdbcTemplate.update("UPDATE takataf_company_request_tender SET is_aproved=0 WHERE response_takataf_company_id=?" +
                 " AND response_takataf_request_id=?", response_takataf_company_id, response_takataf_request_id);
     }
 }

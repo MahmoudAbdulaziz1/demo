@@ -99,7 +99,7 @@ public class LoginRepo {
 
     public boolean isExistILogin(String email, String login_role) {
         Integer cnt = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM efaz_company.efaz_login WHERE user_email=? AND login_role=?;",
+                "SELECT count(*) FROM efaz_login WHERE user_email=? AND login_role=?;",
                 Integer.class, email, login_role);
         return cnt != null && cnt > 0;
     }
@@ -123,7 +123,7 @@ public class LoginRepo {
                     "registration_organization_name\n" +
                     "FROM\n" +
                     "\tefaz_login AS log\n" +
-                    "\tLEFT JOIN efaz_company.efaz_registration AS reg ON log.user_email = reg.registeration_email \n" +
+                    "\tLEFT JOIN efaz_registration AS reg ON log.user_email = reg.registeration_email \n" +
                     "\tAND log.login_role = reg.registration_role \n" +
                     "\tAND reg.registration_isActive = 1 \n" +
                     "WHERE\n" +
@@ -154,7 +154,7 @@ public class LoginRepo {
 
                     if (check) {
                         String token = "!="+ generator.generate(model);
-                        jdbcTemplate.update("UPDATE efaz_company.efaz_login SET login_token = ? WHERE login_id = ?", token, model.getLogin_id());
+                        jdbcTemplate.update("UPDATE efaz_login SET login_token = ? WHERE login_id = ?", token, model.getLogin_id());
                         ObjectNode objectNode = mapper.createObjectNode();
                         objectNode.put("state", 201);
                         objectNode.put("login_id", model.getLogin_id());

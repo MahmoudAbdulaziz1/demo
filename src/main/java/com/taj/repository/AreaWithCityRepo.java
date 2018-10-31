@@ -19,8 +19,8 @@ public class AreaWithCityRepo {
 
     public List<Map<String, Object>> getTestObject() {
         String sql = "SELECT area_id, area_name, city_id, city_name " +
-                "FROM  efaz_company.area AS a " +
-                "LEFT JOIN efaz_company.city AS c ON a.area_id = c.city_area_id;";
+                "FROM  area AS a " +
+                "LEFT JOIN city AS c ON a.area_id = c.city_area_id;";
 
         return jdbcTemplate.queryForList(sql);
     }

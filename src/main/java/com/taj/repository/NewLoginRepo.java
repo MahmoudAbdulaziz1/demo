@@ -125,7 +125,7 @@ public class NewLoginRepo {
                     "registration_id\n" +
                     "FROM\n" +
                     "\tefaz_login AS log\n" +
-                    "\tLEFT JOIN efaz_company.efaz_registration AS reg ON log.user_email = reg.registeration_email \n" +
+                    "\tLEFT JOIN efaz_registration AS reg ON log.user_email = reg.registeration_email \n" +
                     "\tAND log.login_role = reg.registration_role \n" +
                     "\tAND reg.registration_isActive = 1 \n" +
                     "WHERE\n" +
@@ -163,7 +163,7 @@ public class NewLoginRepo {
                         NewLoginModelDto dto = new NewLoginModelDto(model.getLogin_id(), model.getUser_email(), model.getUser_password(),
                                 model.getIs_active(), model.getLogin_role(), model.getLogin_date(), model.getLogin_token(), model.getRegistration_organization_name());
                         String token = "!=" + generator.generate(dto);
-                        jdbcTemplate.update("UPDATE efaz_company.efaz_login SET login_token = ? WHERE login_id = ?", token, model.getLogin_id());
+                        jdbcTemplate.update("UPDATE efaz_login SET login_token = ? WHERE login_id = ?", token, model.getLogin_id());
                         ObjectNode objectNode = mapper.createObjectNode();
                         objectNode.put("state", 201);
                         objectNode.put("login_id", model.getLogin_id());

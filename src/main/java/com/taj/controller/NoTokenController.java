@@ -73,9 +73,9 @@ public class NoTokenController {
         return ResponseEntity.status(HttpStatus.OK).body(objectNode);
     }
 
-    @GetMapping("cat/getAll")
-    public List<CategoryModel> getCategories() {
-        return catRepo.getCategories();
+    @GetMapping("cat/getAll/{flag_ar}")
+    public List<CategoryModelEnglish> getCategories(@PathVariable int flag_ar) {
+        return catRepo.getCategories(flag_ar);
     }
 
     @PostMapping("login/isLogged")
@@ -486,9 +486,9 @@ public class NoTokenController {
 
     }
 
-    @GetMapping("school/category/getCat")
-    public List<schoolCategoriesToWEBSITE> getSchoolRequestCategoriesForWeb() {
-        return  schoolRequestCategoryRepo.getSchoolRequestCategoriesForWeb();
+    @GetMapping("school/category/getCat/{flag_ar}")
+    public List<schoolCategoriesToWEBSITE> getSchoolRequestCategoriesForWeb(@PathVariable int flag_ar) {
+        return  schoolRequestCategoryRepo.getSchoolRequestCategoriesForWeb(flag_ar);
     }
 
     @PutMapping("login/restPassword")

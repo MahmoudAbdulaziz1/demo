@@ -18,30 +18,30 @@ public class AreaRepo {
     JdbcTemplate jdbcTemplate;
 
     public int addArea(String areaName) {
-        return jdbcTemplate.update("INSERT INTO efaz_company.area VALUES (?,?);", null, areaName);
+        return jdbcTemplate.update("INSERT INTO area VALUES (?,?);", null, areaName);
     }
 
     public List<AreaModel> getAreas() {
-        return jdbcTemplate.query("SELECT * FROM efaz_company.area;",
+        return jdbcTemplate.query("SELECT * FROM area;",
                 (resultSet, i) -> new AreaModel(resultSet.getInt(1), resultSet.getString(2)));
     }
 
     public AreaModel getareaById(int areaId) {
-        return jdbcTemplate.queryForObject("SELECT * FROM efaz_company.area WHERE area_id=?;", new Object[]{areaId},
+        return jdbcTemplate.queryForObject("SELECT * FROM area WHERE area_id=?;", new Object[]{areaId},
                 (resultSet, i) -> new AreaModel(resultSet.getInt(1), resultSet.getString(2)));
     }
 
     public int updateArea(int areaId, String areaName) {
-        return jdbcTemplate.update("UPDATE efaz_company.area SET area_name=? WHERE area_id=?;", areaName, areaId);
+        return jdbcTemplate.update("UPDATE area SET area_name=? WHERE area_id=?;", areaName, areaId);
     }
 
     public int deleteArea(int areaId) {
-        return jdbcTemplate.update("DELETE FROM efaz_company.area WHERE area_id=?", areaId);
+        return jdbcTemplate.update("DELETE FROM area WHERE area_id=?", areaId);
     }
 
     public boolean checkIfExist(int areaId) {
         Integer cnt = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM  efaz_company.area WHERE area_id=?;",
+                "SELECT count(*) FROM  area WHERE area_id=?;",
                 Integer.class, areaId);
         return cnt != null && cnt > 0;
     }

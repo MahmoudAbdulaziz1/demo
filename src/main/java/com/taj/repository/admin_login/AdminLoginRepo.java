@@ -76,7 +76,7 @@ public class AdminLoginRepo {
                 if (bCryptPasswordEncoder.matches(user_passwords, model.getPassword())) {
 
                     Integer cnt = jdbcTemplate.queryForObject(
-                            "SELECT count(*) FROM efaz_company.admin_login WHERE email=? AND (role='admin' OR role='super_admin');",//"//AND user_password = ?  ;
+                            "SELECT count(*) FROM admin_login WHERE email=? AND (role='admin' OR role='super_admin');",//"//AND user_password = ?  ;
                             Integer.class, user_email);//, bCryptPasswordEncoder.encode(user_passwords.trim()));
 
                     boolean check = cnt != null && cnt > 0;
@@ -84,7 +84,7 @@ public class AdminLoginRepo {
                     if (check) {
                         NewLoginModelDto dto = new NewLoginModelDto(model.getId(), model.getEmail(), model.getPassword(), model.getIs_active(), model.getRole(), model.getDate(), model.getToken(), model.getName());
                         String token = "!=" + generator.generate(dto);
-                        jdbcTemplate.update("UPDATE efaz_company.admin_login SET token = ? WHERE id = ?", token, model.getId());
+                        jdbcTemplate.update("UPDATE admin_login SET token = ? WHERE id = ?", token, model.getId());
                         ObjectNode objectNode = mapper.createObjectNode();
                         objectNode.put("state", 201);
                         objectNode.put("login_id", model.getId());
@@ -120,7 +120,7 @@ public class AdminLoginRepo {
 
     public boolean isExistILogin(String email) {
         Integer cnt = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM efaz_company.admin_login WHERE email=? AND (role='admin' OR role='super_admin');",
+                "SELECT count(*) FROM admin_login WHERE email=? AND (role='admin' OR role='super_admin');",
                 Integer.class, email);
         return cnt != null && cnt > 0;
     }

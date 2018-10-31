@@ -1,6 +1,6 @@
 package com.taj.repository;
 
-import com.taj.model.CategoryModel;
+import com.taj.model.CategoryModelEnglish;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -16,15 +16,27 @@ public class CategoryRepo {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    public List<CategoryModel> getCategories() {
-        return jdbcTemplate.query("SELECT * FROM efaz_company_category;",
-                (resultSet, i) -> new CategoryModel(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3)));
+    public List<CategoryModelEnglish> getCategories(int flag_ar) {
+        String sql = "";
+        if (flag_ar == 0){
+            sql = "SELECT category_id, category_name FROM efaz_company_category;";
+        }else {
+            sql = "SELECT category_id, category_name_ar AS category_naem FROM efaz_company_category;";
+        }
+        return jdbcTemplate.query(sql,
+                (resultSet, i) -> new CategoryModelEnglish(resultSet.getInt(1), resultSet.getString(2)));
     }
 
 
-    public CategoryModel getCategory(int id) {
-        return jdbcTemplate.queryForObject("SELECT * FROM efaz_company_category WHERE  category_id=?;",
-                new Object[]{id}, (resultSet, i) -> new CategoryModel(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3)));
+    public CategoryModelEnglish getCategory(int id, int flag_ar) {
+        String sql = "";
+        if (flag_ar == 0){
+            sql = "SELECT category_id, category_name FROM efaz_company_category WHERE category_id = ?;";
+        }else {
+            sql = "SELECT category_id, category_name_ar AS category_naem FROM efaz_company_category  WHERE category_id = ?;";
+        }
+        return jdbcTemplate.queryForObject(sql,
+                new Object[]{id}, (resultSet, i) -> new CategoryModelEnglish(resultSet.getInt(1), resultSet.getString(2)));
     }
 
     public int addCategory(String categoryName, String categoryNameAr) {

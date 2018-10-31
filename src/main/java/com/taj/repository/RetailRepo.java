@@ -22,7 +22,7 @@ public class RetailRepo {
                                 int retail_school_id,
                                 int retail_tender_id) {
         if (isExistRequest(retail_school_id, retail_tender_id)) {
-            return jdbcTemplate.update("INSERT INTO efaz_company.takataf_retail_school_request VALUES(?,?,?,?);",
+            return jdbcTemplate.update("INSERT INTO takataf_retail_school_request VALUES(?,?,?,?);",
                     null, retail, retail_school_id, retail_tender_id);
         }else {
             return -100;
@@ -34,13 +34,13 @@ public class RetailRepo {
             int retail_school_id,
             int retail_tender_id) {
         if (isExistRequest(retail_school_id, retail_tender_id)) {
-            int res = jdbcTemplate.update("DELETE FROM  efaz_company.takatf_request_tender WHERE  request_school_id=? AND request_tender_id=?;",
+            int res = jdbcTemplate.update("DELETE FROM  takatf_request_tender WHERE  request_school_id=? AND request_tender_id=?;",
                     retail_school_id, retail_tender_id);
             if (res == 1) {
-                jdbcTemplate.update("DELETE FROM  efaz_company.takataf_request_cat_count WHERE  scool_id=? AND tend_id=?;",
+                jdbcTemplate.update("DELETE FROM  takataf_request_cat_count WHERE  scool_id=? AND tend_id=?;",
                         retail_school_id, retail_tender_id);
 
-                return jdbcTemplate.update("DELETE FROM  efaz_company.takataf_retail_school_request WHERE  retail_school_id=? AND retail_tender_id=?;",
+                return jdbcTemplate.update("DELETE FROM  takataf_retail_school_request WHERE  retail_school_id=? AND retail_tender_id=?;",
                         retail_school_id, retail_tender_id);
 
             } else {
@@ -56,7 +56,7 @@ public class RetailRepo {
             int retail_school_id,
             int retail_tender_id) {
 
-        return jdbcTemplate.update("DELETE FROM  efaz_company.takataf_retail_school_request WHERE  retail_school_id=? AND retail_tender_id=?;",
+        return jdbcTemplate.update("DELETE FROM  takataf_retail_school_request WHERE  retail_school_id=? AND retail_tender_id=?;",
                 retail_school_id, retail_tender_id);
 
     }
@@ -74,10 +74,10 @@ public class RetailRepo {
                 "\tcount(DISTINCT req.request_id ) AS response_count,\n" +
                 "count( DISTINCT ten.t_category_id ) AS cat_count, retail_school_id AS school_id \t\n" +
                 "FROM\n" +
-                "\tefaz_company.takataf_retail_school_request AS retail\n" +
-                "\tLEFT JOIN efaz_company.takatf_tender AS tender ON retail.retail_tender_id = tender.tender_id\n" +
-                "\tLEFT JOIN efaz_company.takatf_request_tender AS req ON req.request_tender_id = tender.tender_id \n" +
-                "\tLEFT JOIN efaz_company.tkatf_tender_catgory_request AS ten ON tender_id = ten.t_tender_id\n" +
+                "\ttakataf_retail_school_request AS retail\n" +
+                "\tLEFT JOIN takatf_tender AS tender ON retail.retail_tender_id = tender.tender_id\n" +
+                "\tLEFT JOIN takatf_request_tender AS req ON req.request_tender_id = tender.tender_id \n" +
+                "\tLEFT JOIN tkatf_tender_catgory_request AS ten ON tender_id = ten.t_tender_id\n" +
                 "\t\n" +
                 "GROUP BY\n" +
                 "\ttender_id,\n" +
@@ -120,14 +120,14 @@ public class RetailRepo {
                     "\tschool_name,\n" +
                     "\tschool_logo_image \n" +
                     "FROM\n" +
-                    "\tefaz_company.takataf_retail_school_request AS retail\n" +
-                    "\tLEFT JOIN efaz_company.takatf_tender AS tender ON retail.retail_tender_id = tender.tender_id\n" +
-                    "\tINNER JOIN efaz_company.takatf_request_tender AS req ON req.request_tender_id = tender.tender_id\n" +
-                    "\tLEFT JOIN efaz_company.takataf_request_cat_count AS tr ON tender_id = tr.tend_id \n" +
+                    "\ttakataf_retail_school_request AS retail\n" +
+                    "\tLEFT JOIN takatf_tender AS tender ON retail.retail_tender_id = tender.tender_id\n" +
+                    "\tINNER JOIN takatf_request_tender AS req ON req.request_tender_id = tender.tender_id\n" +
+                    "\tLEFT JOIN takataf_request_cat_count AS tr ON tender_id = tr.tend_id \n" +
                     "\tAND tr.scool_id = retail.retail_school_id\n" +
-                    "\tLEFT JOIN efaz_company.efaz_company_category AS ca ON tr.cat_id = category_id\n" +
-                    "\tLEFT JOIN efaz_company.tkatf_tender_catgory_request AS ten ON tender_id = ten.t_tender_id\n" +
-                    "\tINNER JOIN efaz_company.efaz_school_profile sp ON tr.scool_id = sp.school_id \n" +
+                    "\tLEFT JOIN efaz_company_category AS ca ON tr.cat_id = category_id\n" +
+                    "\tLEFT JOIN tkatf_tender_catgory_request AS ten ON tender_id = ten.t_tender_id\n" +
+                    "\tINNER JOIN efaz_school_profile sp ON tr.scool_id = sp.school_id \n" +
                     "WHERE\n" +
                     "\tretail_school_id = ? \n" +
                     "\tAND retail_tender_id = ?;";
@@ -155,14 +155,14 @@ public class RetailRepo {
                     "\tschool_name,\n" +
                     "\tschool_logo_image \n" +
                     "FROM\n" +
-                    "\tefaz_company.takataf_retail_school_request AS retail\n" +
-                    "\tLEFT JOIN efaz_company.takatf_tender AS tender ON retail.retail_tender_id = tender.tender_id\n" +
-                    "\tINNER JOIN efaz_company.takatf_request_tender AS req ON req.request_tender_id = tender.tender_id\n" +
-                    "\tLEFT JOIN efaz_company.takataf_request_cat_count AS tr ON tender_id = tr.tend_id \n" +
+                    "\ttakataf_retail_school_request AS retail\n" +
+                    "\tLEFT JOIN takatf_tender AS tender ON retail.retail_tender_id = tender.tender_id\n" +
+                    "\tINNER JOIN takatf_request_tender AS req ON req.request_tender_id = tender.tender_id\n" +
+                    "\tLEFT JOIN takataf_request_cat_count AS tr ON tender_id = tr.tend_id \n" +
                     "\tAND tr.scool_id = retail.retail_school_id\n" +
-                    "\tLEFT JOIN efaz_company.efaz_company_category AS ca ON tr.cat_id = category_id\n" +
-                    "\tLEFT JOIN efaz_company.tkatf_tender_catgory_request AS ten ON tender_id = ten.t_tender_id\n" +
-                    "\tINNER JOIN efaz_company.efaz_school_profile sp ON tr.scool_id = sp.school_id \n" +
+                    "\tLEFT JOIN efaz_company_category AS ca ON tr.cat_id = category_id\n" +
+                    "\tLEFT JOIN tkatf_tender_catgory_request AS ten ON tender_id = ten.t_tender_id\n" +
+                    "\tINNER JOIN efaz_school_profile sp ON tr.scool_id = sp.school_id \n" +
                     "WHERE\n" +
                     "\tretail_school_id = ? \n" +
                     "\tAND retail_tender_id = ?;";
@@ -177,7 +177,7 @@ public class RetailRepo {
 
     public boolean isExistRequest(int school_id, int tender_id) {
         Integer cnt = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM efaz_company.takatf_request_tender WHERE request_school_id=? AND request_tender_id=?;",
+                "SELECT count(*) FROM takatf_request_tender WHERE request_school_id=? AND request_tender_id=?;",
                 Integer.class, school_id, tender_id);
         return cnt != null && cnt > 0;
     }

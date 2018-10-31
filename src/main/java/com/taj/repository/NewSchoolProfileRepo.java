@@ -69,7 +69,7 @@ public class NewSchoolProfileRepo {
                 "\tCOUNT( request_id ) AS request_count \n" +
                 "FROM\n" +
                 "\tefaz_school_profile AS pro\n" +
-                "\tLEFT JOIN efaz_company.efaz_login AS login ON pro.school_id = login.login_id\n" +
+                "\tLEFT JOIN efaz_login AS login ON pro.school_id = login.login_id\n" +
                 "\tLEFT JOIN efaz_school_tender AS tend ON pro.school_id = tend.school_id \n" +
                 "GROUP BY\n" +
                 "\tpro.school_id,\n" +
@@ -112,7 +112,7 @@ public class NewSchoolProfileRepo {
                 "\tarea \n" +
                 "FROM\n" +
                 "\tefaz_school_profile AS pro\n" +
-                "\tLEFT JOIN efaz_company.efaz_login AS login ON pro.school_id = login.login_id" +
+                "\tLEFT JOIN efaz_login AS login ON pro.school_id = login.login_id" +
                 " WHERE   school_id=?;";
         return jdbcTemplate.queryForObject(sql,
                 new Object[]{id}, (resultSet, i) -> new NewSchoolProfileModel(resultSet.getInt(1), resultSet.getString(2),
@@ -126,7 +126,7 @@ public class NewSchoolProfileRepo {
                              String school_service_desc, String school_link_youtube, String school_website_url, float school_lng, float school_lat,
                              byte[] school_cover_image, String school_phone_number, String city, String area) {
 
-        jdbcTemplate.update("update efaz_company.efaz_login set city=?," +
+        jdbcTemplate.update("update efaz_login set city=?," +
                 "area=?  " +
                 " where login_id=?;", city, area, id);
 
@@ -163,7 +163,7 @@ public class NewSchoolProfileRepo {
                 "\tarea \n" +
                 "FROM\n" +
                 "\tefaz_school_profile AS pro\n" +
-                "\tLEFT JOIN efaz_company.efaz_login AS login ON pro.school_id = login.login_id" +
+                "\tLEFT JOIN efaz_login AS login ON pro.school_id = login.login_id" +
                 " WHERE   school_id=?;";
 
         return jdbcTemplate.queryForObject(sql,
@@ -181,7 +181,7 @@ public class NewSchoolProfileRepo {
                 Float.class, id);
         float lng = jdbcTemplate.queryForObject("SELECT school_lng FROM efaz_school_profile WHERE  school_id=?;",
                 Float.class, id);
-        jdbcTemplate.update("update efaz_company.efaz_login set city=?," +
+        jdbcTemplate.update("update efaz_login set city=?," +
                 "area=?  " +
                 " where login_id=?;", city, area, id);
 
@@ -213,7 +213,7 @@ public class NewSchoolProfileRepo {
                 "\tCOUNT( request_id ) AS request_count \n" +
                 "FROM\n" +
                 "\tefaz_school_profile AS pro\n" +
-                "\tLEFT JOIN efaz_company.efaz_login AS login ON pro.school_id = login.login_id\n" +
+                "\tLEFT JOIN efaz_login AS login ON pro.school_id = login.login_id\n" +
                 "\tLEFT JOIN efaz_school_tender AS tend ON pro.school_id = tend.school_id \n" +
                 "GROUP BY\n" +
                 "\tpro.school_id,\n" +
@@ -256,7 +256,7 @@ public class NewSchoolProfileRepo {
                 "\tarea, lng, lat \n" +
                 "FROM\n" +
                 "\tefaz_school_profile AS pro\n" +
-                "\tLEFT JOIN efaz_company.efaz_login AS login ON pro.school_id = login.login_id" +
+                "\tLEFT JOIN efaz_login AS login ON pro.school_id = login.login_id" +
                 " WHERE   school_id=?;";
         return jdbcTemplate.queryForObject(sql,
                 new Object[]{id}, (resultSet, i) -> new NewSchoolProfileModelDTO(resultSet.getInt(1), resultSet.getString(2),
@@ -270,7 +270,7 @@ public class NewSchoolProfileRepo {
                               String school_service_desc, String school_link_youtube, String school_website_url, float school_lng, float school_lat,
                               String school_cover_image, String school_phone_number, String city, String area, float lng, float lat) {
 
-        jdbcTemplate.update("update efaz_company.efaz_login set city=?," +
+        jdbcTemplate.update("update efaz_login set city=?," +
                 "area=?, lng=?, lat=?  " +
                 " where login_id=?;", city, area, lng, lat, id);
 
@@ -300,7 +300,7 @@ public class NewSchoolProfileRepo {
                 "\tarea, lng ,lat \n" +
                 "FROM\n" +
                 "\tefaz_school_profile AS pro\n" +
-                "\tLEFT JOIN efaz_company.efaz_login AS login ON pro.school_id = login.login_id" +
+                "\tLEFT JOIN efaz_login AS login ON pro.school_id = login.login_id" +
                 " WHERE   school_id=?;";
 
         return jdbcTemplate.queryForObject(sql,
@@ -319,7 +319,7 @@ public class NewSchoolProfileRepo {
                 Float.class, id);
         float schoolLng = jdbcTemplate.queryForObject("SELECT school_lng FROM efaz_school_profile WHERE  school_id=?;",
                 Float.class, id);
-        jdbcTemplate.update("update efaz_company.efaz_login set city=?," +
+        jdbcTemplate.update("update efaz_login set city=?," +
                 "area=?, lng=?, lat=? " +
                 " where login_id=?;", city, area, lng, lat, id);
 

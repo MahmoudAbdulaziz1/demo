@@ -571,9 +571,9 @@ public class DasboardsAPIControll {
     }
 
     @PreAuthorize("hasAuthority('admin')")
-    @GetMapping("cat/getAll")
-    public List<CategoryModel> getCategories() {
-        return catRepo.getCategories();
+    @GetMapping("cat/getAll/{flag_ar}")
+    public List<CategoryModelEnglish> getCategories(@PathVariable int flag_ar) {
+        return catRepo.getCategories(flag_ar);
     }
 
     @PreAuthorize("hasAuthority('admin')")
@@ -2453,10 +2453,11 @@ public class DasboardsAPIControll {
     }
 
     @PreAuthorize("hasAuthority('school')")
-    @GetMapping("/school/category/getAll")
+    @GetMapping("/school/category/getAll/{flag_ar}")
 //    @PreAuthorize("hasAuthority('school') or hasAuthority('admin')")
-    public List<SchoolRequestCategoryModel> getSchoolCategories() {
-        return schoolRequestCategoryRepo.getSchoolRequestCategories();
+    public List<SchoolRequestCategoryModelEnglish> getSchoolCategories(@PathVariable int flag_ar) {
+
+        return schoolRequestCategoryRepo.getSchoolRequestCategories(flag_ar);
     }
 
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
@@ -2772,7 +2773,7 @@ public class DasboardsAPIControll {
                 objectNode.put("message", "Validation Failed");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
             }
-            if (repo.isExist(model.getCompany_id())) {
+            if (multiCategoryProfileRepo.isExist(model.getCompany_id())) {
                 ObjectNode objectNode = mapper.createObjectNode();
                 objectNode.put("state", 400);
                 objectNode.put("message", "already has profile in this id");

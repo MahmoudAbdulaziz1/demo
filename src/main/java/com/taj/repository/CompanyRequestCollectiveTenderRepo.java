@@ -20,18 +20,18 @@ public class CompanyRequestCollectiveTenderRepo {
     public int addRequest(int response_takataf_company_id, int response_takataf_request_id,
                           double responsed_cost, int responsed_from, int responsed_to, String response_desc) {
         if (!isExist(response_takataf_company_id, response_takataf_request_id)) {
-            return jdbcTemplate.update("INSERT INTO efaz_company.takataf_company_request_tender VALUES (?,?,?,?,?,?,?,?,?,?)", null,
+            return jdbcTemplate.update("INSERT INTO takataf_company_request_tender VALUES (?,?,?,?,?,?,?,?,?,?)", null,
                     response_takataf_company_id, response_takataf_request_id, responsed_cost, 0, new Timestamp(System.currentTimeMillis()),
                     responsed_from, responsed_to, response_desc, new Timestamp(System.currentTimeMillis()));
         } else {
-            return jdbcTemplate.update("UPDATE efaz_company.takataf_company_request_tender SET responsed_cost=?, response_desc=? , updated_date=? " +
+            return jdbcTemplate.update("UPDATE takataf_company_request_tender SET responsed_cost=?, response_desc=? , updated_date=? " +
                             " WHERE response_takataf_company_id=? AND response_takataf_request_id=?;", responsed_cost, response_desc,
                     new Timestamp(System.currentTimeMillis()), response_takataf_company_id, response_takataf_request_id);
         }
     }
 
     public List<CompanyRequestCollectiveTenderModel> getAll() {
-        return jdbcTemplate.query("SELECT * FROM efaz_company.takataf_company_request_tender;",
+        return jdbcTemplate.query("SELECT * FROM takataf_company_request_tender;",
                 (resultSet, i) -> new CompanyRequestCollectiveTenderModel(resultSet.getInt(1), resultSet.getInt(2), resultSet.getInt(3),
                         resultSet.getDouble(4), resultSet.getInt(5), resultSet.getLong(6), resultSet.getInt(7), resultSet.getInt(8),
                         resultSet.getString(9), resultSet.getTimestamp(10).getTime()));
@@ -39,7 +39,7 @@ public class CompanyRequestCollectiveTenderRepo {
 
     public boolean isExist(int response_takataf_company_id, int response_takataf_request_id) {
         Integer cnt = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM efaz_company.takataf_company_request_tender WHERE response_takataf_company_id=? AND response_takataf_request_id=?;",
+                "SELECT count(*) FROM takataf_company_request_tender WHERE response_takataf_company_id=? AND response_takataf_request_id=?;",
                 Integer.class, response_takataf_company_id, response_takataf_request_id);
         return cnt != null && cnt > 0;
     }

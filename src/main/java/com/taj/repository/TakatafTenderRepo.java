@@ -6,10 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -100,17 +96,17 @@ public class TakatafTenderRepo {
                             long tender_display_date, long tender_expire_date, int tender_is_confirmed, int tender_is_available,
                              long tender_company_display_date,  long tender_company_expired_date,
                             List<Takataf_schoolApplayCollectiveTender> category) {
-        int ten =  jdbcTemplate.update("UPDATE efaz_company.takatf_tender SET tender_logo=?, tender_title=?, tender_explain=?," +
+        int ten =  jdbcTemplate.update("UPDATE takatf_tender SET tender_logo=?, tender_title=?, tender_explain=?," +
                         " tender_display_date=?, tender_expire_date=?, tender_is_confirmed=?, tender_is_available=?, tender_company_expired_date=?," +
                         " tender_company_display_date=? ", tender_logo, tender_title, tender_explain,
                 tender_display_date, tender_expire_date, tender_is_confirmed, tender_is_available, tender_company_display_date,tender_company_expired_date , tender_id);
-        int del = jdbcTemplate.update("Delete from efaz_company.tkatf_tender_catgory_request where t_tender_id = ?;", tender_id);
+        int del = jdbcTemplate.update("Delete from tkatf_tender_catgory_request where t_tender_id = ?;", tender_id);
 
         for (int i = 0; i < category.size(); i++) {
-            int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company.efaz_company_category WHERE  category_name LIKE ?;",
+            int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
                     Integer.class, "%" + category.get(i).getCat_name().trim() + "%");
 
-            jdbcTemplate.update("INSERT INTO efaz_company.tkatf_tender_catgory_request VALUES  (?,?,?)", null, tender_id, categorys);
+            jdbcTemplate.update("INSERT INTO tkatf_tender_catgory_request VALUES  (?,?,?)", null, tender_id, categorys);
         }
 
         return ten;
@@ -124,7 +120,7 @@ public class TakatafTenderRepo {
 
 
     public int deleteTenderRequest(int id) {
-        return jdbcTemplate.update("DELETE FROM efaz_company.tkatf_tender_catgory_request WHERE id=?", id);
+        return jdbcTemplate.update("DELETE FROM tkatf_tender_catgory_request WHERE id=?", id);
     }
 
 

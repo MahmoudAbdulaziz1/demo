@@ -1,6 +1,6 @@
 package com.taj.repository;
 
-import com.taj.model.SchoolRequestCategoryModel;
+import com.taj.model.SchoolRequestCategoryModelEnglish;
 import com.taj.model.schoolCategoriesToWEBSITE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,14 +22,28 @@ public class SchoolRequestCategoryRepo {
         return jdbcTemplate.update("INSERT INTO efaz_school_request_category VALUES (?,?,?)", null, categoryName, categoryNameAr);
     }
 
-    public List<SchoolRequestCategoryModel> getSchoolRequestCategories() {
-        return jdbcTemplate.query("SELECT * FROM efaz_school_request_category",
-                ((resultSet, i) -> new SchoolRequestCategoryModel(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3))));
+    public List<SchoolRequestCategoryModelEnglish> getSchoolRequestCategories(int flag_ar) {
+        String sql = "";
+        if (flag_ar == 0){
+            sql = "SELECT request_category_id, request_category_name FROM efaz_school_request_category;";
+        }else {
+            sql = "SELECT request_category_id, request_category_name_ar AS request_category_name FROM efaz_school_request_category;";
+        }
+        return jdbcTemplate.query(sql,
+                ((resultSet, i) -> new SchoolRequestCategoryModelEnglish(resultSet.getInt(1), resultSet.getString(2))));
     }
 
-    public SchoolRequestCategoryModel getSchoolRequestCategory(int id) {
-        return jdbcTemplate.queryForObject("SELECT * FROM efaz_school_request_category WHERE request_category_id=?", new Object[]{id},
-                ((resultSet, i) -> new SchoolRequestCategoryModel(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3))));
+    public SchoolRequestCategoryModelEnglish getSchoolRequestCategory(int id, int flag_ar) {
+
+        String sql = "";
+        if (flag_ar == 0){
+            sql = "SELECT request_category_id, request_category_name FROM efaz_school_request_category WHERE request_category_id=?;";
+        }else {
+            sql = "SELECT request_category_id, request_category_name_ar AS request_category_name FROM efaz_school_request_category WHERE request_category_id=?;";
+        }
+
+        return jdbcTemplate.queryForObject(sql, new Object[]{id},
+                ((resultSet, i) -> new SchoolRequestCategoryModelEnglish(resultSet.getInt(1), resultSet.getString(2))));
     }
 
     public int updateSchoolRequestCategory(int id, String name, String name_ar) {
@@ -42,34 +56,68 @@ public class SchoolRequestCategoryRepo {
     }
 
 
-    public List<schoolCategoriesToWEBSITE> getSchoolRequestCategoriesForWeb() {
-        String sql = "SELECT\n" +
-                "\trequest_category_id,\n" +
-                "\trequest_category_name,\n" +
-                "\tCount( DISTINCT t.request_id ) AS request_count,\n" +
-                "\tCount( DISTINCT school_id ) AS school_count,\n" +
-                "\tCount( of.response_id ) AS offer_count \n" +
-                "FROM\n" +
-                "\tefaz_school_request_category AS sc\n" +
-                "\tLEFT JOIN efaz_company.efaz_school_tender AS t ON t.requests_category_id = sc.request_category_id\n" +
-                "\tLEFT JOIN efaz_company.efaz_company_response_school_request AS of ON t.request_id = of.responsed_request_id \n" +
-                "GROUP BY\n" +
-                "\trequest_category_id,\n" +
-                "\trequest_category_name;";
+    public List<schoolCategoriesToWEBSITE> getSchoolRequestCategoriesForWeb(int flag_ar) {
+        String sql = "";
+        if ( flag_ar == 0){
+            sql = "SELECT\n" +
+                    "\trequest_category_id,\n" +
+                    "\trequest_category_name,\n" +
+                    "\tCount( DISTINCT t.request_id ) AS request_count,\n" +
+                    "\tCount( DISTINCT school_id ) AS school_count,\n" +
+                    "\tCount( of.response_id ) AS offer_count \n" +
+                    "FROM\n" +
+                    "\tefaz_school_request_category AS sc\n" +
+                    "\tLEFT JOIN efaz_school_tender AS t ON t.requests_category_id = sc.request_category_id\n" +
+                    "\tLEFT JOIN efaz_company_response_school_request AS of ON t.request_id = of.responsed_request_id \n" +
+                    "GROUP BY\n" +
+                    "\trequest_category_id,\n" +
+                    "\trequest_category_name;";
+        }else {
+
+            sql = "SELECT\n" +
+                    "\trequest_category_id,\n" +
+                    "\trequest_category_name_ar AS request_category_name,\n" +
+                    "\tCount( DISTINCT t.request_id ) AS request_count,\n" +
+                    "\tCount( DISTINCT school_id ) AS school_count,\n" +
+                    "\tCount( of.response_id ) AS offer_count \n" +
+                    "FROM\n" +
+                    "\tefaz_school_request_category AS sc\n" +
+                    "\tLEFT JOIN efaz_school_tender AS t ON t.requests_category_id = sc.request_category_id\n" +
+                    "\tLEFT JOIN efaz_company_response_school_request AS of ON t.request_id = of.responsed_request_id \n" +
+                    "GROUP BY\n" +
+                    "\trequest_category_id,\n" +
+                    "\trequest_category_name;";
+
+        }
+
+
         return jdbcTemplate.query(sql,
                 ((resultSet, i) -> new schoolCategoriesToWEBSITE(resultSet.getInt(1), resultSet.getString(2),resultSet.getInt(3),resultSet.getInt(4),resultSet.getInt(5))));
     }
 
 
-    public List<schoolCategoriesToWEBSITE> getSchoolRequestCategoriesForWebById(int id) {
-        String sql = "SELECT " +
-                "request_category_id, request_category_name, Count(DISTINCT t.request_id) as request_count, Count(Distinct school_id) as school_count, Count(of.response_id) as offer_count FROM efaz_school_request_category as sc " +
-                "LEFT JOIN " +
-                "    efaz_company.efaz_school_tender as t  ON sc.request_category_id = t.requests_category_id " +
-                "LEFT JOIN " +
-                "     efaz_company.efaz_company_response_school_request as of  ON t.request_id = of.responsed_request_id " +
-                " WHERE request_category_id=? " +
-                "    Group by request_category_id;";
+    public List<schoolCategoriesToWEBSITE> getSchoolRequestCategoriesForWebById(int id,  int flag_ar) {
+        String sql = "";
+        if (flag_ar == 0){
+            sql = "SELECT " +
+                    "request_category_id, request_category_name, Count(DISTINCT t.request_id) as request_count, Count(Distinct school_id) as school_count, Count(of.response_id) as offer_count FROM efaz_school_request_category as sc " +
+                    "LEFT JOIN " +
+                    "    efaz_school_tender as t  ON sc.request_category_id = t.requests_category_id " +
+                    "LEFT JOIN " +
+                    "     efaz_company_response_school_request as of  ON t.request_id = of.responsed_request_id " +
+                    " WHERE request_category_id=? " +
+                    "    Group by request_category_id;";
+        }else {
+            sql = "SELECT " +
+                    "request_category_id, request_category_name_ar AS request_category_name, Count(DISTINCT t.request_id) as request_count, Count(Distinct school_id) as school_count, Count(of.response_id) as offer_count FROM efaz_school_request_category as sc " +
+                    "LEFT JOIN " +
+                    "    efaz_school_tender as t  ON sc.request_category_id = t.requests_category_id " +
+                    "LEFT JOIN " +
+                    "     efaz_company_response_school_request as of  ON t.request_id = of.responsed_request_id " +
+                    " WHERE request_category_id=? " +
+                    "    Group by request_category_id;";
+        }
+
         return jdbcTemplate.query(sql,new Object[]{id},
                 ((resultSet, i) -> new schoolCategoriesToWEBSITE(resultSet.getInt(1),
                         resultSet.getString(2),resultSet.getInt(3),resultSet.getInt(4),resultSet.getInt(5))));

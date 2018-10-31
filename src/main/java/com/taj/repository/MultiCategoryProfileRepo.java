@@ -62,10 +62,10 @@ public class MultiCategoryProfileRepo {
 //                new Timestamp(tender_display_date), new Timestamp(tender_expire_date), 0, 1, new Timestamp(tender_company_display_date),
 //                new Timestamp(tender_company_expired_date));
         for (int i = 0; i < category.size(); i++) {
-            int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company.efaz_company_category WHERE  category_name LIKE ?;",
+            int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
                     Integer.class, "%" + category.get(i).getCategory_name().trim() + "%");
 
-            jdbcTemplate.update("INSERT INTO efaz_company.efaz_company_profile_cats VALUES  (?,?,?)", null, profileID, categorys);
+            jdbcTemplate.update("INSERT INTO efaz_company_profile_cats VALUES  (?,?,?)", null, profileID, categorys);
         }
 
 
@@ -76,7 +76,7 @@ public class MultiCategoryProfileRepo {
 
     public boolean isExistILogin(int loginId) {
         Integer cnt = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM efaz_company.efaz_login WHERE login_id=? ;",
+                "SELECT count(*) FROM efaz_login WHERE login_id=? ;",
                 Integer.class, loginId);
         return cnt != null && cnt > 0;
     }
@@ -122,15 +122,15 @@ public class MultiCategoryProfileRepo {
 //                new Timestamp(tender_company_expired_date));
             for (int i = 0; i < category.size(); i++) {
                 if (flag_ar == 0){
-                    int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company.efaz_company_category WHERE  category_name LIKE ?;",
+                    int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
                             Integer.class, "%" + category.get(i).getCategory_name().trim() + "%");
 
-                    jdbcTemplate.update("INSERT INTO efaz_company.efaz_company_profile_cats VALUES  (?,?,?)", null, profileID, categorys);
+                    jdbcTemplate.update("INSERT INTO efaz_company_profile_cats VALUES  (?,?,?)", null, profileID, categorys);
                 }else {
-                    int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company.efaz_company_category WHERE  category_name_ar LIKE ?;",
+                    int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name_ar LIKE ?;",
                             Integer.class, "%" + category.get(i).getCategory_name().trim() + "%");
 
-                    jdbcTemplate.update("INSERT INTO efaz_company.efaz_company_profile_cats VALUES  (?,?,?)", null, profileID, categorys);
+                    jdbcTemplate.update("INSERT INTO efaz_company_profile_cats VALUES  (?,?,?)", null, profileID, categorys);
                 }
 
             }
@@ -164,10 +164,10 @@ public class MultiCategoryProfileRepo {
                 "FROM\n" +
                 "\t(\n" +
                 "\t\t(\n" +
-                "\t\t\t( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
                 "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
                 "\t\t)\n" +
-                "\t\tLEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
+                "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
                 "\t) \n" +
                 "GROUP BY\n" +
                 "\tPROFILE.company_id;";
@@ -202,10 +202,10 @@ public class MultiCategoryProfileRepo {
                     "FROM\n" +
                     "\t(\n" +
                     "\t\t(\n" +
-                    "\t\t\t( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                    "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
                     "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
                     "\t\t)\n" +
-                    "\t\tLEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id\n" +
+                    "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id\n" +
                     "\t\tINNER JOIN efaz_company_category AS category ON cats.company_cat_id = category.category_id \n" +
                     "\t) \n" +
                     "WHERE\n" +
@@ -233,10 +233,10 @@ public class MultiCategoryProfileRepo {
                     "FROM\n" +
                     "\t(\n" +
                     "\t\t(\n" +
-                    "\t\t\t( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                    "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
                     "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
                     "\t\t)\n" +
-                    "\t\tLEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id\n" +
+                    "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id\n" +
                     "\t\tINNER JOIN efaz_company_category AS category ON cats.company_cat_id = category.category_id \n" +
                     "\t) \n" +
                     "WHERE\n" +
@@ -257,19 +257,19 @@ public class MultiCategoryProfileRepo {
                              String company_link_youtube, String company_website_url, float school_lng,
                              float school_lat, String company_cover_image, String company_phone_number, String company_desc,
                              List<TakatfTenderCategoryPOJO> category, int flag_ar) {
-        jdbcTemplate.update("DELETE FROM efaz_company.efaz_company_profile_cats WHERE company_profile_id=?;", company_id);
+        jdbcTemplate.update("DELETE FROM efaz_company_profile_cats WHERE company_profile_id=?;", company_id);
 
         for (int i = 0; i < category.size(); i++) {
             if (flag_ar == 0){
-                int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company.efaz_company_category WHERE  category_name LIKE ?;",
+                int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
                         Integer.class, "%" + category.get(i).getCategory_name().trim() + "%");
 
-                jdbcTemplate.update("INSERT INTO efaz_company.efaz_company_profile_cats VALUES  (?,?,?)", null, company_id, categorys);
+                jdbcTemplate.update("INSERT INTO efaz_company_profile_cats VALUES  (?,?,?)", null, company_id, categorys);
             }else {
-                int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company.efaz_company_category WHERE  category_name_ar LIKE ?;",
+                int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name_ar LIKE ?;",
                         Integer.class, "%" + category.get(i).getCategory_name().trim() + "%");
 
-                jdbcTemplate.update("INSERT INTO efaz_company.efaz_company_profile_cats VALUES  (?,?,?)", null, company_id, categorys);
+                jdbcTemplate.update("INSERT INTO efaz_company_profile_cats VALUES  (?,?,?)", null, company_id, categorys);
             }
 
         }
@@ -307,9 +307,9 @@ public class MultiCategoryProfileRepo {
                 "FROM\n" +
                 "\t(\n" +
                 "\t\t(\n" +
-                "\t\t\t( efaz_company.efaz_company_profile AS PROFILE LEFT JOIN efaz_company.efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
                 "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id\n" +
-                "\t\t\tLEFT JOIN efaz_company.efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
+                "\t\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
                 "\t\t)\n" +
                 "\t) \n" +
                 "WHERE\n" +

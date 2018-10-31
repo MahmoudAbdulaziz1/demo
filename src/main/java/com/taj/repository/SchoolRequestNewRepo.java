@@ -401,42 +401,85 @@ public class SchoolRequestNewRepo {
     }
 
 
-    public SchoolRequestWithImageByIdDto getRequestByIDWithImage(int id) {
+    public SchoolRequestWithImageByIdDto getRequestByIDWithImage(int id, int flag_ar) {
+
+        String sql = "";
+
+        if (flag_ar == 0){
+
+            sql = "SELECT\n" +
+                    "\ttender.request_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date,\n" +
+                    "\ttender.school_id,\n" +
+                    "\tschool_name,\n" +
+                    "\tschool_logo_image,\n" +
+                    "\trequest_category_name,\n" +
+                    "\tcount( responsed_request_id ) AS response_count,\n" +
+                    "\tcount( seen_id ) AS views_count,\n" +
+                    "\timage_one \n" +
+                    "FROM\n" +
+                    "\tefaz_school_tender AS tender\n" +
+                    "\tINNER JOIN efaz_school_request_category AS cat ON tender.requests_category_id = cat.request_category_id\n" +
+                    "\tLEFT JOIN efaz_company_response_school_request AS req ON tender.request_id = req.responsed_request_id\n" +
+                    "\tLEFT JOIN efaz_school_profile AS sp ON tender.school_id = sp.school_id\n" +
+                    "\tLEFT JOIN efaz_company_see_request AS reqst ON tender.request_id = reqst.request_id\n" +
+                    "\tLEFT JOIN school_requst_images AS img ON tender.images_id = img.image_id \n" +
+                    "WHERE\n" +
+                    "\ttender.request_id = ? \n" +
+                    "GROUP BY\n" +
+                    "\ttender.request_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date,\n" +
+                    "\ttender.school_id,\n" +
+                    "\tschool_name,\n" +
+                    "\tschool_logo_image,\n" +
+                    "\trequest_category_name,\n" +
+                    "\timage_one;";
+
+        }else {
+
+            sql = "SELECT\n" +
+                    "\ttender.request_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date,\n" +
+                    "\ttender.school_id,\n" +
+                    "\tschool_name,\n" +
+                    "\tschool_logo_image,\n" +
+                    "\trequest_category_name_ar AS request_category_name,\n" +
+                    "\tcount( responsed_request_id ) AS response_count,\n" +
+                    "\tcount( seen_id ) AS views_count,\n" +
+                    "\timage_one \n" +
+                    "FROM\n" +
+                    "\tefaz_school_tender AS tender\n" +
+                    "\tINNER JOIN efaz_school_request_category AS cat ON tender.requests_category_id = cat.request_category_id\n" +
+                    "\tLEFT JOIN efaz_company_response_school_request AS req ON tender.request_id = req.responsed_request_id\n" +
+                    "\tLEFT JOIN efaz_school_profile AS sp ON tender.school_id = sp.school_id\n" +
+                    "\tLEFT JOIN efaz_company_see_request AS reqst ON tender.request_id = reqst.request_id\n" +
+                    "\tLEFT JOIN school_requst_images AS img ON tender.images_id = img.image_id \n" +
+                    "WHERE\n" +
+                    "\ttender.request_id = ? \n" +
+                    "GROUP BY\n" +
+                    "\ttender.request_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date,\n" +
+                    "\ttender.school_id,\n" +
+                    "\tschool_name,\n" +
+                    "\tschool_logo_image,\n" +
+                    "\trequest_category_name,\n" +
+                    "\timage_one;";
+
+        }
 
 
-        String sql = "SELECT\n" +
-                "\ttender.request_id,\n" +
-                "\trequest_title,\n" +
-                "\trequest_explaination,\n" +
-                "\trequest_display_date,\n" +
-                "\trequest_expired_date,\n" +
-                "\ttender.school_id,\n" +
-                "\tschool_name,\n" +
-                "\tschool_logo_image,\n" +
-                "\trequest_category_name,\n" +
-                "\tcount( responsed_request_id ) AS response_count,\n" +
-                "\tcount( seen_id ) AS views_count,\n" +
-                "\timage_one \n" +
-                "FROM\n" +
-                "\tefaz_school_tender AS tender\n" +
-                "\tINNER JOIN efaz_school_request_category AS cat ON tender.requests_category_id = cat.request_category_id\n" +
-                "\tLEFT JOIN efaz_company_response_school_request AS req ON tender.request_id = req.responsed_request_id\n" +
-                "\tLEFT JOIN efaz_school_profile AS sp ON tender.school_id = sp.school_id\n" +
-                "\tLEFT JOIN efaz_company_see_request AS reqst ON tender.request_id = reqst.request_id\n" +
-                "\tLEFT JOIN school_requst_images AS img ON tender.images_id = img.image_id \n" +
-                "WHERE\n" +
-                "\ttender.request_id = ? \n" +
-                "GROUP BY\n" +
-                "\ttender.request_id,\n" +
-                "\trequest_title,\n" +
-                "\trequest_explaination,\n" +
-                "\trequest_display_date,\n" +
-                "\trequest_expired_date,\n" +
-                "\ttender.school_id,\n" +
-                "\tschool_name,\n" +
-                "\tschool_logo_image,\n" +
-                "\trequest_category_name,\n" +
-                "\timage_one;";
 
 
         return jdbcTemplate.queryForObject(sql,
@@ -447,48 +490,97 @@ public class SchoolRequestNewRepo {
     }
 
 
-    public SchoolRequestWithImageByIdDto2 getRequestByIDWithImageAndCompanyRequest(int id, int companyId) {
+    public SchoolRequestWithImageByIdDto2 getRequestByIDWithImageAndCompanyRequest(int id, int companyId, int flag_ar) {
+
+        String sql = "";
+        if (flag_ar == 0 ){
+
+            sql = "SELECT\n" +
+                    "\ttender.request_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date,\n" +
+                    "\ttender.school_id,\n" +
+                    "\tschool_name,\n" +
+                    "\tschool_logo_image,\n" +
+                    "\trequest_category_name,\n" +
+                    "\tcount( req.responsed_request_id ) AS response_count,\n" +
+                    "\tcount( seen_id ) AS views_count,\n" +
+                    "\timage_one,\n" +
+                    "\tIFNULL( cs.responsed_cost, 0 ) AS responsed_cost,\n" +
+                    "\tIFNULL( cs.response_desc, '' ) AS response_desc \n" +
+                    "FROM\n" +
+                    "\tefaz_school_tender AS tender\n" +
+                    "\tINNER JOIN efaz_school_request_category AS cat ON tender.requests_category_id = cat.request_category_id\n" +
+                    "\tLEFT JOIN efaz_company_response_school_request AS req ON tender.request_id = req.responsed_request_id\n" +
+                    "\tLEFT JOIN efaz_school_profile AS sp ON tender.school_id = sp.school_id\n" +
+                    "\tLEFT JOIN efaz_company_see_request AS reqst ON tender.request_id = reqst.request_id\n" +
+                    "\tLEFT JOIN school_requst_images AS img ON tender.images_id = img.image_id\n" +
+                    "\tLEFT JOIN efaz_company_response_school_request AS cs ON cs.responsed_request_id = ? \n" +
+                    "\tAND cs.responsed_company_id = ? \n" +
+                    "WHERE\n" +
+                    "\ttender.request_id = ? \n" +
+                    "GROUP BY\n" +
+                    "\ttender.request_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date,\n" +
+                    "\ttender.school_id,\n" +
+                    "\tschool_name,\n" +
+                    "\tschool_logo_image,\n" +
+                    "\trequest_category_name,\n" +
+                    "\timage_one,\n" +
+                    "\tcs.responsed_cost,\n" +
+                    "\tcs.response_desc;";
+
+        }else {
 
 
-        String sql = "SELECT\n" +
-                "\ttender.request_id,\n" +
-                "\trequest_title,\n" +
-                "\trequest_explaination,\n" +
-                "\trequest_display_date,\n" +
-                "\trequest_expired_date,\n" +
-                "\ttender.school_id,\n" +
-                "\tschool_name,\n" +
-                "\tschool_logo_image,\n" +
-                "\trequest_category_name,\n" +
-                "\tcount( req.responsed_request_id ) AS response_count,\n" +
-                "\tcount( seen_id ) AS views_count,\n" +
-                "\timage_one,\n" +
-                "\tIFNULL( cs.responsed_cost, 0 ) AS responsed_cost,\n" +
-                "\tIFNULL( cs.response_desc, '' ) AS response_desc \n" +
-                "FROM\n" +
-                "\tefaz_school_tender AS tender\n" +
-                "\tINNER JOIN efaz_school_request_category AS cat ON tender.requests_category_id = cat.request_category_id\n" +
-                "\tLEFT JOIN efaz_company_response_school_request AS req ON tender.request_id = req.responsed_request_id\n" +
-                "\tLEFT JOIN efaz_school_profile AS sp ON tender.school_id = sp.school_id\n" +
-                "\tLEFT JOIN efaz_company_see_request AS reqst ON tender.request_id = reqst.request_id\n" +
-                "\tLEFT JOIN school_requst_images AS img ON tender.images_id = img.image_id\n" +
-                "\tLEFT JOIN efaz_company_response_school_request AS cs ON cs.responsed_request_id = ? \n" +
-                "\tAND cs.responsed_company_id = ? \n" +
-                "WHERE\n" +
-                "\ttender.request_id = ? \n" +
-                "GROUP BY\n" +
-                "\ttender.request_id,\n" +
-                "\trequest_title,\n" +
-                "\trequest_explaination,\n" +
-                "\trequest_display_date,\n" +
-                "\trequest_expired_date,\n" +
-                "\ttender.school_id,\n" +
-                "\tschool_name,\n" +
-                "\tschool_logo_image,\n" +
-                "\trequest_category_name,\n" +
-                "\timage_one,\n" +
-                "\tcs.responsed_cost,\n" +
-                "\tcs.response_desc;";
+            sql = "SELECT\n" +
+                    "\ttender.request_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date,\n" +
+                    "\ttender.school_id,\n" +
+                    "\tschool_name,\n" +
+                    "\tschool_logo_image,\n" +
+                    "\trequest_category_name_ar AS request_category_name,\n" +
+                    "\tcount( req.responsed_request_id ) AS response_count,\n" +
+                    "\tcount( seen_id ) AS views_count,\n" +
+                    "\timage_one,\n" +
+                    "\tIFNULL( cs.responsed_cost, 0 ) AS responsed_cost,\n" +
+                    "\tIFNULL( cs.response_desc, '' ) AS response_desc \n" +
+                    "FROM\n" +
+                    "\tefaz_school_tender AS tender\n" +
+                    "\tINNER JOIN efaz_school_request_category AS cat ON tender.requests_category_id = cat.request_category_id\n" +
+                    "\tLEFT JOIN efaz_company_response_school_request AS req ON tender.request_id = req.responsed_request_id\n" +
+                    "\tLEFT JOIN efaz_school_profile AS sp ON tender.school_id = sp.school_id\n" +
+                    "\tLEFT JOIN efaz_company_see_request AS reqst ON tender.request_id = reqst.request_id\n" +
+                    "\tLEFT JOIN school_requst_images AS img ON tender.images_id = img.image_id\n" +
+                    "\tLEFT JOIN efaz_company_response_school_request AS cs ON cs.responsed_request_id = ? \n" +
+                    "\tAND cs.responsed_company_id = ? \n" +
+                    "WHERE\n" +
+                    "\ttender.request_id = ? \n" +
+                    "GROUP BY\n" +
+                    "\ttender.request_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date,\n" +
+                    "\ttender.school_id,\n" +
+                    "\tschool_name,\n" +
+                    "\tschool_logo_image,\n" +
+                    "\trequest_category_name,\n" +
+                    "\timage_one,\n" +
+                    "\tcs.responsed_cost,\n" +
+                    "\tcs.response_desc;";
+
+        }
+
+
 
 
         return jdbcTemplate.queryForObject(sql,
@@ -701,7 +793,7 @@ public class SchoolRequestNewRepo {
                     "\trequest_expired_date," +
                     " IFNULL(request_count,0) AS request_count, " +
                     "\tschool_id,\n" +
-                    "\trequest_category_name AS request_category_name,\n" +
+                    "\trequest_category_name_ar AS request_category_name,\n" +
                     "\tcount( responsed_request_id ) AS response_count,\n" +
                     "\tcompany_name,\n" +
                     "\tcompany_logo_image,\n" +
@@ -743,50 +835,95 @@ public class SchoolRequestNewRepo {
         }
     }
 
-    public SchoolRequestNewDto2ModelPagination getRequestsBySchoolIDPaginationByMore(int id, int page, int pageSize) {
+    public SchoolRequestNewDto2ModelPagination getRequestsBySchoolIDPaginationByMore(int id, int page, int pageSize, int flag_ar) {
 
         int pages = (int) Math.ceil(((float) getRequestsBySchoolIDPaginationCount(id)) / ((float) pageSize));
         System.out.println("Page Size =   " + pages);
         int limitOffset = (page - 1) * pageSize;
 
+        String sql = "";
+        if (flag_ar == 0 ){
 
-        String sql = "SELECT\n" +
-                "\trequest_id,\n" +
-                "\trequest_title,\n" +
-                "\trequest_explaination,\n" +
-                "\trequest_display_date,\n" +
-                "\trequest_expired_date," +
-                " IFNULL(request_count,0) AS request_count, " +
-                "\tschool_id,\n" +
-                "\trequest_category_name,\n" +
-                "\tcount( responsed_request_id ) AS response_count,\n" +
-                "\tcompany_name,\n" +
-                "\tcompany_logo_image,\n" +
-                "\tcompany_category_id,\n" +
-                "\tresponsed_cost,\n" +
-                "\tresponse_date,\n" +
-                "\tis_aproved \n" +
-                "FROM\n" +
-                "\tefaz_school_tender AS tender\n" +
-                "\tINNER JOIN efaz_school_request_category AS cat ON tender.requests_category_id = cat.request_category_id\n" +
-                "\tLEFT JOIN efaz_company_response_school_request AS req ON tender.request_id = req.responsed_request_id\n" +
-                "\tLEFT JOIN efaz_company_profile AS p ON req.responsed_company_id = p.company_id \n" +
-                "WHERE\n" +
-                "\ttender.school_id = ?  AND request_expired_date>= NOW() AND request_is_conformied = 0 " +
-                "GROUP BY\n" +
-                "\trequest_id,\n" +
-                "\trequest_title,\n" +
-                "\trequest_explaination,\n" +
-                "\trequest_display_date,\n" +
-                "\trequest_expired_date, request_count, \n" +
-                "\tschool_id,\n" +
-                "\trequest_category_name,\n" +
-                "\tcompany_name,\n" +
-                "\tcompany_logo_image,\n" +
-                "\tcompany_category_id,\n" +
-                "\tresponsed_cost,\n" +
-                "\tresponse_date, is_aproved  ORDER BY  request_expired_date DESC  " +
-                " LIMIT ?,?;";
+            sql = "SELECT\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date," +
+                    " IFNULL(request_count,0) AS request_count, " +
+                    "\tschool_id,\n" +
+                    "\trequest_category_name,\n" +
+                    "\tcount( responsed_request_id ) AS response_count,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_category_id,\n" +
+                    "\tresponsed_cost,\n" +
+                    "\tresponse_date,\n" +
+                    "\tis_aproved \n" +
+                    "FROM\n" +
+                    "\tefaz_school_tender AS tender\n" +
+                    "\tINNER JOIN efaz_school_request_category AS cat ON tender.requests_category_id = cat.request_category_id\n" +
+                    "\tLEFT JOIN efaz_company_response_school_request AS req ON tender.request_id = req.responsed_request_id\n" +
+                    "\tLEFT JOIN efaz_company_profile AS p ON req.responsed_company_id = p.company_id \n" +
+                    "WHERE\n" +
+                    "\ttender.school_id = ?  AND request_expired_date>= NOW() AND request_is_conformied = 0 " +
+                    "GROUP BY\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date, request_count, \n" +
+                    "\tschool_id,\n" +
+                    "\trequest_category_name,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_category_id,\n" +
+                    "\tresponsed_cost,\n" +
+                    "\tresponse_date, is_aproved  ORDER BY  request_expired_date DESC  " +
+                    " LIMIT ?,?;";
+
+        }else {
+
+            sql = "SELECT\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date," +
+                    " IFNULL(request_count,0) AS request_count, " +
+                    "\tschool_id,\n" +
+                    "\trequest_category_name_ar AS request_category_name,\n" +
+                    "\tcount( responsed_request_id ) AS response_count,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_category_id,\n" +
+                    "\tresponsed_cost,\n" +
+                    "\tresponse_date,\n" +
+                    "\tis_aproved \n" +
+                    "FROM\n" +
+                    "\tefaz_school_tender AS tender\n" +
+                    "\tINNER JOIN efaz_school_request_category AS cat ON tender.requests_category_id = cat.request_category_id\n" +
+                    "\tLEFT JOIN efaz_company_response_school_request AS req ON tender.request_id = req.responsed_request_id\n" +
+                    "\tLEFT JOIN efaz_company_profile AS p ON req.responsed_company_id = p.company_id \n" +
+                    "WHERE\n" +
+                    "\ttender.school_id = ?  AND request_expired_date>= NOW() AND request_is_conformied = 0 " +
+                    "GROUP BY\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date, request_count, \n" +
+                    "\tschool_id,\n" +
+                    "\trequest_category_name,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_category_id,\n" +
+                    "\tresponsed_cost,\n" +
+                    "\tresponse_date, is_aproved  ORDER BY  request_expired_date DESC  " +
+                    " LIMIT ?,?;";
+
+        }
+
 
 
         List<SchoolRequestNewDto2Model> requests = jdbcTemplate.query(sql,
@@ -797,50 +934,93 @@ public class SchoolRequestNewRepo {
         return new SchoolRequestNewDto2ModelPagination(getRequestsBySchoolIDPaginationCount(id), pages, requests);
     }
 
-    public SchoolRequestNewDto2ModelPagination getRequestsBySchoolIDPaginationByLess(int id, int page, int pageSize) {
+    public SchoolRequestNewDto2ModelPagination getRequestsBySchoolIDPaginationByLess(int id, int page, int pageSize, int flag_ar) {
 
         int pages = (int) Math.ceil(((float) getRequestsBySchoolIDPaginationCount(id)) / ((float) pageSize));
         System.out.println("Page Size =   " + pages);
         int limitOffset = (page - 1) * pageSize;
 
+        String sql = "";
 
-        String sql = "SELECT\n" +
-                "\trequest_id,\n" +
-                "\trequest_title,\n" +
-                "\trequest_explaination,\n" +
-                "\trequest_display_date,\n" +
-                "\trequest_expired_date," +
-                " IFNULL(request_count,0) AS request_count, " +
-                "\tschool_id,\n" +
-                "\trequest_category_name,\n" +
-                "\tcount( responsed_request_id ) AS response_count,\n" +
-                "\tcompany_name,\n" +
-                "\tcompany_logo_image,\n" +
-                "\tcompany_category_id,\n" +
-                "\tresponsed_cost,\n" +
-                "\tresponse_date,\n" +
-                "\tis_aproved \n" +
-                "FROM\n" +
-                "\tefaz_school_tender AS tender\n" +
-                "\tINNER JOIN efaz_school_request_category AS cat ON tender.requests_category_id = cat.request_category_id\n" +
-                "\tLEFT JOIN efaz_company_response_school_request AS req ON tender.request_id = req.responsed_request_id\n" +
-                "\tLEFT JOIN efaz_company_profile AS p ON req.responsed_company_id = p.company_id \n" +
-                "WHERE\n" +
-                "\ttender.school_id = ?  AND request_expired_date>= NOW() AND request_is_conformied = 0 " +
-                "GROUP BY\n" +
-                "\trequest_id,\n" +
-                "\trequest_title,\n" +
-                "\trequest_explaination,\n" +
-                "\trequest_display_date,\n" +
-                "\trequest_expired_date, request_count, \n" +
-                "\tschool_id,\n" +
-                "\trequest_category_name,\n" +
-                "\tcompany_name,\n" +
-                "\tcompany_logo_image,\n" +
-                "\tcompany_category_id,\n" +
-                "\tresponsed_cost,\n" +
-                "\tresponse_date, is_aproved ORDER BY  request_expired_date ASC   " +
-                " LIMIT ?,?;";
+        if (flag_ar == 0){
+            sql = "SELECT\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date," +
+                    " IFNULL(request_count,0) AS request_count, " +
+                    "\tschool_id,\n" +
+                    "\trequest_category_name,\n" +
+                    "\tcount( responsed_request_id ) AS response_count,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_category_id,\n" +
+                    "\tresponsed_cost,\n" +
+                    "\tresponse_date,\n" +
+                    "\tis_aproved \n" +
+                    "FROM\n" +
+                    "\tefaz_school_tender AS tender\n" +
+                    "\tINNER JOIN efaz_school_request_category AS cat ON tender.requests_category_id = cat.request_category_id\n" +
+                    "\tLEFT JOIN efaz_company_response_school_request AS req ON tender.request_id = req.responsed_request_id\n" +
+                    "\tLEFT JOIN efaz_company_profile AS p ON req.responsed_company_id = p.company_id \n" +
+                    "WHERE\n" +
+                    "\ttender.school_id = ?  AND request_expired_date>= NOW() AND request_is_conformied = 0 " +
+                    "GROUP BY\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date, request_count, \n" +
+                    "\tschool_id,\n" +
+                    "\trequest_category_name,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_category_id,\n" +
+                    "\tresponsed_cost,\n" +
+                    "\tresponse_date, is_aproved ORDER BY  request_expired_date ASC   " +
+                    " LIMIT ?,?;";
+        }else {
+            sql = "SELECT\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date," +
+                    " IFNULL(request_count,0) AS request_count, " +
+                    "\tschool_id,\n" +
+                    "\trequest_category_name_ar AS request_category_name,\n" +
+                    "\tcount( responsed_request_id ) AS response_count,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_category_id,\n" +
+                    "\tresponsed_cost,\n" +
+                    "\tresponse_date,\n" +
+                    "\tis_aproved \n" +
+                    "FROM\n" +
+                    "\tefaz_school_tender AS tender\n" +
+                    "\tINNER JOIN efaz_school_request_category AS cat ON tender.requests_category_id = cat.request_category_id\n" +
+                    "\tLEFT JOIN efaz_company_response_school_request AS req ON tender.request_id = req.responsed_request_id\n" +
+                    "\tLEFT JOIN efaz_company_profile AS p ON req.responsed_company_id = p.company_id \n" +
+                    "WHERE\n" +
+                    "\ttender.school_id = ?  AND request_expired_date>= NOW() AND request_is_conformied = 0 " +
+                    "GROUP BY\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date, request_count, \n" +
+                    "\tschool_id,\n" +
+                    "\trequest_category_name,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_category_id,\n" +
+                    "\tresponsed_cost,\n" +
+                    "\tresponse_date, is_aproved ORDER BY  request_expired_date ASC   " +
+                    " LIMIT ?,?;";
+        }
+
+
 
 
         List<SchoolRequestNewDto2Model> requests = jdbcTemplate.query(sql,
@@ -866,50 +1046,95 @@ public class SchoolRequestNewRepo {
         return jdbcTemplate.queryForObject(sql, Integer.class, id, "%" + name + "%");
     }
 
-    public SchoolRequestNewDto2ModelPagination getRequestsBySchoolIDPaginationByBothMore(int id, int page, int pageSize, String name) {
+    public SchoolRequestNewDto2ModelPagination getRequestsBySchoolIDPaginationByBothMore(int id, int page, int pageSize, String name, int flag_ar) {
 
         int pages = (int) Math.ceil(((float) getRequestsBySchoolIDPaginationCountByBothMore(id, name)) / ((float) pageSize));
         System.out.println("Page Size =   " + pages);
         int limitOffset = (page - 1) * pageSize;
 
+        String sql = "";
+        if (flag_ar == 0){
 
-        String sql = "SELECT\n" +
-                "\trequest_id,\n" +
-                "\trequest_title,\n" +
-                "\trequest_explaination,\n" +
-                "\trequest_display_date,\n" +
-                "\trequest_expired_date," +
-                " IFNULL(request_count,0) AS request_count, " +
-                "\tschool_id,\n" +
-                "\trequest_category_name,\n" +
-                "\tcount( responsed_request_id ) AS response_count,\n" +
-                "\tcompany_name,\n" +
-                "\tcompany_logo_image,\n" +
-                "\tcompany_category_id,\n" +
-                "\tresponsed_cost,\n" +
-                "\tresponse_date,\n" +
-                "\tis_aproved \n" +
-                "FROM\n" +
-                "\tefaz_school_tender AS tender\n" +
-                "\tINNER JOIN efaz_school_request_category AS cat ON tender.requests_category_id = cat.request_category_id\n" +
-                "\tLEFT JOIN efaz_company_response_school_request AS req ON tender.request_id = req.responsed_request_id\n" +
-                "\tLEFT JOIN efaz_company_profile AS p ON req.responsed_company_id = p.company_id \n" +
-                "WHERE\n" +
-                "\ttender.school_id = ?  AND request_expired_date>= NOW() AND request_is_conformied = 0 AND request_title LIKE ? " +
-                "GROUP BY\n" +
-                "\trequest_id,\n" +
-                "\trequest_title,\n" +
-                "\trequest_explaination,\n" +
-                "\trequest_display_date,\n" +
-                "\trequest_expired_date, request_count, \n" +
-                "\tschool_id,\n" +
-                "\trequest_category_name,\n" +
-                "\tcompany_name,\n" +
-                "\tcompany_logo_image,\n" +
-                "\tcompany_category_id,\n" +
-                "\tresponsed_cost,\n" +
-                "\tresponse_date, is_aproved ORDER BY  request_expired_date DESC  " +
-                " LIMIT ?,?;";
+            sql = "SELECT\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date," +
+                    " IFNULL(request_count,0) AS request_count, " +
+                    "\tschool_id,\n" +
+                    "\trequest_category_name,\n" +
+                    "\tcount( responsed_request_id ) AS response_count,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_category_id,\n" +
+                    "\tresponsed_cost,\n" +
+                    "\tresponse_date,\n" +
+                    "\tis_aproved \n" +
+                    "FROM\n" +
+                    "\tefaz_school_tender AS tender\n" +
+                    "\tINNER JOIN efaz_school_request_category AS cat ON tender.requests_category_id = cat.request_category_id\n" +
+                    "\tLEFT JOIN efaz_company_response_school_request AS req ON tender.request_id = req.responsed_request_id\n" +
+                    "\tLEFT JOIN efaz_company_profile AS p ON req.responsed_company_id = p.company_id \n" +
+                    "WHERE\n" +
+                    "\ttender.school_id = ?  AND request_expired_date>= NOW() AND request_is_conformied = 0 AND request_title LIKE ? " +
+                    "GROUP BY\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date, request_count, \n" +
+                    "\tschool_id,\n" +
+                    "\trequest_category_name,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_category_id,\n" +
+                    "\tresponsed_cost,\n" +
+                    "\tresponse_date, is_aproved ORDER BY  request_expired_date DESC  " +
+                    " LIMIT ?,?;";
+
+
+        }else {
+            sql = "SELECT\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date," +
+                    " IFNULL(request_count,0) AS request_count, " +
+                    "\tschool_id,\n" +
+                    "\trequest_category_name_ar AS request_category_name,\n" +
+                    "\tcount( responsed_request_id ) AS response_count,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_category_id,\n" +
+                    "\tresponsed_cost,\n" +
+                    "\tresponse_date,\n" +
+                    "\tis_aproved \n" +
+                    "FROM\n" +
+                    "\tefaz_school_tender AS tender\n" +
+                    "\tINNER JOIN efaz_school_request_category AS cat ON tender.requests_category_id = cat.request_category_id\n" +
+                    "\tLEFT JOIN efaz_company_response_school_request AS req ON tender.request_id = req.responsed_request_id\n" +
+                    "\tLEFT JOIN efaz_company_profile AS p ON req.responsed_company_id = p.company_id \n" +
+                    "WHERE\n" +
+                    "\ttender.school_id = ?  AND request_expired_date>= NOW() AND request_is_conformied = 0 AND request_title LIKE ? " +
+                    "GROUP BY\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date, request_count, \n" +
+                    "\tschool_id,\n" +
+                    "\trequest_category_name,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_category_id,\n" +
+                    "\tresponsed_cost,\n" +
+                    "\tresponse_date, is_aproved ORDER BY  request_expired_date DESC  " +
+                    " LIMIT ?,?;";
+
+        }
+
 
 
         List<SchoolRequestNewDto2Model> requests = jdbcTemplate.query(sql,
@@ -935,51 +1160,97 @@ public class SchoolRequestNewRepo {
         return jdbcTemplate.queryForObject(sql, Integer.class, id, "%" + name + "%");
     }
 
-    public SchoolRequestNewDto2ModelPagination getRequestsBySchoolIDPaginationByBothLess(int id, int page, int pageSize, String name) {
+    public SchoolRequestNewDto2ModelPagination getRequestsBySchoolIDPaginationByBothLess(int id, int page, int pageSize, String name, int flag_ar) {
 
         int pages = (int) Math.ceil(((float) getRequestsBySchoolIDPaginationCountByBothLess(id, name)) / ((float) pageSize));
         System.out.println("Page Size =   " + pages);
         int limitOffset = (page - 1) * pageSize;
 
+        String sql = "";
 
-        String sql = "SELECT\n" +
-                "\trequest_id,\n" +
-                "\trequest_title,\n" +
-                "\trequest_explaination,\n" +
-                "\trequest_display_date,\n" +
-                "\trequest_expired_date," +
-                " IFNULL(request_count,0) AS request_count, " +
-                "\tschool_id,\n" +
-                "\trequest_category_name,\n" +
-                "\tcount( responsed_request_id ) AS response_count,\n" +
-                "\tcompany_name,\n" +
-                "\tcompany_logo_image,\n" +
-                "\tcompany_category_id,\n" +
-                "\tresponsed_cost,\n" +
-                "\tresponse_date,\n" +
-                "\tis_aproved \n" +
-                "FROM\n" +
-                "\tefaz_school_tender AS tender\n" +
-                "\tINNER JOIN efaz_school_request_category AS cat ON tender.requests_category_id = cat.request_category_id\n" +
-                "\tLEFT JOIN efaz_company_response_school_request AS req ON tender.request_id = req.responsed_request_id\n" +
-                "\tLEFT JOIN efaz_company_profile AS p ON req.responsed_company_id = p.company_id \n" +
-                "WHERE\n" +
-                "\ttender.school_id = ?  AND request_expired_date>= NOW() AND request_is_conformied = 0 AND request_title LIKE ? " +
-                "GROUP BY\n" +
-                "\trequest_id,\n" +
-                "\trequest_title,\n" +
-                "\trequest_explaination,\n" +
-                "\trequest_display_date,\n" +
-                "\trequest_expired_date, request_count, \n" +
-                "\tschool_id,\n" +
-                "\trequest_category_name,\n" +
-                "\tcompany_name,\n" +
-                "\tcompany_logo_image,\n" +
-                "\tcompany_category_id,\n" +
-                "\tresponsed_cost,\n" +
-                "\tresponse_date, is_aproved " +
-                " ORDER BY  request_expired_date ASC " +
-                " LIMIT ?,?;";
+        if (flag_ar == 0){
+            sql = "SELECT\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date," +
+                    " IFNULL(request_count,0) AS request_count, " +
+                    "\tschool_id,\n" +
+                    "\trequest_category_name,\n" +
+                    "\tcount( responsed_request_id ) AS response_count,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_category_id,\n" +
+                    "\tresponsed_cost,\n" +
+                    "\tresponse_date,\n" +
+                    "\tis_aproved \n" +
+                    "FROM\n" +
+                    "\tefaz_school_tender AS tender\n" +
+                    "\tINNER JOIN efaz_school_request_category AS cat ON tender.requests_category_id = cat.request_category_id\n" +
+                    "\tLEFT JOIN efaz_company_response_school_request AS req ON tender.request_id = req.responsed_request_id\n" +
+                    "\tLEFT JOIN efaz_company_profile AS p ON req.responsed_company_id = p.company_id \n" +
+                    "WHERE\n" +
+                    "\ttender.school_id = ?  AND request_expired_date>= NOW() AND request_is_conformied = 0 AND request_title LIKE ? " +
+                    "GROUP BY\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date, request_count, \n" +
+                    "\tschool_id,\n" +
+                    "\trequest_category_name,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_category_id,\n" +
+                    "\tresponsed_cost,\n" +
+                    "\tresponse_date, is_aproved " +
+                    " ORDER BY  request_expired_date ASC " +
+                    " LIMIT ?,?;";
+
+
+        }else {
+            sql = "SELECT\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date," +
+                    " IFNULL(request_count,0) AS request_count, " +
+                    "\tschool_id,\n" +
+                    "\trequest_category_name_ar AS request_category_name,\n" +
+                    "\tcount( responsed_request_id ) AS response_count,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_category_id,\n" +
+                    "\tresponsed_cost,\n" +
+                    "\tresponse_date,\n" +
+                    "\tis_aproved \n" +
+                    "FROM\n" +
+                    "\tefaz_school_tender AS tender\n" +
+                    "\tINNER JOIN efaz_school_request_category AS cat ON tender.requests_category_id = cat.request_category_id\n" +
+                    "\tLEFT JOIN efaz_company_response_school_request AS req ON tender.request_id = req.responsed_request_id\n" +
+                    "\tLEFT JOIN efaz_company_profile AS p ON req.responsed_company_id = p.company_id \n" +
+                    "WHERE\n" +
+                    "\ttender.school_id = ?  AND request_expired_date>= NOW() AND request_is_conformied = 0 AND request_title LIKE ? " +
+                    "GROUP BY\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_title,\n" +
+                    "\trequest_explaination,\n" +
+                    "\trequest_display_date,\n" +
+                    "\trequest_expired_date, request_count, \n" +
+                    "\tschool_id,\n" +
+                    "\trequest_category_name,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_category_id,\n" +
+                    "\tresponsed_cost,\n" +
+                    "\tresponse_date, is_aproved " +
+                    " ORDER BY  request_expired_date ASC " +
+                    " LIMIT ?,?;";
+
+
+        }
 
 
         List<SchoolRequestNewDto2Model> requests = jdbcTemplate.query(sql,
