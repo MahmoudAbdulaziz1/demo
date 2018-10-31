@@ -30,9 +30,9 @@ public class NewLoginController {
     @Autowired
     ObjectMapper mapper;
 
-    @PostMapping("/")
+    @PostMapping("/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ResponseEntity<ObjectNode> loginUsers(@RequestBody @Valid LoginIsLoggedDTO model, Errors errors) {
+    public ResponseEntity<ObjectNode> loginUsers(@RequestBody @Valid LoginIsLoggedDTO model, Errors errors, @PathVariable int flag_ar) {
         if (errors.hasErrors()) {
             ObjectNode objectNode = mapper.createObjectNode();
             objectNode.put(STATUS, 400);
@@ -55,7 +55,7 @@ public class NewLoginController {
 //
 //        return ResponseEntity.status(HttpStatus.ACCEPTED).body(objectNode);
 
-        return loginRepo.isLogged(model.getUser_email(), model.getUser_password(), model.getLogin_role());
+        return loginRepo.isLogged(model.getUser_email(), model.getUser_password(), model.getLogin_role(), flag_ar);
 
     }
 

@@ -3,6 +3,7 @@ package com.taj.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.taj.model.CityModel;
+import com.taj.model.CityModelEnglish;
 import com.taj.repository.CityRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,7 +36,7 @@ public class CityController {
     @PostMapping("/")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
     public ResponseEntity<ObjectNode> addCity(@RequestBody CityModel model) {
-        int response = cityRepo.addCity(model.getCityName(), model.getCityAreaId());
+        int response = cityRepo.addCity(model.getCityName(), model.getCityAreaId(), model.getCityNameAr());
         if (response == 1) {
             ObjectNode objectNode = mapper.createObjectNode();
             objectNode.put(CITYNAME, model.getCityName());
@@ -47,27 +48,28 @@ public class CityController {
         }
     }
 
-    @GetMapping("/")
+    @GetMapping("/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ResponseEntity<List<CityModel>> getCities() {
-        if (cityRepo.getCities().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(cityRepo.getCities());
+    public ResponseEntity<List<CityModelEnglish>> getCities(int flag_ar) {
+        if (cityRepo.getCities(flag_ar).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(cityRepo.getCities(flag_ar));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(cityRepo.getCities());
+        return ResponseEntity.status(HttpStatus.OK).body(cityRepo.getCities(flag_ar));
 
 
     }
 
-    @GetMapping("/{cityId}")
+    @GetMapping("/{cityId}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ResponseEntity<ObjectNode> getCityById(@PathVariable int cityId) {
+    public ResponseEntity<ObjectNode> getCityById(@PathVariable int cityId,
+                                                  @PathVariable int flag_ar) {
         if (!(cityRepo.checkIfExist(cityId))) {
             ObjectNode objectNode = mapper.createObjectNode();
             objectNode.put(STATUS, "400");
             objectNode.put(MESSAGE, NOFOUND);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
         } else {
-            CityModel cityModel = cityRepo.getCityById(cityId);
+            CityModelEnglish cityModel = cityRepo.getCityById(cityId, flag_ar);
             ObjectNode objectNode = mapper.createObjectNode();
             objectNode.put("city_id", cityModel.getCitId());
             objectNode.put(NOFOUND, cityModel.getCityName());

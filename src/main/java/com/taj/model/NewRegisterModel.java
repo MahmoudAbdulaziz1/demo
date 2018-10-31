@@ -67,6 +67,7 @@ public class NewRegisterModel {
     private float lng;
     private float lat;
 
+
     public NewRegisterModel() {
     }
 

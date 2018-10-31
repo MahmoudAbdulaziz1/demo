@@ -583,15 +583,15 @@ public class DasboardsAPIControll {
     }
 
     @PreAuthorize("hasAuthority('admin')")
-    @GetMapping("register/getInActives")
-    public List<NewRegisterModel> getInActiveCompainesNew() {
-        return newRegisterRepo.getInActiveCompanies();
+    @GetMapping("register/getInActives/{flag_ar}")
+    public List<NewRegisterModel> getInActiveCompainesNew(@PathVariable int flag_ar) {
+        return newRegisterRepo.getInActiveCompanies(flag_ar);
     }
 
     @PreAuthorize("hasAuthority('admin')")
-    @GetMapping("register/getInActives/page/{page}/{pageSize}")
-    public NewRegisterModelPagination getInActiveCompainesNewPagination(@PathVariable int page, @PathVariable int pageSize) {
-        return newRegisterRepo.getInActiveCompaniesPagination(page, pageSize);
+    @GetMapping("register/getInActives/page/{page}/{pageSize}/{flag_ar}")
+    public NewRegisterModelPagination getInActiveCompainesNewPagination(@PathVariable int page, @PathVariable int pageSize, @PathVariable int flag_ar) {
+        return newRegisterRepo.getInActiveCompaniesPagination(page, pageSize, flag_ar);
     }
 
     @PreAuthorize("hasAuthority('admin')")
@@ -618,9 +618,9 @@ public class DasboardsAPIControll {
     }
 
     @PreAuthorize("hasAuthority('admin')")
-    @GetMapping("register/confirms/{id}")
-    public ObjectNode confirmEmailWithCity(@PathVariable int id) {
-        int res = newRegisterRepo.confirmEmail(id);
+    @GetMapping("register/confirms/{id}/{flag_ar}")
+    public ObjectNode confirmEmailWithCity(@PathVariable int id, @PathVariable int flag_ar) {
+        int res = newRegisterRepo.confirmEmail(id, flag_ar);
 
         if (res == 1) {
             ObjectNode objectNode = mapper.createObjectNode();
@@ -651,8 +651,8 @@ public class DasboardsAPIControll {
 
     @PreAuthorize("hasAuthority('admin')")
     @GetMapping("register/get/address/{id}")
-    public NewRegisterModel getUserWithAddresData(@PathVariable int id) {
-        return newRegisterRepo.getUser(id);
+    public NewRegisterModel getUserWithAddresData(@PathVariable int id, int flag_ar) {
+        return newRegisterRepo.getUser(id,flag_ar);
     }
 
     @PreAuthorize("hasAuthority('admin') OR hasAuthority('school')")

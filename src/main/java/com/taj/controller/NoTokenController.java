@@ -360,8 +360,8 @@ public class NoTokenController {
 
 
 
-    @PostMapping("usr/register/")
-    public ResponseEntity<ObjectNode> addUserRegistration(@RequestBody @Valid NewRegisterModel registrationModel, Errors errors) {
+    @PostMapping("usr/register/{flag_ar}")
+    public ResponseEntity<ObjectNode> addUserRegistration(@RequestBody @Valid NewRegisterModel registrationModel, Errors errors, @PathVariable int flag_ar) {
 
         if (errors.hasErrors()) {
             ObjectNode objectNode = mapper.createObjectNode();
@@ -386,7 +386,7 @@ public class NoTokenController {
                     registrationModel.getRegistrationOrganizationName(), registrationModel.getRegistrationAddressDesc(),
                     registrationModel.getRegistrationWebsiteUrl(), registrationModel.getRegistrationRole(),
                     new Timestamp(System.currentTimeMillis()).getTime(), registrationModel.getCity(), registrationModel.getArea(),
-                    registrationModel.getLng(), registrationModel.getLat());
+                    registrationModel.getLng(), registrationModel.getLat(), flag_ar);
             if (model == 1) {
                 ObjectNode objectNode = mapper.createObjectNode();
                 objectNode.put(STATUS, 201);
@@ -518,8 +518,8 @@ public class NoTokenController {
         }
     }
 
-    @PostMapping("new/login/")
-    public ResponseEntity<ObjectNode> loginUsers(@RequestBody @Valid LoginIsLoggedDTO model, Errors errors) {
+    @PostMapping("new/login/{flag_ar}")
+    public ResponseEntity<ObjectNode> loginUsers(@RequestBody @Valid LoginIsLoggedDTO model, Errors errors, @PathVariable int flag_ar) {
         if (errors.hasErrors()) {
             ObjectNode objectNode = mapper.createObjectNode();
             objectNode.put(STATUS, 400);
@@ -542,7 +542,7 @@ public class NoTokenController {
 //
 //        return ResponseEntity.status(HttpStatus.ACCEPTED).body(objectNode);
 
-        return loginRepo2.isLogged(model.getUser_email(), model.getUser_password(), model.getLogin_role());
+        return loginRepo2.isLogged(model.getUser_email(), model.getUser_password(), model.getLogin_role(), flag_ar);
 
     }
 
@@ -550,7 +550,7 @@ public class NoTokenController {
 
     @PostMapping("area/")
     public ResponseEntity<ObjectNode> addArea(@RequestBody AreaModel model) {
-        int response = areaRepo.addArea(model.getAreaName());
+        int response = areaRepo.addArea(model.getAreaName(),model.getAreaNameAr());
         if (response == 1) {
             ObjectNode objectNode = mapper.createObjectNode();
             objectNode.put(AREANAME, model.getAreaName());
@@ -563,19 +563,19 @@ public class NoTokenController {
     }
 
     @GetMapping("area/")
-    public ResponseEntity<List<AreaModel>> getCities() {
-        if (areaRepo.getAreas().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(areaRepo.getAreas());
+    public ResponseEntity<List<AreaModelEnglish>> getCities(int flag_ar) {
+        if (areaRepo.getAreas(flag_ar).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(areaRepo.getAreas(flag_ar));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(areaRepo.getAreas());
+        return ResponseEntity.status(HttpStatus.OK).body(areaRepo.getAreas(flag_ar));
 
 
     }
 
-    @GetMapping("area/cities/")
-    public AreaWithCityDto getTestObject() {
+    @GetMapping("area/cities/{flag_ar}")
+    public AreaWithCityDto getTestObject(@PathVariable int flag_ar) {
         Map<AreaDataDto, List<CityDataDto>> res = new HashMap<>();
-        List<Map<String, Object>> list = repo.getTestObject();
+        List<Map<String, Object>> list = repo.getTestObject(flag_ar);
         List<AreaDataDto> schoolsList = new ArrayList<>();
         Set<AreaDataDto> schools = new HashSet<>();
         List<CityDataDto> test2Models = new ArrayList<>();

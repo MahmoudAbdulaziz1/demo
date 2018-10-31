@@ -17,10 +17,19 @@ public class AreaWithCityRepo {
     JdbcTemplate jdbcTemplate;
 
 
-    public List<Map<String, Object>> getTestObject() {
-        String sql = "SELECT area_id, area_name, city_id, city_name " +
-                "FROM  area AS a " +
-                "LEFT JOIN city AS c ON a.area_id = c.city_area_id;";
+    public List<Map<String, Object>> getTestObject(int flag_ar) {
+        String sql = "";
+        if (flag_ar == 0){
+            sql = "SELECT area_id, area_name, city_id, city_name " +
+                    "FROM  area AS a " +
+                    "LEFT JOIN city AS c ON a.area_id = c.city_area_id;";
+        }else {
+            sql = "SELECT area_id, area_name_ar AS area_name, city_id, city_name_ar  AS city_name " +
+                    "FROM  area AS a " +
+                    "LEFT JOIN city AS c ON a.area_id = c.city_area_id;";
+        }
+
+
 
         return jdbcTemplate.queryForList(sql);
     }

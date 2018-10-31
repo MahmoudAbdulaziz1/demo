@@ -1,21 +1,20 @@
 package com.taj.model;
 
 /**
- * Created by User on 9/16/2018.
+ * Created by User on 10/31/2018.
  */
-public class AreaModel {
+public class AreaModelEnglish {
+
 
     private int areaId;
     private String areaName;
-    private String areaNameAr;
 
-    public AreaModel(int areaId, String areaName, String areaNameAr) {
+    public AreaModelEnglish(int areaId, String areaName) {
         this.areaId = areaId;
         this.areaName = areaName;
-        this.areaNameAr = areaNameAr;
     }
 
-    public AreaModel() {
+    public AreaModelEnglish() {
     }
 
     public int getAreaId() {
@@ -32,14 +31,6 @@ public class AreaModel {
 
     public void setAreaName(String areaName) {
         this.areaName = areaName;
-    }
-
-    public String getAreaNameAr() {
-        return areaNameAr;
-    }
-
-    public void setAreaNameAr(String areaNameAr) {
-        this.areaNameAr = areaNameAr;
     }
 
 

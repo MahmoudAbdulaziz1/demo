@@ -3,6 +3,7 @@ package com.taj.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.taj.model.AreaModel;
+import com.taj.model.AreaModelEnglish;
 import com.taj.repository.AreaRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,7 @@ public class AreaController {
     @PostMapping("/")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
     public ResponseEntity<ObjectNode> addArea(@RequestBody AreaModel model) {
-        int response = areaRepo.addArea(model.getAreaName());
+        int response = areaRepo.addArea(model.getAreaName(), model.getAreaNameAr());
         if (response == 1) {
             ObjectNode objectNode = mapper.createObjectNode();
             objectNode.put(AREANAME, model.getAreaName());
@@ -48,27 +49,27 @@ public class AreaController {
         }
     }
 
-    @GetMapping("/")
+    @GetMapping("/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ResponseEntity<List<AreaModel>> getCities() {
-        if (areaRepo.getAreas().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(areaRepo.getAreas());
+    public ResponseEntity<List<AreaModelEnglish>> getCities(@PathVariable int flag_ar) {
+        if (areaRepo.getAreas(flag_ar).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(areaRepo.getAreas(flag_ar));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(areaRepo.getAreas());
+        return ResponseEntity.status(HttpStatus.OK).body(areaRepo.getAreas(flag_ar));
 
 
     }
 
     @GetMapping("/{areaId}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ResponseEntity<ObjectNode> getCityById(@PathVariable int areaId) {
+    public ResponseEntity<ObjectNode> getCityById(@PathVariable int areaId, @PathVariable int flag_area) {
         if (!(areaRepo.checkIfExist(areaId))) {
             ObjectNode objectNode = mapper.createObjectNode();
             objectNode.put(STATUS, "400");
             objectNode.put(MESSAGE, NOFOUND);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
         } else {
-            AreaModel areaModel = areaRepo.getareaById(areaId);
+            AreaModelEnglish areaModel = areaRepo.getareaById(areaId, flag_area);
             ObjectNode objectNode = mapper.createObjectNode();
             objectNode.put("area_id", areaModel.getAreaId());
             objectNode.put(AREANAME, areaModel.getAreaName());

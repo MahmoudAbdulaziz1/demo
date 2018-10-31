@@ -1094,41 +1094,83 @@ public class NewProfileRepo {
     }
 
 
-    public List<Map<String, Object>> getCompaniesProfilesObject2Pagination2(int id) {
+    public List<Map<String, Object>> getCompaniesProfilesObject2Pagination2(int id, int flag_ar) {
 
-        String sql = "SELECT\n" +
-                "\tcompany_id,\n" +
-                "\tcompany_name,\n" +
-                "\tcompany_logo_image,\n" +
-                "\tcompany_address,\n" +
-                "\tcompany_link_youtube,\n" +
-                "\tcompany_website_url,\n" +
-                "\tcompany_lng,\n" +
-                "\tcompany_lat,\n" +
-                "\tcompany_cover_image,\n" +
-                "\tcompany_phone_number,\n" +
-                "\tcount( DISTINCT follow_id ) AS follower_count,\n" +
-                "\tcount( DISTINCT offer_id ) AS order_count,\n" +
-                "\tcompany_desc,\n" +
-                "\tCOUNT( DISTINCT id ) AS category_num,\n" +
-                "\tcity,\n" +
-                "\tarea, lng, lat, \n" +
-                "\tcategory_id,\n" +
-                "\tcategory_name \n" +
-                "FROM\n" +
-                "\t(\n" +
-                "\t\t(\n" +
-                "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
-                "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
-                "\t\t)\n" +
-                "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
-                "\t)\n" +
-                "\tLEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
-                "\tLEFT JOIN efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id  " +
-                " WHERE company_id != ? " +
-                "GROUP BY\n" +
-                "\tPROFILE.company_id,\n" +
-                "\tccat.category_id;";
+        String sql = "";
+        if ( flag_ar == 0){
+            sql = "SELECT\n" +
+                    "\tcompany_id,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_address,\n" +
+                    "\tcompany_link_youtube,\n" +
+                    "\tcompany_website_url,\n" +
+                    "\tcompany_lng,\n" +
+                    "\tcompany_lat,\n" +
+                    "\tcompany_cover_image,\n" +
+                    "\tcompany_phone_number,\n" +
+                    "\tcount( DISTINCT follow_id ) AS follower_count,\n" +
+                    "\tcount( DISTINCT offer_id ) AS order_count,\n" +
+                    "\tcompany_desc,\n" +
+                    "\tCOUNT( DISTINCT id ) AS category_num,\n" +
+                    "\tcity_name,\n" +
+                    "\tarea_name, lng, lat, \n" +
+                    "\tcategory_id,\n" +
+                    "\tcategory_name \n" +
+                    "FROM\n" +
+                    "\t(\n" +
+                    "\t\t(\n" +
+                    "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                    "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
+                    "\t\t)\n" +
+                    "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
+                    "\t)\n" +
+                    "\tLEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
+                    "\tLEFT JOIN efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id  " +
+                    " LEFT JOIN area AS a ON pc.area = a.area_id " +
+                    " LEFT JOIN city AS c ON pc.city = c.city_id " +
+                    " WHERE company_id != ? " +
+                    "GROUP BY\n" +
+                    "\tPROFILE.company_id,\n" +
+                    "\tccat.category_id;";
+        }else {
+            sql = "SELECT\n" +
+                    "\tcompany_id,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_address,\n" +
+                    "\tcompany_link_youtube,\n" +
+                    "\tcompany_website_url,\n" +
+                    "\tcompany_lng,\n" +
+                    "\tcompany_lat,\n" +
+                    "\tcompany_cover_image,\n" +
+                    "\tcompany_phone_number,\n" +
+                    "\tcount( DISTINCT follow_id ) AS follower_count,\n" +
+                    "\tcount( DISTINCT offer_id ) AS order_count,\n" +
+                    "\tcompany_desc,\n" +
+                    "\tCOUNT( DISTINCT id ) AS category_num,\n" +
+                    "\tcity_name_ar AS city_name,\n" +
+                    "\tarea_name_ar AS area_name, lng, lat, \n" +
+                    "\tcategory_id,\n" +
+                    "\tcategory_name \n" +
+                    "FROM\n" +
+                    "\t(\n" +
+                    "\t\t(\n" +
+                    "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                    "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
+                    "\t\t)\n" +
+                    "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id \n" +
+                    "\t)\n" +
+                    "\tLEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
+                    "\tLEFT JOIN efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id  " +
+                    " LEFT JOIN area AS a ON pc.area = a.area_id " +
+                    " LEFT JOIN city AS c ON pc.city = c.city_id " +
+                    " WHERE company_id != ? " +
+                    "GROUP BY\n" +
+                    "\tPROFILE.company_id,\n" +
+                    "\tccat.category_id;";
+        }
+
 
 
         return jdbcTemplate.queryForList(sql, id);

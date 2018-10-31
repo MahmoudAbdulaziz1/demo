@@ -43,9 +43,9 @@ public class NewRegisterController {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
-    @PostMapping("/")
+    @PostMapping("/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ResponseEntity<ObjectNode> addUserRegistration(@RequestBody @Valid NewRegisterModel registrationModel, Errors errors) {
+    public ResponseEntity<ObjectNode> addUserRegistration(@RequestBody @Valid NewRegisterModel registrationModel, Errors errors, @PathVariable int flag_ar) {
 
         if (errors.hasErrors()) {
             ObjectNode objectNode = mapper.createObjectNode();
@@ -70,7 +70,7 @@ public class NewRegisterController {
                     registrationModel.getRegistrationOrganizationName(), registrationModel.getRegistrationAddressDesc(),
                     registrationModel.getRegistrationWebsiteUrl(), registrationModel.getRegistrationRole(),
                     new Timestamp(System.currentTimeMillis()).getTime(), registrationModel.getCity(), registrationModel.getArea(),
-                    registrationModel.getLng(), registrationModel.getLat());
+                    registrationModel.getLng(), registrationModel.getLat(), flag_ar);
             if (model == 1) {
                 ObjectNode objectNode = mapper.createObjectNode();
                 objectNode.put(STATUS, 201);
@@ -120,8 +120,8 @@ public class NewRegisterController {
 
     @GetMapping("/getInActive")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public List<NewRegisterModel> getInActiveCompanies() {
-        return registrationRepo.getInActiveCompanies();
+    public List<NewRegisterModel> getInActiveCompanies(@PathVariable int flag_ar) {
+        return registrationRepo.getInActiveCompanies(flag_ar);
     }
 
     @PutMapping("Archive/{id}")
@@ -204,10 +204,10 @@ public class NewRegisterController {
         return registrationRepo.getInActiveCompaniesBoth();
     }
 
-    @GetMapping("/confirm/{id}")
+    @GetMapping("/confirm/{id}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ObjectNode confirmEmail(@PathVariable int id) {
-        int res = registrationRepo.confirmEmail(id);
+    public ObjectNode confirmEmail(@PathVariable int id, @PathVariable int flag_ar) {
+        int res = registrationRepo.confirmEmail(id, flag_ar);
 
         if (res == 1) {
             ObjectNode objectNode = mapper.createObjectNode();
@@ -228,12 +228,12 @@ public class NewRegisterController {
         return registrationRepo.getUsers();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ResponseEntity<ObjectNode> getUser(@PathVariable int id) {
+    public ResponseEntity<ObjectNode> getUser(@PathVariable int id, int flag_ar) {
 
         if (registrationRepo.IfEmailExist(id)) {
-            NewRegisterModel model = registrationRepo.getUser(id);
+            NewRegisterModel model = registrationRepo.getUser(id, flag_ar);
             ObjectNode nodes = mapper.createObjectNode();
             nodes.put("registration_id", model.getRegistrationId());
             nodes.put("registeration_email", model.getRegisterationEmail());

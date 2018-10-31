@@ -105,32 +105,60 @@ public class NewLoginRepo {
     }
 
 
-    public ResponseEntity<ObjectNode> isLogged(String user_email, String user_passwords, String login_role) {
+    public ResponseEntity<ObjectNode> isLogged(String user_email, String user_passwords, String login_role, int flag_ar) {
 
         NewLoginDto2 model = null;
 
         if (isExist(user_email, login_role)) {
+            String sql = "";
+            if (flag_ar == 0){
+                sql = "SELECT\n" +
+                        "login_id,\n" +
+                        "user_email,\n" +
+                        "user_password,\n" +
+                        "is_active,\n" +
+                        "login_role,\n" +
+                        "login_token,\n" +
+                        "login_date,\n" +
+                        "city_name,\n" +
+                        "area_name,\n" +
+                        "registration_organization_name," +
+                        "registration_id\n" +
+                        "FROM\n" +
+                        "\tefaz_login AS log\n" +
+                        "\tLEFT JOIN efaz_registration AS reg ON log.user_email = reg.registeration_email \n" +
+                        "\tAND log.login_role = reg.registration_role \n" +
+                        "\tAND reg.registration_isActive = 1 \n" +
+                        " LEFT JOIN area AS a ON log.area = a.area_id " +
+                        " LEFT JOIN city AS c ON log.city = c.city_id " +
+                        "WHERE\n" +
+                        "\tuser_email = ? \n" +
+                        "\tAND login_role = ?";
+            }else {
+                sql = "SELECT\n" +
+                        "login_id,\n" +
+                        "user_email,\n" +
+                        "user_password,\n" +
+                        "is_active,\n" +
+                        "login_role,\n" +
+                        "login_token,\n" +
+                        "login_date,\n" +
+                        "city_name_ar AS city_name,\n" +
+                        "area_name_ar AS area_name,\n" +
+                        "registration_organization_name," +
+                        "registration_id\n" +
+                        "FROM\n" +
+                        "\tefaz_login AS log\n" +
+                        "\tLEFT JOIN efaz_registration AS reg ON log.user_email = reg.registeration_email \n" +
+                        "\tAND log.login_role = reg.registration_role \n" +
+                        "\tAND reg.registration_isActive = 1 \n" +
+                        " LEFT JOIN area AS a ON log.area = a.area_id " +
+                        " LEFT JOIN city AS c ON log.city = c.city_id " +
+                        "WHERE\n" +
+                        "\tuser_email = ? \n" +
+                        "\tAND login_role = ?";
+            }
 
-            String sql = "SELECT\n" +
-                    "login_id,\n" +
-                    "user_email,\n" +
-                    "user_password,\n" +
-                    "is_active,\n" +
-                    "login_role,\n" +
-                    "login_token,\n" +
-                    "login_date,\n" +
-                    "city,\n" +
-                    "area,\n" +
-                    "registration_organization_name," +
-                    "registration_id\n" +
-                    "FROM\n" +
-                    "\tefaz_login AS log\n" +
-                    "\tLEFT JOIN efaz_registration AS reg ON log.user_email = reg.registeration_email \n" +
-                    "\tAND log.login_role = reg.registration_role \n" +
-                    "\tAND reg.registration_isActive = 1 \n" +
-                    "WHERE\n" +
-                    "\tuser_email = ? \n" +
-                    "\tAND login_role = ?";
             try {
                 model = jdbcTemplate.queryForObject(sql
                         , new Object[]{user_email, login_role},

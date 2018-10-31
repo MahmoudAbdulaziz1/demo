@@ -30,7 +30,7 @@ public class NewRegisterRepo {
 
     public int addUser(String email, String password, String userName, String phoneNumber, String companyName
             , String address, String website, String registrationRole, long registerationDate, String city, String area
-            , float lng, float lat) {
+            , float lng, float lat, int flag_ar) {
 
         if (IfOrgNameExist(companyName)) {
             return -100;
@@ -53,7 +53,15 @@ public class NewRegisterRepo {
                 ps.setString(7, address);
                 ps.setString(8, website);
                 ps.setInt(9, 0);
+                //if (flag_ar == 0) {
                 ps.setString(10, registrationRole);
+//                } else {
+//                    if (registrationRole.equals("مدرسة")) {
+//                        ps.setString(10, "school");
+//                    } else if (registrationRole.equals("شركة")) {
+//                        ps.setString(10, "company");
+//                    }
+//                }
                 ps.setTimestamp(11, new Timestamp(registerationDate));
 
                 return ps;
@@ -61,34 +69,26 @@ public class NewRegisterRepo {
         }, holder);
 
         int id = holder.getKey().intValue();
+        if (flag_ar == 0) {
 
-        return jdbcTemplate.update("INSERT INTO  complete_register_data VALUES (?,?,?,?,?,?,?)", id, city, area, 0, 0, lng, lat);
-//        String sql = "SELECT " +
-//                "\tregistration_id, " +
-//                "\tregisteration_email, " +
-//                "\tregisteration_password, " +
-//                "\tregisteration_username, " +
-//                "\tregisteration_phone_number, " +
-//                "\tregistration_organization_name, " +
-//                "\tregistration_address_desc, " +
-//                "\tregistration_website_url, " +
-//                "\tregistration_isActive, " +
-//                "\tregistration_role, " +
-//                "\tregisteration_date, " +
-//                "\tcity, " +
-//                "\tarea, " +
-//                "\tarchive, " +
-//                "\tconsider  " +
-//                "FROM " +
-//                " efaz_registration AS org" +
-//                " LEFT JOIN complete_register_data AS DATA ON org.registration_id = DATA.id  " +
-//                "WHERE " +
-//                " registration_id = ?";
-//        return jdbcTemplate.queryForObject(sql, new Object[]{id},
-//                ((resultSet, i) -> new NewRegisterModel(resultSet.getInt(1), resultSet.getString(2),
-//                        resultSet.getString(3), resultSet.getString(4), resultSet.getString(5), resultSet.getString(6),
-//                        resultSet.getString(7), resultSet.getString(8), resultSet.getInt(9), resultSet.getString(10),
-//                        resultSet.getTimestamp(11).getTime(), resultSet.getString(12), resultSet.getString(13), resultSet.getInt(14), resultSet.getInt(15))));
+//            int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
+//                    Integer.class, "%" + name.trim() + "%");
+
+            int city_id = jdbcTemplate.queryForObject("SELECT city_id FROM city WHERE city_name LIKE ?;", Integer.class, "%" + city.trim() + "%");
+            System.out.println("city " + city_id);
+            int area_id = jdbcTemplate.queryForObject("SELECT area_id FROM area WHERE area_name LIKE ?;", Integer.class, "%" + area.trim() + "%");
+            System.out.println(area + "  " + area_id);
+
+            return jdbcTemplate.update("INSERT INTO  complete_register_data VALUES (?,?,?,?,?,?,?)", id, city_id, area_id, 0, 0, lng, lat);
+
+        } else {
+            int city_id = jdbcTemplate.queryForObject("SELECT city_id FROM city WHERE city_name_ar LIKE ?;", Integer.class, "%" + city + "%");
+            System.out.println(city_id);
+            int area_id = jdbcTemplate.queryForObject("SELECT area_id FROM area WHERE area_name_ar LIKE ?;", Integer.class, "%" + area + "%");
+            System.out.println(area_id);
+
+            return jdbcTemplate.update("INSERT INTO  complete_register_data VALUES (?,?,?,?,?,?,?)", id, city_id, area_id, 0, 0, lng, lat);
+        }
 
 
     }
@@ -133,36 +133,71 @@ public class NewRegisterRepo {
     }
 
 
-    public NewRegisterModelPagination getInActiveCompaniesPagination(int page, int pageSize) {
+    public NewRegisterModelPagination getInActiveCompaniesPagination(int page, int pageSize, int flag_ar) {
         int pages = (int) Math.ceil(((float) getInActiveCompaniesPaginationCount()) / ((float) pageSize));
         System.out.println("Page Size =   " + pages);
         int limitOffset = (page - 1) * pageSize;
-        String sql = " SELECT " +
-                " registration_id, " +
-                " registeration_email, " +
-                " registeration_password, " +
-                " registeration_username, " +
-                " registeration_phone_number, " +
-                " registration_organization_name, " +
-                " registration_address_desc, " +
-                " registration_website_url, " +
-                " registration_isActive, " +
-                " registration_role, " +
-                " registeration_date, " +
-                " city, " +
-                " area, " +
-                " archive, " +
-                " consider ," +
-                " lng," +
-                " lat " +
-                " FROM " +
-                " efaz_registration AS org " +
-                " LEFT JOIN complete_register_data AS dta ON org.registration_id = dta.id  " +
-                " WHERE " +
-                " registration_isActive = 0   " +
-                " AND archive = 0  " +
-                " AND consider = 0 " +
-                " LIMIT ?,?;";
+        String sql = "";
+        if (flag_ar == 0) {
+            sql = " SELECT " +
+                    " registration_id, " +
+                    " registeration_email, " +
+                    " registeration_password, " +
+                    " registeration_username, " +
+                    " registeration_phone_number, " +
+                    " registration_organization_name, " +
+                    " registration_address_desc, " +
+                    " registration_website_url, " +
+                    " registration_isActive, " +
+                    " registration_role, " +
+                    " registeration_date, " +
+                    " city_name, " +
+                    " area_name, " +
+                    " archive, " +
+                    " consider ," +
+                    " lng," +
+                    " lat " +
+                    " FROM " +
+                    " efaz_registration AS org " +
+                    " LEFT JOIN complete_register_data AS dta ON org.registration_id = dta.id " +
+                    " LEFT JOIN area AS a ON dta.area = a.area_id " +
+                    " LEFT JOIN city AS c ON dta.city = c.city_id " +
+                    " WHERE " +
+                    " registration_isActive = 0   " +
+                    " AND archive = 0  " +
+                    " AND consider = 0 " +
+                    " LIMIT ?,?;";
+        } else {
+            sql = " SELECT " +
+                    " registration_id, " +
+                    " registeration_email, " +
+                    " registeration_password, " +
+                    " registeration_username, " +
+                    " registeration_phone_number, " +
+                    " registration_organization_name, " +
+                    " registration_address_desc, " +
+                    " registration_website_url, " +
+                    " registration_isActive, " +
+                    " registration_role, " +
+                    " registeration_date, " +
+                    " city_name_ar AS city, " +
+                    " area_name_ar AS area, " +
+                    " archive, " +
+                    " consider ," +
+                    " lng," +
+                    " lat " +
+                    " FROM " +
+                    " efaz_registration AS org " +
+                    " LEFT JOIN complete_register_data AS dta ON org.registration_id = dta.id  " +
+                    " LEFT JOIN area AS a ON dta.area = a.area_id " +
+                    " LEFT JOIN city AS c ON dta.city = c.city_id " +
+                    " WHERE " +
+                    " registration_isActive = 0   " +
+                    " AND archive = 0  " +
+                    " AND consider = 0 " +
+                    " LIMIT ?,?;";
+        }
+
 
         List<NewRegisterModel> userData = jdbcTemplate.query(sql, new Object[]{limitOffset, pageSize},
                 (resultSet, i) -> new NewRegisterModel(resultSet.getInt(1), resultSet.getString(2),
@@ -175,32 +210,65 @@ public class NewRegisterRepo {
     }
 
 
-    public List<NewRegisterModel> getInActiveCompanies() {
-        String sql = " SELECT " +
-                " registration_id, " +
-                " registeration_email, " +
-                " registeration_password, " +
-                " registeration_username, " +
-                " registeration_phone_number, " +
-                " registration_organization_name, " +
-                " registration_address_desc, " +
-                " registration_website_url, " +
-                " registration_isActive, " +
-                " registration_role, " +
-                " registeration_date, " +
-                " city, " +
-                " area, " +
-                " archive, " +
-                " consider ," +
-                " lng," +
-                " lat " +
-                " FROM " +
-                " efaz_registration AS org " +
-                " LEFT JOIN complete_register_data AS dta ON org.registration_id = dta.id  " +
-                " WHERE " +
-                " registration_isActive = 0   " +
-                " AND archive = 0  " +
-                " AND consider = 0;";
+    public List<NewRegisterModel> getInActiveCompanies(int flag_ar) {
+        String sql = "";
+        if (flag_ar == 0) {
+
+            sql = " SELECT " +
+                    " registration_id, " +
+                    " registeration_email, " +
+                    " registeration_password, " +
+                    " registeration_username, " +
+                    " registeration_phone_number, " +
+                    " registration_organization_name, " +
+                    " registration_address_desc, " +
+                    " registration_website_url, " +
+                    " registration_isActive, " +
+                    " registration_role, " +
+                    " registeration_date, " +
+                    " city, " +
+                    " area, " +
+                    " archive, " +
+                    " consider ," +
+                    " lng," +
+                    " lat " +
+                    " FROM " +
+                    " efaz_registration AS org " +
+                    " LEFT JOIN complete_register_data AS dta ON org.registration_id = dta.id  " +
+                    " WHERE " +
+                    " registration_isActive = 0   " +
+                    " AND archive = 0  " +
+                    " AND consider = 0;";
+
+
+        } else {
+            sql = " SELECT " +
+                    " registration_id, " +
+                    " registeration_email, " +
+                    " registeration_password, " +
+                    " registeration_username, " +
+                    " registeration_phone_number, " +
+                    " registration_organization_name, " +
+                    " registration_address_desc, " +
+                    " registration_website_url, " +
+                    " registration_isActive, " +
+                    " registration_role, " +
+                    " registeration_date, " +
+                    " city_ar AS city, " +
+                    " area_ar AS area, " +
+                    " archive, " +
+                    " consider ," +
+                    " lng," +
+                    " lat " +
+                    " FROM " +
+                    " efaz_registration AS org " +
+                    " LEFT JOIN complete_register_data AS dta ON org.registration_id = dta.id  " +
+                    " WHERE " +
+                    " registration_isActive = 0   " +
+                    " AND archive = 0  " +
+                    " AND consider = 0;";
+        }
+
 
         return jdbcTemplate.query(sql,
                 (resultSet, i) -> new NewRegisterModel(resultSet.getInt(1), resultSet.getString(2),
@@ -529,30 +597,60 @@ public class NewRegisterRepo {
 
     }
 
-    public NewRegisterModel getUser(int id) {
+    public NewRegisterModel getUser(int id, int flag_ar) {
+        String sql = "";
+        if (flag_ar == 0) {
+            sql = "SELECT\n" +
+                    "\tregistration_id,\n" +
+                    "\tregisteration_email,\n" +
+                    "\tregisteration_password,\n" +
+                    "\tregisteration_username,\n" +
+                    "\tregisteration_phone_number,\n" +
+                    "\tregistration_organization_name,\n" +
+                    "\tregistration_address_desc,\n" +
+                    "\tregistration_website_url,\n" +
+                    "\tregistration_isActive,\n" +
+                    "\tregistration_role,\n" +
+                    "\tregisteration_date,\n" +
+                    "\tcity_name_ar AS city_name,\n" +
+                    "\tarea_name_ar AS area_name,\n" +
+                    "\tarchive,\n" +
+                    "\tconsider ," +
+                    " lng, lat " +
+                    "FROM\n" +
+                    "\tefaz_registration AS org " +
+                    "\tLEFT JOIN complete_register_data AS dta ON org.registration_id = dta.id " +
+                    " LEFT JOIN area AS a ON dta.area = a.area_id " +
+                    " LEFT JOIN city AS c ON dta.city = c.city_id " +
+                    " WHERE\n" +
+                    " registration_id=?; ";
+        } else {
+            sql = "SELECT\n" +
+                    "\tregistration_id,\n" +
+                    "\tregisteration_email,\n" +
+                    "\tregisteration_password,\n" +
+                    "\tregisteration_username,\n" +
+                    "\tregisteration_phone_number,\n" +
+                    "\tregistration_organization_name,\n" +
+                    "\tregistration_address_desc,\n" +
+                    "\tregistration_website_url,\n" +
+                    "\tregistration_isActive,\n" +
+                    "\tregistration_role,\n" +
+                    "\tregisteration_date,\n" +
+                    "\tcity_name_ar AS city_name,\n" +
+                    "\tarea_name_ar AS area_name,\n" +
+                    "\tarchive,\n" +
+                    "\tconsider ," +
+                    " lng, lat " +
+                    "FROM\n" +
+                    "\tefaz_registration AS org " +
+                    "\tLEFT JOIN complete_register_data AS dta ON org.registration_id = dta.id " +
+                    " LEFT JOIN area AS a ON dta.area = a.area_id " +
+                    " LEFT JOIN city AS c ON dta.city = c.city_id " +
+                    " WHERE\n" +
+                    " registration_id=?; ";
+        }
 
-        String sql = "SELECT\n" +
-                "\tregistration_id,\n" +
-                "\tregisteration_email,\n" +
-                "\tregisteration_password,\n" +
-                "\tregisteration_username,\n" +
-                "\tregisteration_phone_number,\n" +
-                "\tregistration_organization_name,\n" +
-                "\tregistration_address_desc,\n" +
-                "\tregistration_website_url,\n" +
-                "\tregistration_isActive,\n" +
-                "\tregistration_role,\n" +
-                "\tregisteration_date,\n" +
-                "\tcity,\n" +
-                "\tarea,\n" +
-                "\tarchive,\n" +
-                "\tconsider ," +
-                " lng, lat " +
-                "FROM\n" +
-                "\tefaz_registration AS org " +
-                "\tLEFT JOIN complete_register_data AS dta ON org.registration_id = dta.id " +
-                " WHERE\n" +
-                " registration_id=?; ";
 
         return jdbcTemplate.queryForObject(sql, new Object[]{id},
                 ((resultSet, i) -> new NewRegisterModel(resultSet.getInt(1), resultSet.getString(2),
@@ -563,8 +661,8 @@ public class NewRegisterRepo {
     }
 
 
-    public int confirmEmail(int id) {
-        NewRegisterModel model = getUser(id);
+    public int confirmEmail(int id, int flag_ar) {
+        NewRegisterModel model = getUser(id, flag_ar);
         if (isExistILogin(model.getRegisterationEmail(), model.getRegistrationRole())) {
             return -100;
         } else {
@@ -574,9 +672,30 @@ public class NewRegisterRepo {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return jdbcTemplate.update("INSERT INTO efaz_login VALUES (?,?,?,?,?,?,?,?,?,?,?)", null, model.getRegisterationEmail(),
-                    model.getRegisterationPassword(), 0, model.getRegistrationRole(), "Token=", new Timestamp(System.currentTimeMillis())
-                    , model.getCity(), model.getArea(), model.getLng(), model.getLat());
+
+            if (flag_ar == 0) {
+
+//            int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
+//                    Integer.class, "%" + name.trim() + "%");
+
+                int city_id = jdbcTemplate.queryForObject("SELECT city_id FROM city WHERE city_name LIKE ?;", Integer.class, "%" + model.getCity().trim() + "%");
+                System.out.println("city " + city_id);
+                int area_id = jdbcTemplate.queryForObject("SELECT area_id FROM area WHERE area_name LIKE ?;", Integer.class, "%" + model.getArea().trim() + "%");
+
+                return jdbcTemplate.update("INSERT INTO efaz_login VALUES (?,?,?,?,?,?,?,?,?,?,?)", null, model.getRegisterationEmail(),
+                        model.getRegisterationPassword(), 0, model.getRegistrationRole(), "Token=", new Timestamp(System.currentTimeMillis())
+                        ,city_id , area_id , model.getLng(), model.getLat());
+            } else {
+                int city_id = jdbcTemplate.queryForObject("SELECT city_id FROM city WHERE city_name_ar LIKE ?;", Integer.class, "%" +  model.getCity() + "%");
+                System.out.println(city_id);
+                int area_id = jdbcTemplate.queryForObject("SELECT area_id FROM area WHERE area_name_ar LIKE ?;", Integer.class, "%" + model.getArea() + "%");
+                System.out.println(area_id);
+
+                return jdbcTemplate.update("INSERT INTO efaz_login VALUES (?,?,?,?,?,?,?,?,?,?,?)", null, model.getRegisterationEmail(),
+                        model.getRegisterationPassword(), 0, model.getRegistrationRole(), "Token=", new Timestamp(System.currentTimeMillis())
+                        ,city_id, area_id, model.getLng(), model.getLat());            }
+
+
         }
     }
 

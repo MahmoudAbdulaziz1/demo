@@ -8,10 +8,7 @@ import com.taj.repository.AreaWithCityRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -27,11 +24,11 @@ public class AreaWithCompanyController {
     @Autowired
     AreaWithCityRepo repo;
 
-    @GetMapping("/")
+    @GetMapping("/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public AreaWithCityDto getTestObject() {
+    public AreaWithCityDto getTestObject(@PathVariable int flag_ar) {
         Map<AreaDataDto, List<CityDataDto>> res = new HashMap<>();
-        List<Map<String, Object>> list = repo.getTestObject();
+        List<Map<String, Object>> list = repo.getTestObject(flag_ar);
         List<AreaDataDto> schoolsList = new ArrayList<>();
         Set<AreaDataDto> schools = new HashSet<>();
         List<CityDataDto> test2Models = new ArrayList<>();

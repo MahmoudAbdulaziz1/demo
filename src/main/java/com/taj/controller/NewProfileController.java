@@ -1315,13 +1315,13 @@ public class NewProfileController {
     }
 
 
-    @GetMapping("/s/all/page/{page}/{pageSize}/{id}")
+    @GetMapping("/s/all/page/{page}/{pageSize}/{id}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public CompanyProfileDtoThreeDTOPaginate getTestObject2Pagination(@PathVariable int page, @PathVariable int pageSize, @PathVariable int id) {
+    public CompanyProfileDtoThreeDTOPaginate getTestObject2Pagination(@PathVariable int page, @PathVariable int pageSize, @PathVariable int id,@PathVariable int flag_ar) {
 
         int pages = (int) Math.ceil(((float) repo.getCompaniesProfilesObject2PaginationCount()) / ((float) pageSize));
         Map<CompanyProfileDtoTwoDTO, List<CompanyProfileDtoOne>> res = new HashMap<>();
-        List<Map<String, Object>> list = repo.getCompaniesProfilesObject2Pagination2(id);
+        List<Map<String, Object>> list = repo.getCompaniesProfilesObject2Pagination2(id, flag_ar);
         List<CompanyProfileDtoTwoDTO> schoolsList = new ArrayList<>();
         Set<CompanyProfileDtoTwoDTO> schools = new HashSet<>();
         List<CompanyProfileDtoOne> test2Models = new ArrayList<>();

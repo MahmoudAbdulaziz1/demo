@@ -1,6 +1,6 @@
 package com.taj.repository;
 
-import com.taj.model.AreaModel;
+import com.taj.model.AreaModelEnglish;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -17,18 +17,30 @@ public class AreaRepo {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    public int addArea(String areaName) {
-        return jdbcTemplate.update("INSERT INTO area VALUES (?,?);", null, areaName);
+    public int addArea(String areaName, String areNameAr) {
+        return jdbcTemplate.update("INSERT INTO area VALUES (?,?,?);", null, areaName, areNameAr);
     }
 
-    public List<AreaModel> getAreas() {
-        return jdbcTemplate.query("SELECT * FROM area;",
-                (resultSet, i) -> new AreaModel(resultSet.getInt(1), resultSet.getString(2)));
+    public List<AreaModelEnglish> getAreas(int flag_ar) {
+        String sql = "";
+        if (flag_ar == 0){
+            sql = "SELECT area_id, area_name  FROM area;";
+        }else {
+            sql = "SELECT area_id, area_name_ar  FROM area;";
+        }
+        return jdbcTemplate.query(sql,
+                (resultSet, i) -> new AreaModelEnglish(resultSet.getInt(1), resultSet.getString(2)));
     }
 
-    public AreaModel getareaById(int areaId) {
-        return jdbcTemplate.queryForObject("SELECT * FROM area WHERE area_id=?;", new Object[]{areaId},
-                (resultSet, i) -> new AreaModel(resultSet.getInt(1), resultSet.getString(2)));
+    public AreaModelEnglish getareaById(int areaId, int flag_ar) {
+        String sql = "";
+        if (flag_ar == 0){
+            sql = "SELECT area_id, area_name FROM area WHERE area_id=?;";
+        }else {
+            sql = "SELECT area_id, area_name_ar FROM area WHERE area_id=?;";
+        }
+        return jdbcTemplate.queryForObject(sql, new Object[]{areaId},
+                (resultSet, i) -> new AreaModelEnglish(resultSet.getInt(1), resultSet.getString(2)));
     }
 
     public int updateArea(int areaId, String areaName) {

@@ -1,23 +1,21 @@
 package com.taj.model;
 
 /**
- * Created by User on 9/16/2018.
+ * Created by User on 10/31/2018.
  */
-public class CityModel {
+public class CityModelEnglish {
+
     private int citId;
     private String cityName;
-    private String cityNameAr;
     private int cityAreaId;
 
-
-    public CityModel(int citId, String cityName, String cityNameAr, int cityAreaId) {
+    public CityModelEnglish(int citId, String cityName, int cityAreaId) {
         this.citId = citId;
         this.cityName = cityName;
-        this.cityNameAr = cityNameAr;
         this.cityAreaId = cityAreaId;
     }
 
-    public CityModel() {
+    public CityModelEnglish() {
     }
 
     public int getCitId() {
@@ -42,13 +40,5 @@ public class CityModel {
 
     public void setCityAreaId(int cityAreaId) {
         this.cityAreaId = cityAreaId;
-    }
-
-    public String getCityNameAr() {
-        return cityNameAr;
-    }
-
-    public void setCityNameAr(String cityNameAr) {
-        this.cityNameAr = cityNameAr;
     }
 }
