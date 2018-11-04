@@ -134,13 +134,13 @@ public class NewSchoolProfileController {
         return repo.getSchoolSProfiles();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ResponseEntity<ObjectNode> getProfile(@PathVariable int id) {
+    public ResponseEntity<ObjectNode> getProfile(@PathVariable int id, @PathVariable int flag_ar) {
 
 
         if (repo.isExist(id)) {
-            NewSchoolProfileModel model = repo.getSchoolProfile(id);
+            NewSchoolProfileModel model = repo.getSchoolProfile(id, flag_ar);
             ObjectNode node = mapper.createObjectNode();
             node.put("school_id", model.getSchool_id());
             node.put("school_name", model.getSchool_name());
@@ -309,13 +309,13 @@ public class NewSchoolProfileController {
         return repo.getSchoolSProfiles2();
     }
 
-    @GetMapping("/s/{id}")
+    @GetMapping("/s/{id}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ResponseEntity<ObjectNode> getProfile2(@PathVariable int id) {
+    public ResponseEntity<ObjectNode> getProfile2(@PathVariable int id, @PathVariable int flag_ar) {
 
 
         if (repo.isExist(id)) {
-            NewSchoolProfileModelDTO model = repo.getSchoolProfile2(id);
+            NewSchoolProfileModelDTO model = repo.getSchoolProfile2(id, flag_ar);
             ObjectNode node = mapper.createObjectNode();
             node.put("school_id", model.getSchool_id());
             node.put("school_name", model.getSchool_name());
@@ -401,12 +401,12 @@ public class NewSchoolProfileController {
 
     }
 
-    @GetMapping("/s/get/{id}")
+    @GetMapping("/s/get/{id}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ResponseEntity<ObjectNode> getProfileForAdmin2(@PathVariable int id) {
+    public ResponseEntity<ObjectNode> getProfileForAdmin2(@PathVariable int id,@PathVariable int flag_ar) {
 
         if (repo.isExist(id)) {
-            NewCustomSchoolProfileModelDTO model = repo.getSchoolProfileForAdmin2(id);
+            NewCustomSchoolProfileModelDTO model = repo.getSchoolProfileForAdmin2(id, flag_ar);
             ObjectNode node = mapper.createObjectNode();
             node.put("school_id", model.getSchool_id());
             node.put("school_name", model.getSchool_name());
@@ -433,9 +433,9 @@ public class NewSchoolProfileController {
 
     }
 
-    @PutMapping("/s/update")
+    @PutMapping("/s/update/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ResponseEntity<ObjectNode> updateProfileForAdmin2(@Valid @RequestBody NewSchoolProfileModelDTO model, Errors errors) {
+    public ResponseEntity<ObjectNode> updateProfileForAdmin2(@Valid @RequestBody NewSchoolProfileModelDTO model, Errors errors, @PathVariable int flag_ar) {
 
         if (errors.hasErrors()) {
             ObjectNode objectNode = mapper.createObjectNode();
@@ -448,7 +448,7 @@ public class NewSchoolProfileController {
         int res = repo.updateProfileForAdmin2(model.getSchool_id(), model.getSchool_name(), model.getSchool_logo_image(),
                 model.getSchool_address(), model.getSchool_service_desc(), model.getSchool_link_youtube(),
                 model.getSchool_website_url(), model.getSchool_cover_image(), model.getSchool_phone_number(), model.getArea(),
-                model.getCity(), model.getLng(), model.getLat());
+                model.getCity(), model.getLng(), model.getLat(),flag_ar);
 
         if (res == 1) {
             ObjectNode objectNode = mapper.createObjectNode();

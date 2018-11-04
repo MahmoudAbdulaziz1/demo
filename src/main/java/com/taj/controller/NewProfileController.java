@@ -121,10 +121,10 @@ public class NewProfileController {
     }
 
 
-    @PutMapping("/")
+    @PutMapping("/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
     public ResponseEntity<ObjectNode> updateProfile(@RequestParam(value = "logo", required = false) MultipartFile logo, @RequestParam(value = "cover", required = false) MultipartFile cover,
-                                                    @Valid @RequestPart String newProfileDto3String, Errors errors) {
+                                                    @Valid @RequestPart String newProfileDto3String, Errors errors, int flag_ar) {
 
 
         try {
@@ -161,7 +161,7 @@ public class NewProfileController {
                         int res = repo.updateProfile(model.getCompanyId(), model.getCompanyName(), model.getCompanyLogoImage(), model.getCompanyAddress(),
                                 model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                                 model.getCompanyLat(), model.getCompanyCoverImage(), model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                                model.getCity(), model.getArea(), model.getCategory());
+                                model.getCity(), model.getArea(), model.getCategory(),flag_ar);
                         if (res == 1) {
                             ArrayNode category = mapper.createArrayNode();
 
@@ -202,7 +202,7 @@ public class NewProfileController {
                         int res = repo.updateProfile(model.getCompanyId(), model.getCompanyName(), coverUrl, model.getCompanyAddress(),
                                 model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                                 model.getCompanyLat(), model.getCompanyCoverImage(), model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                                model.getCity(), model.getArea(), model.getCategory());
+                                model.getCity(), model.getArea(), model.getCategory(),flag_ar);
                         if (res == 1) {
                             ArrayNode category = mapper.createArrayNode();
 
@@ -245,7 +245,7 @@ public class NewProfileController {
                         int res = repo.updateProfile(model.getCompanyId(), model.getCompanyName(), model.getCompanyLogoImage(), model.getCompanyAddress(),
                                 model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                                 model.getCompanyLat(), model.getCompanyCoverImage(), model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                                model.getCity(), model.getArea(), model.getCategory());
+                                model.getCity(), model.getArea(), model.getCategory(), flag_ar);
                         if (res == 1) {
                             ArrayNode category = mapper.createArrayNode();
 
@@ -287,7 +287,7 @@ public class NewProfileController {
                         int res = repo.updateProfile(model.getCompanyId(), model.getCompanyName(), logoUrl, model.getCompanyAddress(),
                                 model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                                 model.getCompanyLat(), model.getCompanyCoverImage(), model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                                model.getCity(), model.getArea(), model.getCategory());
+                                model.getCity(), model.getArea(), model.getCategory(),flag_ar);
                         if (res == 1) {
                             ArrayNode category = mapper.createArrayNode();
 
@@ -327,7 +327,7 @@ public class NewProfileController {
                     int res = repo.updateProfile(model.getCompanyId(), model.getCompanyName(), logoUrl, model.getCompanyAddress(),
                             model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                             model.getCompanyLat(), coverUrl, model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                            model.getCity(), model.getArea(), model.getCategory());
+                            model.getCity(), model.getArea(), model.getCategory(),flag_ar);
                     if (res == 1) {
                         ArrayNode category = mapper.createArrayNode();
 
@@ -626,11 +626,11 @@ public class NewProfileController {
         return repo.getProfiles2();
     }
 
-    @GetMapping("/s/{id}")
+    @GetMapping("/s/{id}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public NewProfileDto3DTO getProfile2(@PathVariable int id) {
+    public NewProfileDto3DTO getProfile2(@PathVariable int id, @PathVariable int flag_ar) {
         List<TakatfTenderCategoryPOJO> category = new ArrayList<>();
-        List<NewProfileDtoDTO> allData = repo.getProfile2(id);
+        List<NewProfileDtoDTO> allData = repo.getProfile2(id, flag_ar);
         for (int i = 0; i < allData.size(); i++) {
             TakatfTenderCategoryPOJO pojo = new TakatfTenderCategoryPOJO(allData.get(i).getCompanyCatName());
             category.add(pojo);
@@ -645,10 +645,10 @@ public class NewProfileController {
     }
 
 
-    @PutMapping("/s/")
+    @PutMapping("/s/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
     public ResponseEntity<ObjectNode> updateProfile2(@RequestParam(value = "logo", required = false) MultipartFile logo, @RequestParam(value = "cover", required = false) MultipartFile cover,
-                                                     @Valid @RequestPart String newProfileDto3DTOString, Errors errors) {
+                                                     @Valid @RequestPart String newProfileDto3DTOString, Errors errors, @PathVariable int flag_ar) {
 
 
         try {
@@ -682,7 +682,7 @@ public class NewProfileController {
                         int res = repo.updateProfile2(model.getCompanyId(), model.getCompanyName(), model.getCompanyLogoImage(), model.getCompanyAddress(),
                                 model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                                 model.getCompanyLat(), model.getCompanyCoverImage(), model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                                model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory());
+                                model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory(),flag_ar);
                         if (res == 1) {
                             ArrayNode category = mapper.createArrayNode();
 
@@ -726,7 +726,7 @@ public class NewProfileController {
                         int res = repo.updateProfile2(model.getCompanyId(), model.getCompanyName(), model.getCompanyLogoImage(), model.getCompanyAddress(),
                                 model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                                 model.getCompanyLat(), coverUrl, model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                                model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory());
+                                model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory(),flag_ar);
                         if (res == 1) {
                             ArrayNode category = mapper.createArrayNode();
 
@@ -773,7 +773,7 @@ public class NewProfileController {
                         int res = repo.updateProfile2(model.getCompanyId(), model.getCompanyName(), model.getCompanyLogoImage(), model.getCompanyAddress(),
                                 model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                                 model.getCompanyLat(), model.getCompanyCoverImage(), model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                                model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory());
+                                model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory(), flag_ar);
                         if (res == 1) {
                             ArrayNode category = mapper.createArrayNode();
 
@@ -816,7 +816,7 @@ public class NewProfileController {
                         int res = repo.updateProfile2(model.getCompanyId(), model.getCompanyName(), logoUrl, model.getCompanyAddress(),
                                 model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                                 model.getCompanyLat(), model.getCompanyCoverImage(), model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                                model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory());
+                                model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory(), flag_ar);
                         if (res == 1) {
                             ArrayNode category = mapper.createArrayNode();
 
@@ -863,7 +863,7 @@ public class NewProfileController {
                     int res = repo.updateProfile2(model.getCompanyId(), model.getCompanyName(), logoUrl, model.getCompanyAddress(),
                             model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                             model.getCompanyLat(), coverUrl, model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                            model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory());
+                            model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory(), flag_ar);
                     if (res == 1) {
                         ArrayNode category = mapper.createArrayNode();
 
@@ -1049,13 +1049,13 @@ public class NewProfileController {
         return mainModel;
     }
 
-    @PostMapping("/s/all/pages/{page}/{pageSize}")
+    @PostMapping("/s/all/pages/{page}/{pageSize}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
     public CompanyProfileDtoThreeDTOPaginate getCompaniesProfilesObject2PaginationWithFilter(@PathVariable int page, @PathVariable int pageSize,
-                                                                                             @RequestBody Filter2Model filter) {
+                                                                                             @RequestBody Filter2Model filter, @PathVariable int flag_ar) {
         Map<CompanyProfileDtoTwoDTO, List<CompanyProfileDtoOne>> res = new HashMap<>();
         List<Map<String, Object>> list = repo.getCompaniesProfilesObject2PaginationWithFilter(filter.getName(),
-                filter.getCat(), filter.getArea(), filter.getCity(), filter.getView());
+                filter.getCat(), filter.getArea(), filter.getCity(), filter.getView(), flag_ar);
         List<CompanyProfileDtoTwoDTO> schoolsList = new ArrayList<>();
         Set<CompanyProfileDtoTwoDTO> schools = new HashSet<>();
         List<CompanyProfileDtoOne> test2Models = new ArrayList<>();
@@ -1448,15 +1448,15 @@ public class NewProfileController {
     }
 
 
-    @PostMapping("/s/all/page/{page}/{pageSize}/{id}")
+    @PostMapping("/s/all/page/{page}/{pageSize}/{id}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
     public CompanyProfileDtoThreeDTOPaginate getTestObject2PaginationWithFilter(@PathVariable int page, @PathVariable int pageSize,
-                                                                                @PathVariable int id, @RequestBody Filter2Model filter) {
+                                                                                @PathVariable int id, @RequestBody Filter2Model filter, @PathVariable int flag_ar) {
 
 
         Map<CompanyProfileDtoTwoDTO, List<CompanyProfileDtoOne>> res = new HashMap<>();
         List<Map<String, Object>> list = repo.getCompaniesProfilesObject2Pagination2WithFilter(id, filter.getName(), filter.getCat(),
-                filter.getArea(), filter.getCity(), filter.getView());
+                filter.getArea(), filter.getCity(), filter.getView(), flag_ar);
         List<CompanyProfileDtoTwoDTO> schoolsList = new ArrayList<>();
         Set<CompanyProfileDtoTwoDTO> schools = new HashSet<>();
         List<CompanyProfileDtoOne> test2Models = new ArrayList<>();
@@ -1716,13 +1716,14 @@ public class NewProfileController {
     }
 
 
-    @PostMapping("/s/all/{id}/pages/{page}/{pageSize}")
+    @PostMapping("/s/all/{id}/pages/{page}/{pageSize}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
     public CompanyProfileDtoThreeDTOPaginate getTestObject22PaginationWithFilter(@PathVariable int id, @PathVariable int page,
-                                                                                 @PathVariable int pageSize, @RequestBody Filter3Model filter) {
+                                                                                 @PathVariable int pageSize, @RequestBody Filter3Model filter,
+                                                                                 @PathVariable int flag_ar) {
         Map<CompanyProfileDtoTwoDTO, List<CompanyProfileDtoOne>> res = new HashMap<>();
         List<Map<String, Object>> list = repo.getCompaniesProfilesObjectForAll2WithFilter(id, filter.getName(), filter.getCat(),
-                filter.getArea(), filter.getCity(), filter.getView(), filter.getFollow());
+                filter.getArea(), filter.getCity(), filter.getView(), filter.getFollow(),  flag_ar);
         List<CompanyProfileDtoTwoDTO> schoolsList = new ArrayList<>();
         Set<CompanyProfileDtoTwoDTO> schools = new HashSet<>();
         List<CompanyProfileDtoOne> test2Models = new ArrayList<>();

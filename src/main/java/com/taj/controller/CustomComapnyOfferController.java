@@ -68,9 +68,9 @@ public class CustomComapnyOfferController {
      * @return 1 if success or 0 if failed
      */
 
-    @PostMapping("/")
+    @PostMapping("/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ResponseEntity<ObjectNode> addCompanyOffers(@Valid @RequestBody CustomCompanyOfferModel model, Errors errors) {
+    public ResponseEntity<ObjectNode> addCompanyOffers(@Valid @RequestBody CustomCompanyOfferModel model, Errors errors, int flag_ar) {
 
         if (errors.hasErrors()) {
             ObjectNode objectNode = mapper.createObjectNode();
@@ -80,7 +80,7 @@ public class CustomComapnyOfferController {
         } else {
             int res = repo.addOfferEdeited(model.getImage_one(), model.getImage_two(), model.getImage_third(), model.getImage_four(), model.getOffer_title(), model.getOffer_explaination(),
                     model.getOffer_cost(), model.getOffer_display_date(), model.getOffer_expired_date(), model.getOffer_deliver_date(),
-                    model.getCompany_id(), model.getOffer_count(), model.getCity(), model.getArea(), model.getLng(), model.getLat());
+                    model.getCompany_id(), model.getOffer_count(), model.getCity(), model.getArea(), model.getLng(), model.getLat(), flag_ar);
             if (res == 1) {
                 ObjectNode objectNode = mapper.createObjectNode();
                 objectNode.put("status", 200);
@@ -126,11 +126,11 @@ public class CustomComapnyOfferController {
     }
 
 
-    @PostMapping("/image/")
+    @PostMapping("/image/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
     public ResponseEntity<ObjectNode> addCompanyOffersWitImage(@RequestParam("image_one") MultipartFile image1, @RequestParam("image_two") MultipartFile image12,
                                                                @RequestParam("image_three") MultipartFile image13, @RequestParam("image_four") MultipartFile image4,
-                                                               @RequestPart @Valid String offerModelString, Errors errors) {
+                                                               @RequestPart @Valid String offerModelString, Errors errors,@PathVariable int flag_ar) {
 
         try {
             CustomCompanyOfferModelWithImage model = new ObjectMapper().readValue(offerModelString, CustomCompanyOfferModelWithImage.class);
@@ -188,7 +188,7 @@ public class CustomComapnyOfferController {
 
                 int res = repo.addOfferEdeitedWithImage(image, image2Url, image3Url, image4Url, model.getOffer_title(), model.getOffer_explaination(),
                         model.getOffer_cost(), model.getOffer_display_date(), model.getOffer_expired_date(), model.getOffer_deliver_date(),
-                        model.getCompany_id(), model.getOffer_count(), model.getCity(), model.getArea(), model.getLng(), model.getLat());
+                        model.getCompany_id(), model.getOffer_count(), model.getCity(), model.getArea(), model.getLng(), model.getLat(), flag_ar);
                 if (res == 1) {
                     ObjectNode objectNode = mapper.createObjectNode();
                     objectNode.put("status", 200);
@@ -233,9 +233,9 @@ public class CustomComapnyOfferController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ResponseEntity<getCustomeOffer2> getCompanyOffer(@PathVariable int id) {
+    public ResponseEntity<getCustomeOffer2> getCompanyOffers(@PathVariable int id, @RequestParam(value = "flag") int flag_ar) {
         if (repo.checkIfExist(id)) {
-            CustomCompanyModelWithViewAndDescRes model = repo.getCompanyOfferWithDesc(id);
+            CustomCompanyModelWithViewAndDescRes model = repo.getCompanyOfferWithDesc(id, flag_ar);
 
             return ResponseEntity.status(HttpStatus.OK).body(new getCustomeOffer2("200", model));
 
@@ -376,16 +376,16 @@ public class CustomComapnyOfferController {
 
     }
 
-    @GetMapping("/history/{companyId}")
+    @GetMapping("/history/{companyId}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public List<CompanyHistoryDto> getCompanyHistory(@PathVariable int companyId) {
-        return repo.getCompanyHistory(companyId);
+    public List<CompanyHistoryDto> getCompanyHistory(@PathVariable int companyId, @PathVariable int flag_ar) {
+        return repo.getCompanyHistory(companyId, flag_ar);
     }
 
-    @GetMapping("/history2/{companyId}")
+    @GetMapping("/history2/{companyId}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public List<CompanyHistoryDto2> getCompanyHistory2(@PathVariable int companyId) {
-        return repo.getCompanyHistory2(companyId);
+    public List<CompanyHistoryDto2> getCompanyHistory2(@PathVariable int companyId, @PathVariable int flag_ar) {
+        return repo.getCompanyHistory2(companyId, flag_ar);
     }
 
 

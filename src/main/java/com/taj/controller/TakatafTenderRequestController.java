@@ -41,7 +41,7 @@ public class TakatafTenderRequestController {
             objectNode.put("details", errors.getAllErrors().toString());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
         }
-        int res = repo.add$Request(model.getRequest_school_id(), model.getRequest_tender_id(), model.getIs_aproved(), model.getDate(), model.getCategory());
+        int res = repo.add$Request(model.getRequest_school_id(), model.getRequest_tender_id(), model.getIs_aproved(), model.getDate(), model.getCategory(), model.getFlag_ar());
         if (res == 1) {
             ObjectNode objectNode = mapper.createObjectNode();
             //objectNode.put("request_id", model.getRequest_id());

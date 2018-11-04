@@ -317,7 +317,7 @@ public class NewProfileRepo {
 
 
     public List<Map<String, Object>> getCompaniesProfilesObjectForAll2WithFilter(int school_id, String name, int cat,
-                                                                                 String area, String city, int view, int followed) {
+                                                                                 String area, String city, int view, int followed, int flag_ar) {
 
 
         int nameFlag = 0;
@@ -326,32 +326,62 @@ public class NewProfileRepo {
         int cityFlag = 0;
         int viewFlag = 0;
         int followedFlag = 0;
+        String cols = "";
+        if (flag_ar == 0) {
+            cols = "SELECT \n" +
+                    "    company_id,\n" +
+                    "    company_name,\n" +
+                    "    company_logo_image,\n" +
+                    "    company_address,\n" +
+                    "    company_link_youtube,\n" +
+                    "    company_website_url,\n" +
+                    "    company_lng,\n" +
+                    "    company_lat,\n" +
+                    "    company_cover_image,\n" +
+                    "    company_phone_number,\n" +
+                    "    COUNT(DISTINCT follow.follow_id) AS follower_count,\n" +
+                    "    COUNT(DISTINCT offer_id) AS order_count,\n" +
+                    "    company_desc,\n" +
+                    "    COUNT(id) AS category_num,\n" +
+                    " IFNULL( city_name, '' ) AS city,\n" +
+                    "\tIFNULL( area_name, '' ) AS area,\n" +
+                    "    lng,\n" +
+                    "    lat,\n" +
+                    "    category_id,\n" +
+                    "    category_name,\n" +
+                    "    IF(PROFILE.company_id = follow2.organization_id\n" +
+                    "            AND follow2.follower_id = ?,\n" +
+                    "        1,\n" +
+                    "        0) AS is_follow  ";
 
-        String cols = "SELECT \n" +
-                "    company_id,\n" +
-                "    company_name,\n" +
-                "    company_logo_image,\n" +
-                "    company_address,\n" +
-                "    company_link_youtube,\n" +
-                "    company_website_url,\n" +
-                "    company_lng,\n" +
-                "    company_lat,\n" +
-                "    company_cover_image,\n" +
-                "    company_phone_number,\n" +
-                "    COUNT(DISTINCT follow.follow_id) AS follower_count,\n" +
-                "    COUNT(DISTINCT offer_id) AS order_count,\n" +
-                "    company_desc,\n" +
-                "    COUNT(id) AS category_num,\n" +
-                "    city,\n" +
-                "    area,\n" +
-                "    lng,\n" +
-                "    lat,\n" +
-                "    category_id,\n" +
-                "    category_name,\n" +
-                "    IF(PROFILE.company_id = follow2.organization_id\n" +
-                "            AND follow2.follower_id = ?,\n" +
-                "        1,\n" +
-                "        0) AS is_follow  ";
+        } else {
+            cols = "SELECT \n" +
+                    "    company_id,\n" +
+                    "    company_name,\n" +
+                    "    company_logo_image,\n" +
+                    "    company_address,\n" +
+                    "    company_link_youtube,\n" +
+                    "    company_website_url,\n" +
+                    "    company_lng,\n" +
+                    "    company_lat,\n" +
+                    "    company_cover_image,\n" +
+                    "    company_phone_number,\n" +
+                    "    COUNT(DISTINCT follow.follow_id) AS follower_count,\n" +
+                    "    COUNT(DISTINCT offer_id) AS order_count,\n" +
+                    "    company_desc,\n" +
+                    "    COUNT(id) AS category_num,\n" +
+                    "IFNULL( city_name_ar, '' ) AS city,\n" +
+                    "\tIFNULL( area_name_ar, '' ) AS area,\n" +
+                    "    lng,\n" +
+                    "    lat,\n" +
+                    "    category_id,\n" +
+                    "    category_name_ar AS category_name ,\n" +
+                    "    IF(PROFILE.company_id = follow2.organization_id\n" +
+                    "            AND follow2.follower_id = ?,\n" +
+                    "        1,\n" +
+                    "        0) AS is_follow  ";
+
+        }
 
 
         String from = "FROM\n" +
@@ -369,6 +399,8 @@ public class NewProfileRepo {
         String join6 = "LEFT JOIN\n" +
                 "    efaz_organization_following AS follow2 ON PROFILE.company_id = follow2.organization_id\n" +
                 "        AND follow2.follower_id = ?";
+        String join7 = " LEFT JOIN area AS a ON pc.area = a.area_id " +
+                " LEFT JOIN city AS c ON pc.city = c.city_id ";
 
         String where = " WHERE  ";
 
@@ -391,9 +423,18 @@ public class NewProfileRepo {
 
         if (!(area.isEmpty() || area.equals(null) || area.equals(""))) {
             if (nameFlag != 0 || catFlag != 0) {
-                where = where + " AND area LIKE ? ";
+                if (flag_ar == 0) {
+                    where = where + " AND area_name LIKE ? ";
+                } else {
+                    where = where + " AND area_name_ar LIKE ? ";
+                }
+
             } else {
-                where = where + " area LIKE ? ";
+                if (flag_ar == 0) {
+                    where = where + "  area_name LIKE ? ";
+                } else {
+                    where = where + "  area_name_ar LIKE ? ";
+                }
             }
 
             areaFlag = 1;
@@ -401,9 +442,17 @@ public class NewProfileRepo {
 
         if (!(city.isEmpty() || city.equals(null) || city.equals(""))) {
             if (nameFlag != 0 || catFlag != 0 || areaFlag != 0) {
-                where = where + " AND city LIKE ? ";
+                if (flag_ar == 0) {
+                    where = where + " AND city_name LIKE ? ";
+                } else {
+                    where = where + " AND city_name_ar LIKE ? ";
+                }
             } else {
-                where = where + " city LIKE ? ";
+                if (flag_ar == 0) {
+                    where = where + "  city_name LIKE ? ";
+                } else {
+                    where = where + "  city_name_ar LIKE ? ";
+                }
             }
 
             cityFlag = 1;
@@ -436,16 +485,16 @@ public class NewProfileRepo {
 
         String sql = "";
         if (nameFlag == 1 || catFlag == 1 || areaFlag == 1 || cityFlag == 1 || viewFlag == 1 || followedFlag == 1) {
-            sql = sql + cols + from + join1 + close1 + join2 + close2 + join3 + close3 + join4 + join5 + join6 + where + groupBy;
+            sql = sql + cols + from + join1 + close1 + join2 + close2 + join3 + close3 + join4 + join5 + join6 + join7 + where + groupBy;
         } else {
-            sql = sql + cols + from + join1 + close1 + join2 + close2 + join3 + close3 + join4 + join5 + join6 + groupBy;
+            sql = sql + cols + from + join1 + close1 + join2 + close2 + join3 + close3 + join4 + join5 + join6 + join7 + groupBy;
         }
 
         List<Object> list = new ArrayList<>();
         list.add(school_id);
         list.add(school_id);
         if (nameFlag == 1) {
-            list.add("%"+name+"%");
+            list.add("%" + name + "%");
         }
         if (catFlag == 1) {
             list.add(cat);
@@ -463,7 +512,6 @@ public class NewProfileRepo {
 
 
         System.out.println(sql + "  " + obj.length);
-
 
 
         return jdbcTemplate.queryForList(sql, obj);
@@ -559,39 +607,83 @@ public class NewProfileRepo {
     }
 
 
-    public List<NewProfileDtoDTO> getProfile2(int profile) {
-        String sql = "SELECT\n" +
-                "\tcompany_id,\n" +
-                "\tcompany_name,\n" +
-                "\tcompany_logo_image,\n" +
-                "\tcompany_address,\n" +
-                "\tcompany_link_youtube,\n" +
-                "\tcompany_website_url,\n" +
-                "\tcompany_lng,\n" +
-                "\tcompany_lat,\n" +
-                "\tcompany_cover_image,\n" +
-                "\tcompany_phone_number,\n" +
-                "\tcount( DISTINCT follow_id ) AS follower_count,\n" +
-                "\tcount( DISTINCT offer_id ) AS order_count,\n" +
-                "\tcompany_desc,\n" +
-                "\tcompany_cat_id,\n" +
-                "\tcategory.category_name,\n" +
-                "\tcity,\n" +
-                "\tarea, pc.lng, pc.lat \n" +
-                "FROM\n" +
-                "\t(\n" +
-                "\t\t(\n" +
-                "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
-                "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
-                "\t\t)\n" +
-                "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id\n" +
-                "\t\tLEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
-                "\t\tINNER JOIN efaz_company_category AS category ON cats.company_cat_id = category.category_id \n" +
-                "\t) \n" +
-                "WHERE\n" +
-                "\tPROFILE.company_id = ? \n" +
-                "GROUP BY\n" +
-                "\tcats.company_cat_id;";
+    public List<NewProfileDtoDTO> getProfile2(int profile, int flag_ar) {
+
+        String sql = "";
+        if (flag_ar == 0) {
+            sql = "SELECT\n" +
+                    "\tcompany_id,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_address,\n" +
+                    "\tcompany_link_youtube,\n" +
+                    "\tcompany_website_url,\n" +
+                    "\tcompany_lng,\n" +
+                    "\tcompany_lat,\n" +
+                    "\tcompany_cover_image,\n" +
+                    "\tcompany_phone_number,\n" +
+                    "\tcount( DISTINCT follow_id ) AS follower_count,\n" +
+                    "\tcount( DISTINCT offer_id ) AS order_count,\n" +
+                    "\tcompany_desc,\n" +
+                    "\tcompany_cat_id,\n" +
+                    "\tcategory.category_name,\n" +
+                    "IFNULL( city_name, '' ) AS city,\n" +
+                    "\tIFNULL( area_name, '' ) AS area,\n" +
+                    " pc.lng, pc.lat \n" +
+                    "FROM\n" +
+                    "\t(\n" +
+                    "\t\t(\n" +
+                    "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                    "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
+                    "\t\t)\n" +
+                    "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id\n" +
+                    "\t\tLEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
+                    "\t\tINNER JOIN efaz_company_category AS category ON cats.company_cat_id = category.category_id \n" +
+                    " LEFT JOIN area AS a ON pc.area = a.area_id " +
+                    " LEFT JOIN city AS c ON pc.city = c.city_id " +
+                    "\t) \n" +
+                    "WHERE\n" +
+                    "\tPROFILE.company_id = ? \n" +
+                    "GROUP BY\n" +
+                    "\tcats.company_cat_id;";
+        } else {
+            sql = "SELECT\n" +
+                    "\tcompany_id,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_address,\n" +
+                    "\tcompany_link_youtube,\n" +
+                    "\tcompany_website_url,\n" +
+                    "\tcompany_lng,\n" +
+                    "\tcompany_lat,\n" +
+                    "\tcompany_cover_image,\n" +
+                    "\tcompany_phone_number,\n" +
+                    "\tcount( DISTINCT follow_id ) AS follower_count,\n" +
+                    "\tcount( DISTINCT offer_id ) AS order_count,\n" +
+                    "\tcompany_desc,\n" +
+                    "\tcompany_cat_id,\n" +
+                    "\tcategory.category_name_ar AS category_name ,\n" +
+                    " IFNULL( city_name_ar, '' ) AS city,\n" +
+                    "\tIFNULL( area_name_ar, '' ) AS area,\n" +
+                    " pc.lng, pc.lat \n" +
+                    "FROM\n" +
+                    "\t(\n" +
+                    "\t\t(\n" +
+                    "\t\t\t( efaz_company_profile AS PROFILE LEFT JOIN efaz_organization_following AS follow ON PROFILE.company_id = follow.follower_id )\n" +
+                    "\t\t\tLEFT JOIN efaz_company_offer AS offer ON PROFILE.company_id = offer.offer_company_id \n" +
+                    "\t\t)\n" +
+                    "\t\tLEFT JOIN efaz_company_profile_cats AS cats ON PROFILE.company_id = cats.company_profile_id\n" +
+                    "\t\tLEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id\n" +
+                    "\t\tINNER JOIN efaz_company_category AS category ON cats.company_cat_id = category.category_id \n" +
+                    " LEFT JOIN area AS a ON pc.area = a.area_id " +
+                    " LEFT JOIN city AS c ON pc.city = c.city_id " +
+                    "\t) \n" +
+                    "WHERE\n" +
+                    "\tPROFILE.company_id = ? \n" +
+                    "GROUP BY\n" +
+                    "\tcats.company_cat_id;";
+        }
+
         return jdbcTemplate.query(sql, new Object[]{profile},
                 (resultSet, i) -> new NewProfileDtoDTO(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3),
                         resultSet.getString(4), resultSet.getString(5), resultSet.getString(6),
@@ -604,19 +696,47 @@ public class NewProfileRepo {
     public int updateProfile(int companyId, String companyName, String companyLogoImage, String companyAddress,
                              String companyLinkYoutube, String companyWebsiteUrl, float schoolLng,
                              float schoolLat, String companyCoverImage, String companyPhoneNumber, String companyDesc,
-                             String city, String area, List<TakatfTenderCategoryPOJO> category) {
+                             String city, String area, List<TakatfTenderCategoryPOJO> category, int flag_ar) {
         jdbcTemplate.update("DELETE FROM efaz_company_profile_cats WHERE company_profile_id=?;", companyId);
 
         for (int i = 0; i < category.size(); i++) {
-            int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
-                    Integer.class, "%" + category.get(i).getCategory_name().trim() + "%");
+            if (flag_ar == 0) {
+                int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
+                        Integer.class, "%" + category.get(i).getCategory_name().trim() + "%");
 
-            jdbcTemplate.update("INSERT INTO efaz_company_profile_cats VALUES  (?,?,?)", null, companyId, categorys);
+                jdbcTemplate.update("INSERT INTO efaz_company_profile_cats VALUES  (?,?,?)", null, companyId, categorys);
+            } else {
+                int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name_ar LIKE ?;",
+                        Integer.class, "%" + category.get(i).getCategory_name().trim() + "%");
+
+                jdbcTemplate.update("INSERT INTO efaz_company_profile_cats VALUES  (?,?,?)", null, companyId, categorys);
+            }
+
+
         }
 
-        jdbcTemplate.update("update efaz_login set city=?," +
-                "area=?  " +
-                " where login_id=?;", city, area, companyId);
+        if (flag_ar == 0) {
+
+            int city_id = jdbcTemplate.queryForObject("SELECT city_id FROM city WHERE city_name LIKE ?;", Integer.class, city);
+            System.out.println("city " + city_id);
+            int area_id = jdbcTemplate.queryForObject("SELECT area_id FROM area WHERE area_name LIKE ?;", Integer.class, area);
+
+
+            jdbcTemplate.update("update efaz_login set city=?," +
+                    "area=?  " +
+                    " where login_id=?;", city_id, area_id, companyId);
+        } else {
+
+            int city_id = jdbcTemplate.queryForObject("SELECT city_id FROM city WHERE city_name_ar LIKE ?;", Integer.class, city);
+            System.out.println("city " + city_id);
+            int area_id = jdbcTemplate.queryForObject("SELECT area_id FROM area WHERE area_name_ar LIKE ?;", Integer.class, area);
+
+
+            jdbcTemplate.update("update efaz_login set city=?," +
+                    "area=?  " +
+                    " where login_id=?;", city_id, area_id, companyId);
+        }
+
 
         return jdbcTemplate.update("update efaz_company_profile set company_name=?," +
                         "company_logo_image=?, company_address=?," +
@@ -632,19 +752,46 @@ public class NewProfileRepo {
     public int updateProfile2(int companyId, String companyName, String companyLogoImage, String companyAddress,
                               String companyLinkYoutube, String companyWebsiteUrl, float schoolLng,
                               float schoolLat, String companyCoverImage, String companyPhoneNumber, String companyDesc,
-                              String city, String area, float lng, float lat, List<TakatfTenderCategoryPOJO> category) {
+                              String city, String area, float lng, float lat, List<TakatfTenderCategoryPOJO> category, int flag_ar) {
         jdbcTemplate.update("DELETE FROM efaz_company_profile_cats WHERE company_profile_id=?;", companyId);
 
         for (int i = 0; i < category.size(); i++) {
-            int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
-                    Integer.class, "%" + category.get(i).getCategory_name().trim() + "%");
+            if (flag_ar == 0) {
+                int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
+                        Integer.class, category.get(i).getCategory_name().trim());
 
-            jdbcTemplate.update("INSERT INTO efaz_company_profile_cats VALUES  (?,?,?)", null, companyId, categorys);
+                jdbcTemplate.update("INSERT INTO efaz_company_profile_cats VALUES  (?,?,?)", null, companyId, categorys);
+            } else {
+                int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name_ar LIKE ?;",
+                        Integer.class, category.get(i).getCategory_name().trim());
+
+                jdbcTemplate.update("INSERT INTO efaz_company_profile_cats VALUES  (?,?,?)", null, companyId, categorys);
+            }
+
         }
 
-        jdbcTemplate.update("update efaz_login set city=?," +
-                "area=?, lng=?, lat=?  " +
-                " where login_id=?;", city, area, lng, lat, companyId);
+        if (flag_ar == 0) {
+
+            int city_id = jdbcTemplate.queryForObject("SELECT city_id FROM city WHERE city_name LIKE ?;", Integer.class, city);
+            System.out.println("city " + city_id);
+            int area_id = jdbcTemplate.queryForObject("SELECT area_id FROM area WHERE area_name LIKE ?;", Integer.class, area);
+
+
+            jdbcTemplate.update("update efaz_login set city=?," +
+                    "area=?  " +
+                    " where login_id=?;", city_id, area_id, companyId);
+        } else {
+
+            int city_id = jdbcTemplate.queryForObject("SELECT city_id FROM city WHERE city_name_ar LIKE ?;", Integer.class, city);
+            System.out.println("city " + city_id);
+            int area_id = jdbcTemplate.queryForObject("SELECT area_id FROM area WHERE area_name_ar LIKE ?;", Integer.class, area);
+
+
+            jdbcTemplate.update("update efaz_login set city=?," +
+                    "area=?  " +
+                    " where login_id=?;", city_id, area_id, companyId);
+        }
+
 
         return jdbcTemplate.update("update efaz_company_profile set company_name=?," +
                         "company_logo_image=?, company_address=?," +
@@ -840,33 +987,60 @@ public class NewProfileRepo {
 
     //List<Map<String, Object>>
     public List<Map<String, Object>> getCompaniesProfilesObject2PaginationWithFilter(String name, int cat,
-                                                                                     String area, String city, int view) {
+                                                                                     String area, String city, int view, int flag_ar) {
 
         int nameFlag = 0;
         int catFlag = 0;
         int areaFlag = 0;
         int cityFlag = 0;
         int viewFlag = 0;
+        String cols = "";
+        if (flag_ar == 0) {
+            cols = "SELECT\n" +
+                    "\tcompany_id,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_address,\n" +
+                    "\tcompany_link_youtube,\n" +
+                    "\tcompany_website_url,\n" +
+                    "\tcompany_lng,\n" +
+                    "\tcompany_lat,\n" +
+                    "\tcompany_cover_image,\n" +
+                    "\tcompany_phone_number,\n" +
+                    "\tcount( DISTINCT follow_id ) AS follower_count,\n" +
+                    "\tcount( DISTINCT offer_id ) AS order_count,\n" +
+                    "\tcompany_desc,\n" +
+                    "\tCOUNT( DISTINCT id ) AS category_num,\n" +
+                    " IFNULL( city_name, '' ) AS city,\n " +
+                    " \tIFNULL( area_name, '' ) AS area,\n " +
+                    "lng, lat, \n" +
+                    "\tcategory_id,\n" +
+                    "\tcategory_name \n";
 
-        String cols = "SELECT\n" +
-                "\tcompany_id,\n" +
-                "\tcompany_name,\n" +
-                "\tcompany_logo_image,\n" +
-                "\tcompany_address,\n" +
-                "\tcompany_link_youtube,\n" +
-                "\tcompany_website_url,\n" +
-                "\tcompany_lng,\n" +
-                "\tcompany_lat,\n" +
-                "\tcompany_cover_image,\n" +
-                "\tcompany_phone_number,\n" +
-                "\tcount( DISTINCT follow_id ) AS follower_count,\n" +
-                "\tcount( DISTINCT offer_id ) AS order_count,\n" +
-                "\tcompany_desc,\n" +
-                "\tCOUNT( DISTINCT id ) AS category_num,\n" +
-                "\tcity,\n" +
-                "\tarea, lng, lat, \n" +
-                "\tcategory_id,\n" +
-                "\tcategory_name \n";
+        } else {
+            cols = "SELECT\n" +
+                    "\tcompany_id,\n" +
+                    "\tcompany_name,\n" +
+                    "\tcompany_logo_image,\n" +
+                    "\tcompany_address,\n" +
+                    "\tcompany_link_youtube,\n" +
+                    "\tcompany_website_url,\n" +
+                    "\tcompany_lng,\n" +
+                    "\tcompany_lat,\n" +
+                    "\tcompany_cover_image,\n" +
+                    "\tcompany_phone_number,\n" +
+                    "\tcount( DISTINCT follow_id ) AS follower_count,\n" +
+                    "\tcount( DISTINCT offer_id ) AS order_count,\n" +
+                    "\tcompany_desc,\n" +
+                    "\tCOUNT( DISTINCT id ) AS category_num,\n" +
+                    " IFNULL( city_name_ar, '' ) AS city,\n " +
+                    " \tIFNULL( area_name_ar, '' ) AS area,\n " +
+                    "lng, lat, \n" +
+                    "\tcategory_id,\n" +
+                    "\tcategory_name_ar AS category_name \n";
+
+        }
+
 
         String from = "FROM ((( efaz_company_profile AS PROFILE  ";
 
@@ -878,10 +1052,12 @@ public class NewProfileRepo {
         String close3 = " ) ";
         String join4 = " LEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id ";
         String join5 = " LEFT JOIN efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id ";
+        String join6 = " LEFT JOIN area AS a ON pc.area = a.area_id " +
+                " LEFT JOIN city AS c ON pc.city = c.city_id ";
 
-        String groupBy = "GROUP BY" +
+        String groupBy = " GROUP BY" +
                 "                PROFILE.company_id," +
-                "                ccat.category_id;";
+                "                ccat.category_id; ";
 
 
         String where = " WHERE ";
@@ -901,9 +1077,19 @@ public class NewProfileRepo {
 
         if (!(area.isEmpty() || area.equals(null) || area.equals(""))) {
             if (nameFlag != 0 || catFlag != 0) {
-                where = where + " AND area LIKE ? ";
+                if (flag_ar == 0) {
+                    where = where + " AND area_name LIKE ? ";
+                } else {
+                    where = where + " AND area_name_ar LIKE ? ";
+                }
             } else {
-                where = where + " area LIKE ? ";
+
+                if (flag_ar == 0) {
+                    where = where + "  area_name LIKE ? ";
+                } else {
+                    where = where + "  area_name_ar LIKE ? ";
+                }
+                //where = where + " area_name LIKE ? ";
             }
 
             areaFlag = 1;
@@ -911,9 +1097,17 @@ public class NewProfileRepo {
 
         if (!(city.isEmpty() || city.equals(null) || city.equals(""))) {
             if (nameFlag != 0 || catFlag != 0 || areaFlag != 0) {
-                where = where + " AND city LIKE ? ";
+                if (flag_ar == 0) {
+                    where = where + " AND city_name LIKE ? ";
+                } else {
+                    where = where + " AND city_name_ar LIKE ? ";
+                }
             } else {
-                where = where + " city LIKE ? ";
+                if (flag_ar == 0) {
+                    where = where + "  city_name LIKE ? ";
+                } else {
+                    where = where + "  city_name_ar LIKE ? ";
+                }
             }
 
             cityFlag = 1;
@@ -933,14 +1127,14 @@ public class NewProfileRepo {
 
         String sql = "";
         if (nameFlag == 1 || catFlag == 1 || areaFlag == 1 || cityFlag == 1 || viewFlag == 1) {
-            sql = sql + cols + from + join1 + close1 + join2 + close2 + join3 + close3 + join4 + join5 + where + groupBy;
+            sql = sql + cols + from + join1 + close1 + join2 + close2 + join3 + close3 + join4 + join5 + join6 + where + groupBy;
         } else {
-            sql = sql + cols + from + join1 + close1 + join2 + close2 + join3 + close3 + join4 + join5 + groupBy;
+            sql = sql + cols + from + join1 + close1 + join2 + close2 + join3 + close3 + join4 + join5 + join6 + groupBy;
         }
 
         List<Object> list = new ArrayList<>();
         if (nameFlag == 1) {
-            list.add("%"+name+"%");
+            list.add("%" + name + "%");
         }
         if (catFlag == 1) {
             list.add(cat);
@@ -966,7 +1160,7 @@ public class NewProfileRepo {
 
 
     public List<Map<String, Object>> getCompaniesProfilesObject2Pagination2WithFilter(int id, String name, int cat,
-                                                                                      String area, String city, int view) {
+                                                                                      String area, String city, int view, int flag_ar) {
 
         int nameFlag = 0;
         int catFlag = 0;
@@ -974,27 +1168,53 @@ public class NewProfileRepo {
         int cityFlag = 0;
         int viewFlag = 0;
 
-        String cols = "SELECT \n" +
-                "    company_id,\n" +
-                "    company_name,\n" +
-                "    company_logo_image,\n" +
-                "    company_address,\n" +
-                "    company_link_youtube,\n" +
-                "    company_website_url,\n" +
-                "    company_lng,\n" +
-                "    company_lat,\n" +
-                "    company_cover_image,\n" +
-                "    company_phone_number,\n" +
-                "    COUNT(DISTINCT follow_id) AS follower_count,\n" +
-                "    COUNT(DISTINCT offer_id) AS order_count,\n" +
-                "    company_desc,\n" +
-                "    COUNT(DISTINCT id) AS category_num,\n" +
-                "    city,\n" +
-                "    area,\n" +
-                "    lng,\n" +
-                "    lat,\n" +
-                "    category_id,\n" +
-                "    category_name ";
+        String cols = "";
+        if (flag_ar == 0) {
+            cols = "SELECT \n" +
+                    "    company_id,\n" +
+                    "    company_name,\n" +
+                    "    company_logo_image,\n" +
+                    "    company_address,\n" +
+                    "    company_link_youtube,\n" +
+                    "    company_website_url,\n" +
+                    "    company_lng,\n" +
+                    "    company_lat,\n" +
+                    "    company_cover_image,\n" +
+                    "    company_phone_number,\n" +
+                    "    COUNT(DISTINCT follow_id) AS follower_count,\n" +
+                    "    COUNT(DISTINCT offer_id) AS order_count,\n" +
+                    "    company_desc,\n" +
+                    "    COUNT(DISTINCT id) AS category_num,\n" +
+                    " IFNULL( city_name, '' ) AS city,\n" +
+                    "\tIFNULL( area_name, '' ) AS area,\n" +
+                    "    lng,\n" +
+                    "    lat,\n" +
+                    "    category_id,\n" +
+                    "    category_name ";
+        } else {
+            cols = "SELECT \n" +
+                    "    company_id,\n" +
+                    "    company_name,\n" +
+                    "    company_logo_image,\n" +
+                    "    company_address,\n" +
+                    "    company_link_youtube,\n" +
+                    "    company_website_url,\n" +
+                    "    company_lng,\n" +
+                    "    company_lat,\n" +
+                    "    company_cover_image,\n" +
+                    "    company_phone_number,\n" +
+                    "    COUNT(DISTINCT follow_id) AS follower_count,\n" +
+                    "    COUNT(DISTINCT offer_id) AS order_count,\n" +
+                    "    company_desc,\n" +
+                    "    COUNT(DISTINCT id) AS category_num,\n" +
+                    " IFNULL( city_name_ar, '' ) AS city,\n" +
+                    "\tIFNULL( area_name_ar, '' ) AS area,\n" +
+                    "    lng,\n" +
+                    "    lat,\n" +
+                    "    category_id,\n" +
+                    "    category_name_ar As category_name ";
+        }
+
 
         String from = "  FROM\n " +
                 "    (((efaz_company_profile AS PROFILE ";
@@ -1007,6 +1227,8 @@ public class NewProfileRepo {
         String close3 = " ) ";
         String join4 = " LEFT JOIN efaz_login AS pc ON PROFILE.company_id = pc.login_id ";
         String join5 = " LEFT JOIN efaz_company_category AS ccat ON cats.company_cat_id = ccat.category_id ";
+        String join6 = " LEFT JOIN area AS a ON pc.area = a.area_id " +
+                " LEFT JOIN city AS c ON pc.city = c.city_id ";
 
         String groupBy = " GROUP BY" +
                 "                PROFILE.company_id, " +
@@ -1031,9 +1253,17 @@ public class NewProfileRepo {
 
         if (!(area.isEmpty() || area.equals(null) || area.equals(""))) {
             if (nameFlag != 0 || catFlag != 0) {
-                where = where + " AND area LIKE ? ";
+                if (flag_ar == 0) {
+                    where = where + " AND area_name LIKE ? ";
+                } else {
+                    where = where + " AND area_name_ar LIKE ? ";
+                }
             } else {
-                where = where + " AND area LIKE ? ";
+                if (flag_ar == 0) {
+                    where = where + " AND area_name LIKE ? ";
+                } else {
+                    where = where + " AND area_name_ar LIKE ? ";
+                }
             }
 
             areaFlag = 1;
@@ -1041,9 +1271,17 @@ public class NewProfileRepo {
 
         if (!(city.isEmpty() || city.equals(null) || city.equals(""))) {
             if (nameFlag != 0 || catFlag != 0 || areaFlag != 0) {
-                where = where + " AND city LIKE ? ";
+                if (flag_ar == 0) {
+                    where = where + " AND city_name LIKE ? ";
+                } else {
+                    where = where + " AND city_name_ar LIKE ? ";
+                }
             } else {
-                where = where + " AND city LIKE ? ";
+                if (flag_ar == 0) {
+                    where = where + " AND city_name LIKE ? ";
+                } else {
+                    where = where + " AND city_name_ar LIKE ? ";
+                }
             }
 
             cityFlag = 1;
@@ -1063,15 +1301,15 @@ public class NewProfileRepo {
 
         String sql = "";
         if (nameFlag == 1 || catFlag == 1 || areaFlag == 1 || cityFlag == 1 || viewFlag == 1) {
-            sql = sql + cols + from + join1 + close1 + join2 + close2 + join3 + close3 + join4 + join5 + where + groupBy;
+            sql = sql + cols + from + join1 + close1 + join2 + close2 + join3 + close3 + join4 + join5 + join6 + where + groupBy;
         } else {
-            sql = sql + cols + from + join1 + close1 + join2 + close2 + join3 + close3 + join4 + join5 + where + groupBy;
+            sql = sql + cols + from + join1 + close1 + join2 + close2 + join3 + close3 + join4 + join5 + join6 + where + groupBy;
         }
 
         List<Object> list = new ArrayList<>();
         list.add(id);
         if (nameFlag == 1) {
-            list.add("%"+name+"%");
+            list.add("%" + name + "%");
         }
         if (catFlag == 1) {
             list.add(cat);
@@ -1097,7 +1335,7 @@ public class NewProfileRepo {
     public List<Map<String, Object>> getCompaniesProfilesObject2Pagination2(int id, int flag_ar) {
 
         String sql = "";
-        if ( flag_ar == 0){
+        if (flag_ar == 0) {
             sql = "SELECT\n" +
                     "\tcompany_id,\n" +
                     "\tcompany_name,\n" +
@@ -1113,8 +1351,10 @@ public class NewProfileRepo {
                     "\tcount( DISTINCT offer_id ) AS order_count,\n" +
                     "\tcompany_desc,\n" +
                     "\tCOUNT( DISTINCT id ) AS category_num,\n" +
-                    "\tcity_name,\n" +
-                    "\tarea_name, lng, lat, \n" +
+                    "IFNULL( city_name, '' ) AS city,\n" +
+                    "\tIFNULL( area_name, '' ) AS area,\n" +
+                    "\tIFNULL( lng, 0 ) AS lng,\n" +
+                    "\tIFNULL( lat, 0 ) AS lat," +
                     "\tcategory_id,\n" +
                     "\tcategory_name \n" +
                     "FROM\n" +
@@ -1133,7 +1373,7 @@ public class NewProfileRepo {
                     "GROUP BY\n" +
                     "\tPROFILE.company_id,\n" +
                     "\tccat.category_id;";
-        }else {
+        } else {
             sql = "SELECT\n" +
                     "\tcompany_id,\n" +
                     "\tcompany_name,\n" +
@@ -1149,10 +1389,12 @@ public class NewProfileRepo {
                     "\tcount( DISTINCT offer_id ) AS order_count,\n" +
                     "\tcompany_desc,\n" +
                     "\tCOUNT( DISTINCT id ) AS category_num,\n" +
-                    "\tcity_name_ar AS city_name,\n" +
-                    "\tarea_name_ar AS area_name, lng, lat, \n" +
+                    " IFNULL( city_name_ar, '' ) AS city,\n" +
+                    "\tIFNULL( area_name_ar, '' ) AS area,\n" +
+                    "\tIFNULL( lng, 0 ) AS lng,\n" +
+                    "\tIFNULL( lat, 0 ) AS lat, " +
                     "\tcategory_id,\n" +
-                    "\tcategory_name \n" +
+                    "\tcategory_name_ar AS category_name \n" +
                     "FROM\n" +
                     "\t(\n" +
                     "\t\t(\n" +
@@ -1170,7 +1412,6 @@ public class NewProfileRepo {
                     "\tPROFILE.company_id,\n" +
                     "\tccat.category_id;";
         }
-
 
 
         return jdbcTemplate.queryForList(sql, id);

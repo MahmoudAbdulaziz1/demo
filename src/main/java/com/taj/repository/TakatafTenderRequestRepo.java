@@ -18,7 +18,7 @@ public class TakatafTenderRequestRepo {
     JdbcTemplate jdbcTemplate;
 
 
-    public int add$Request(int request_school_id, int request_tender_id, int is_aproved, long date, List<Takataf_schoolApplayCollectiveTender> category) {
+    public int add$Request(int request_school_id, int request_tender_id, int is_aproved, long date, List<Takataf_schoolApplayCollectiveTender> category, int flag_ar) {
         int res = 0;
         boolean isInserted = false;
         if (!(isExistApp(request_school_id, request_tender_id))) {
@@ -27,10 +27,18 @@ public class TakatafTenderRequestRepo {
                         , new Timestamp(System.currentTimeMillis()));
                 if (insertRes == 1) {
                     for (int i = 0; i < category.size(); i++) {
-                        int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
-                                Integer.class, "%" + category.get(i).getCat_name().trim() + "%");
-                        res = jdbcTemplate.update("INSERT INTO takataf_request_cat_count VALUES (?,?,?,?,?)", null, categorys, request_school_id,
-                                request_tender_id, category.get(i).getCount());
+                        if (flag_ar == 0){
+                            int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
+                                    Integer.class, "%" + category.get(i).getCat_name().trim() + "%");
+                            res = jdbcTemplate.update("INSERT INTO takataf_request_cat_count VALUES (?,?,?,?,?)", null, categorys, request_school_id,
+                                    request_tender_id, category.get(i).getCount());
+                        }else {
+                            int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name_ar LIKE ?;",
+                                    Integer.class,  category.get(i).getCat_name().trim() );
+                            res = jdbcTemplate.update("INSERT INTO takataf_request_cat_count VALUES (?,?,?,?,?)", null, categorys, request_school_id,
+                                    request_tender_id, category.get(i).getCount());
+                        }
+
                     }
                     isInserted = true;
                 }
@@ -40,10 +48,18 @@ public class TakatafTenderRequestRepo {
             return res;
         } else {
             for (int i = 0; i < category.size(); i++) {
-                int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
-                        Integer.class, "%" + category.get(i).getCat_name().trim() + "%");
-                res = jdbcTemplate.update("UPDATE takataf_request_cat_count SET count=? WHERE cat_id=? AND scool_id=? AND tend_id=?", category.get(i).getCount(),
-                        categorys, request_school_id, request_tender_id);
+                if (flag_ar == 0){
+                    int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
+                            Integer.class,  category.get(i).getCat_name().trim() );
+                    res = jdbcTemplate.update("UPDATE takataf_request_cat_count SET count=? WHERE cat_id=? AND scool_id=? AND tend_id=?", category.get(i).getCount(),
+                            categorys, request_school_id, request_tender_id);
+                }else {
+                    int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name_ar LIKE ?;",
+                            Integer.class,  category.get(i).getCat_name().trim() );
+                    res = jdbcTemplate.update("UPDATE takataf_request_cat_count SET count=? WHERE cat_id=? AND scool_id=? AND tend_id=?", category.get(i).getCount(),
+                            categorys, request_school_id, request_tender_id);
+                }
+
             }
 
             return res;

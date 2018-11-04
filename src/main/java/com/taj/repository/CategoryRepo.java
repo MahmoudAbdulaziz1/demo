@@ -21,7 +21,7 @@ public class CategoryRepo {
         if (flag_ar == 0){
             sql = "SELECT category_id, category_name FROM efaz_company_category;";
         }else {
-            sql = "SELECT category_id, category_name_ar AS category_naem FROM efaz_company_category;";
+            sql = "SELECT category_id, category_name_ar AS category_name FROM efaz_company_category;";
         }
         return jdbcTemplate.query(sql,
                 (resultSet, i) -> new CategoryModelEnglish(resultSet.getInt(1), resultSet.getString(2)));

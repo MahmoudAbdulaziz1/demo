@@ -36,7 +36,8 @@ public class SchoolProfileRepo {
                                 String school_service_desc, String school_link_youtube, String school_website_url, float school_lng,
                                 float school_lat, String school_cover_image, String school_phone_number) {
         return jdbcTemplate.update("INSERT INTO efaz_school_profile VALUES (?,?,?,?,?,?,?,?,?,?,?)", school_id, school_name,
-                school_logo_image, school_address, school_service_desc, school_link_youtube, school_website_url, school_lng, school_lat, school_cover_image, school_phone_number);
+                school_logo_image, school_address, school_service_desc, school_link_youtube, school_website_url, school_lng, school_lat,
+                school_cover_image, school_phone_number);
     }
 
 

@@ -224,12 +224,12 @@ public class NoTokenController {
     }
 
 
-    @PostMapping("company/profil/s/all/pages/{page}/{pageSize}")
+    @PostMapping("company/profil/s/all/pages/{page}/{pageSize}/{flag_ar}")
     public CompanyProfileDtoThreeDTOPaginate getCompaniesProfilesObject2PaginationWithFilter(@PathVariable int page, @PathVariable int pageSize,
-                                                                                             @RequestBody Filter2Model filter) {
+                                                                                             @RequestBody Filter2Model filter, @PathVariable int flag_ar) {
         Map<CompanyProfileDtoTwoDTO, List<CompanyProfileDtoOne>> res = new HashMap<>();
         List<Map<String, Object>> list = companyProfilerRepo.getCompaniesProfilesObject2PaginationWithFilter(filter.getName(),
-                filter.getCat(), filter.getArea(), filter.getCity(), filter.getView());
+                filter.getCat(), filter.getArea(), filter.getCity(), filter.getView(), flag_ar);
         List<CompanyProfileDtoTwoDTO> schoolsList = new ArrayList<>();
         Set<CompanyProfileDtoTwoDTO> schools = new HashSet<>();
         List<CompanyProfileDtoOne> test2Models = new ArrayList<>();

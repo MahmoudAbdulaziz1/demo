@@ -50,6 +50,7 @@ import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -68,6 +69,7 @@ public class DasboardsAPIControll {
     private static final String FAILED = "failed";
     private final Path rootLocation = Paths.get("upload-dir");
     private final Path schoolRootLocation = Paths.get("upload-dir");
+    private final Path schoolCoverRootLocation = Paths.get("upload-dir");
     private final Path takatafRootLocation = Paths.get("upload-dir");
 
     @Autowired
@@ -481,7 +483,6 @@ public class DasboardsAPIControll {
                     ArrayNode nodes = mapper.createArrayNode();
 
 
-
                     if (model.getFlag_ar() == 0) {
                         List<CategoriesInUse> data = repo.getCategoriesInUse();
                         for (int i = 0; i < data.size(); i++) {
@@ -505,8 +506,6 @@ public class DasboardsAPIControll {
                         objectNode.set("cats", nodes);
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
                     }
-
-
 
 
                 } else {
@@ -644,15 +643,47 @@ public class DasboardsAPIControll {
 //
 
     @PreAuthorize("hasAuthority('admin')")
-    @GetMapping("register/get/{id}")
-    public RegistrationModel getUser(@PathVariable int id) {
-        return registrationRepo.getUser(id);
+    @GetMapping("register/get/{id}/{flag_ar}")
+    public ResponseEntity<ObjectNode> getUser(@PathVariable int id, @PathVariable int flag_ar) {
+        ObjectNode objectNode = mapper.createObjectNode();
+        RegistrationModel model = null ;
+        try {
+            model = registrationRepo.getUser(id);
+        } catch (Exception e) {
+            objectNode.put("message", "not date to this id");
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
+        }
+
+        objectNode.put("registration_id", model.getRegistration_id());
+        objectNode.put("registeration_email", model.getRegisteration_email());
+        objectNode.put("registeration_password", model.getRegisteration_password());
+        objectNode.put("registeration_username", model.getRegisteration_username());
+        objectNode.put("registeration_phone_number", model.getRegisteration_phone_number());
+        objectNode.put("registration_organization_name", model.getRegistration_organization_name());
+        objectNode.put("registration_address_desc", model.getRegistration_address_desc());
+        objectNode.put("registration_website_url", model.getRegistration_website_url());
+        objectNode.put("registration_isActive", model.getRegistration_isActive());
+        if (flag_ar == 0) {
+            objectNode.put("registration_role",model.getRegistration_role());
+        } else {
+            if (model.getRegistration_role().equals("school")){
+                objectNode.put("registration_role", "مدرسة");
+
+            }else if (model.getRegistration_role().equals("company")) {
+                objectNode.put("registration_role", "شركة");
+
+            }
+        }
+        objectNode.put("registeration_date", model.getRegisteration_date());
+
+        return ResponseEntity.status(HttpStatus.OK).body(objectNode);
     }
 
     @PreAuthorize("hasAuthority('admin')")
     @GetMapping("register/get/address/{id}")
     public NewRegisterModel getUserWithAddresData(@PathVariable int id, int flag_ar) {
-        return newRegisterRepo.getUser(id,flag_ar);
+        return newRegisterRepo.getUser(id, flag_ar);
     }
 
     @PreAuthorize("hasAuthority('admin') OR hasAuthority('school')")
@@ -1010,9 +1041,9 @@ public class DasboardsAPIControll {
     }
 
     @PreAuthorize("hasAuthority('admin')")
-    @GetMapping("register/getInActive/archived/page/{page}/{pageSize}")
-    public NewRegisterModelPagination getInActiveCompaniesArchivedPagination(@PathVariable int page, @PathVariable int pageSize) {
-        return newRegisterRepo.getInActiveCompaniesArchived(page, pageSize);
+    @GetMapping("register/getInActive/archived/page/{page}/{pageSize}/{flag_ar}")
+    public NewRegisterModelPagination getInActiveCompaniesArchivedPagination(@PathVariable int page, @PathVariable int pageSize, @PathVariable int flag_ar) {
+        return newRegisterRepo.getInActiveCompaniesArchived(page, pageSize, flag_ar);
     }
 
     @PreAuthorize("hasAuthority('admin')")
@@ -1022,9 +1053,9 @@ public class DasboardsAPIControll {
     }
 
     @PreAuthorize("hasAuthority('admin')")
-    @GetMapping("register/getInActive/consider/page/{page}/{pageSize}")
-    public NewRegisterModelPagination getInActiveCompaniesConsideratePagination(@PathVariable int page, @PathVariable int pageSize) {
-        return newRegisterRepo.getInActiveCompaniesConsideratePaginations(page, pageSize);
+    @GetMapping("register/getInActive/consider/page/{page}/{pageSize}/{flag_ar}")
+    public NewRegisterModelPagination getInActiveCompaniesConsideratePagination(@PathVariable int page, @PathVariable int pageSize, @PathVariable int flag_ar) {
+        return newRegisterRepo.getInActiveCompaniesConsideratePaginations(page, pageSize, flag_ar);
     }
 
     @PreAuthorize("hasAuthority('admin')")
@@ -1564,13 +1595,13 @@ public class DasboardsAPIControll {
 
     }
 
-    @GetMapping("school/profil/{id}")
+    @GetMapping("school/profil/{id}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ResponseEntity<ObjectNode> getProfile(@PathVariable int id) {
+    public ResponseEntity<ObjectNode> getProfile(@PathVariable int id, @PathVariable int flag_ar) {
 
 
         if (repo.isExist(id)) {
-            NewSchoolProfileModel model = newSchoolProfileRepo.getSchoolProfile(id);
+            NewSchoolProfileModel model = newSchoolProfileRepo.getSchoolProfile(id, flag_ar);
             ObjectNode node = mapper.createObjectNode();
             node.put("school_id", model.getSchool_id());
             node.put("school_name", model.getSchool_name());
@@ -1597,13 +1628,13 @@ public class DasboardsAPIControll {
     }
 
 
-    @GetMapping("school/profil/s/{id}")
+    @GetMapping("school/profil/s/{id}/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ResponseEntity<ObjectNode> getProfile2(@PathVariable int id) {
+    public ResponseEntity<ObjectNode> getProfile2(@PathVariable int id, @PathVariable int flag_ar) {
 
 
         if (repo.isExist(id)) {
-            NewSchoolProfileModelDTO model = newSchoolProfileRepo.getSchoolProfile2(id);
+            NewSchoolProfileModelDTO model = newSchoolProfileRepo.getSchoolProfile2(id, flag_ar);
             ObjectNode node = mapper.createObjectNode();
             node.put("school_id", model.getSchool_id());
             node.put("school_name", model.getSchool_name());
@@ -1633,16 +1664,16 @@ public class DasboardsAPIControll {
 
 
     @PreAuthorize("hasAuthority('school') or hasAuthority('admin')")
-    @GetMapping("/school/profil/get/{id}")
-    public NewCustomSchoolProfileModelDTO getProfileForAdmin2(@PathVariable int id) {
-        return newSchoolProfileRepo.getSchoolProfileForAdmin2(id);
+    @GetMapping("/school/profil/get/{id}/{flag_ar}")
+    public NewCustomSchoolProfileModelDTO getProfileForAdmin2(@PathVariable int id, @PathVariable int flag_ar) {
+        return newSchoolProfileRepo.getSchoolProfileForAdmin2(id, flag_ar);
     }
 
     @PreAuthorize("hasAuthority('school')")
-    @PutMapping("/school/profil/update")
+    @PutMapping("/school/profil/update/{flag_ar}")
     public ResponseEntity<ObjectNode> updateProfileForAdmin2(@RequestParam(value = "logo", required = false) MultipartFile logo,
                                                              @RequestParam(value = "cover", required = false) MultipartFile cover,
-                                                             @RequestPart String newSchoolProfileModelDTOString, Errors errors) {
+                                                             @RequestPart String newSchoolProfileModelDTOString, Errors errors, @PathVariable int flag_ar) {
 
         try {
             UpdateSchoolProfilModel model = new ObjectMapper().readValue(newSchoolProfileModelDTOString, UpdateSchoolProfilModel.class);
@@ -1678,7 +1709,7 @@ public class DasboardsAPIControll {
                     int res = newSchoolProfileRepo.updateProfileForAdmin2(model.getSchool_id(), model.getSchool_name(), model.getSchool_logo_image(),
                             model.getSchool_address(), model.getSchool_service_desc(), model.getSchool_link_youtube(),
                             model.getSchool_website_url(), model.getSchool_cover_image(), model.getSchool_phone_number(), model.getCity(), model.getArea(),
-                            model.getLng(), model.getLat());
+                            model.getLng(), model.getLat(), flag_ar);
 
                     if (res == 1) {
                         ObjectNode objectNode = mapper.createObjectNode();
@@ -1708,7 +1739,7 @@ public class DasboardsAPIControll {
                     int res = newSchoolProfileRepo.updateProfileForAdmin2(model.getSchool_id(), model.getSchool_name(), model.getSchool_logo_image(),
                             model.getSchool_address(), model.getSchool_service_desc(), model.getSchool_link_youtube(),
                             model.getSchool_website_url(), coverUrl, model.getSchool_phone_number(), model.getCity(), model.getArea(),
-                            model.getLng(), model.getLat());
+                            model.getLng(), model.getLat(), flag_ar);
 
                     if (res == 1) {
                         ObjectNode objectNode = mapper.createObjectNode();
@@ -1745,7 +1776,7 @@ public class DasboardsAPIControll {
                     int res = newSchoolProfileRepo.updateProfileForAdmin2(model.getSchool_id(), model.getSchool_name(), model.getSchool_logo_image(),
                             model.getSchool_address(), model.getSchool_service_desc(), model.getSchool_link_youtube(),
                             model.getSchool_website_url(), model.getSchool_cover_image(), model.getSchool_phone_number(), model.getCity(), model.getArea(),
-                            model.getLng(), model.getLat());
+                            model.getLng(), model.getLat(), flag_ar);
 
                     if (res == 1) {
                         ObjectNode objectNode = mapper.createObjectNode();
@@ -1775,7 +1806,7 @@ public class DasboardsAPIControll {
                     int res = newSchoolProfileRepo.updateProfileForAdmin2(model.getSchool_id(), model.getSchool_name(), logoUrl,
                             model.getSchool_address(), model.getSchool_service_desc(), model.getSchool_link_youtube(),
                             model.getSchool_website_url(), model.getSchool_cover_image(), model.getSchool_phone_number(), model.getCity(), model.getArea(),
-                            model.getLng(), model.getLat());
+                            model.getLng(), model.getLat(), flag_ar);
 
                     if (res == 1) {
                         ObjectNode objectNode = mapper.createObjectNode();
@@ -1806,7 +1837,7 @@ public class DasboardsAPIControll {
                 int res = newSchoolProfileRepo.updateProfileForAdmin2(model.getSchool_id(), model.getSchool_name(), logoUrl,
                         model.getSchool_address(), model.getSchool_service_desc(), model.getSchool_link_youtube(),
                         model.getSchool_website_url(), coverUrl, model.getSchool_phone_number(), model.getCity(), model.getArea(),
-                        model.getLng(), model.getLat());
+                        model.getLng(), model.getLat(), flag_ar);
 
                 if (res == 1) {
                     ObjectNode objectNode = mapper.createObjectNode();
@@ -1857,16 +1888,25 @@ public class DasboardsAPIControll {
                 ObjectNode objectNode = mapper.createObjectNode();
                 objectNode.put("state", 400);
                 objectNode.put("message", "Validation Failed");
-                objectNode.put("details", errors.getAllErrors().toString());
+                //objectNode.put("details", errors.getAllErrors().toString());
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
             }
             if (schoolProfileRepo.isExistInLogin(model.getSchool_id(), "school")) {
 
-                if (!repo.isExist(model.getSchool_id())) {
+                System.out.println("test1  : "+  schoolProfileRepo.isExistInLogin(model.getSchool_id(), "school"));
+
+                System.out.println("testxxxx2  : "+  !(schoolProfileRepo.isExist(model.getSchool_id())));
+
+                if (!(schoolProfileRepo.isExist(model.getSchool_id()))) {
+                    System.out.println("testxxxx  : "+  !(schoolProfileRepo.isExist(model.getSchool_id())));
 
 
                     String logoUrl = imageUrl(logo, schoolRootLocation);
+                    System.out.println("test2  : "+  !(schoolProfileRepo.isExist(model.getSchool_id())));
+                    TimeUnit.MILLISECONDS.sleep(11);
                     String coverUrl = imageUrl(cover, schoolRootLocation);
+
+                    System.out.println("test3  : "+ model.getSchool_name());
 
 
                     int res = schoolProfileRepo.addSchoolProfile(model.getSchool_id(), model.getSchool_name(), logoUrl,
@@ -2090,14 +2130,14 @@ public class DasboardsAPIControll {
 
     @PreAuthorize("hasAuthority('school')")
     @GetMapping("/school/tenders/school/{id}/{flag_ar}")
-    public List<SchoolRequestNewDto2Model> getSchoolRequestsBySchool(@PathVariable int id,@PathVariable int flag_ar) {
+    public List<SchoolRequestNewDto2Model> getSchoolRequestsBySchool(@PathVariable int id, @PathVariable int flag_ar) {
         return schoolRequestNewRepo.getRequestsBySchoolID(id, flag_ar);
     }
 
     @PreAuthorize("hasAuthority('school')")
     @GetMapping("/school/tenders/school/{id}/page/{page}/{pageSize}/{flag_ar}")
     public SchoolRequestNewDto2ModelPagination getSchoolRequestsBySchool(@PathVariable int id,
-                                                                         @PathVariable int page, @PathVariable int pageSize,@PathVariable int flag_ar) {
+                                                                         @PathVariable int page, @PathVariable int pageSize, @PathVariable int flag_ar) {
         return schoolRequestNewRepo.getRequestsBySchoolIDPagination(id, page, pageSize, flag_ar);
     }
 
@@ -2419,7 +2459,7 @@ public class DasboardsAPIControll {
         return schoolRequestRepo.getApprovedSchoolRequestsPagination(id, page, pageSize);
     }
 
-    @PreAuthorize("hasAuthority('school')")
+    @PreAuthorize("hasAuthority('school') or hasAuthority('admin')")
     @GetMapping("/school/requests/get/history/desc2/{id}")
     //@PreAuthorize("hasAuthority('school') or hasAuthority('admin')")
     public List<SchoolRequestHistoryDtoDTO2> getSchoolHistoryRequestBySchoolIdWithDesc2(@PathVariable int id) {
@@ -2427,22 +2467,22 @@ public class DasboardsAPIControll {
     }
 
     @PreAuthorize("hasAuthority('company')")
-    @GetMapping("/company/offer/history/{companyId}")
-    public List<CompanyHistoryDto> getCompanyHistory(@PathVariable int companyId) {
-        return customCompanyOfferRepo.getCompanyHistory(companyId);
+    @GetMapping("/company/offer/history/{companyId}/{flag_ar}")
+    public List<CompanyHistoryDto> getCompanyHistory(@PathVariable int companyId, @PathVariable int flag_ar) {
+        return customCompanyOfferRepo.getCompanyHistory(companyId,flag_ar);
     }
 
-    @PreAuthorize("hasAuthority('company')")
-    @GetMapping("/company/offer/history/{companyId}/page/{page}/{pageSize}")
+    @PreAuthorize("hasAuthority('company') or hasAuthority('admin') or hasAuthority('school')")
+    @GetMapping("/company/offer/history/{companyId}/page/{page}/{pageSize}/{flag_ar}")
     public CompanyHistoryDtoPaginatin getCompanyHistoryPagination(@PathVariable int companyId,
-                                                                  @PathVariable int page, @PathVariable int pageSize) {
-        return customCompanyOfferRepo.getCompanyHistoryPagination(companyId, page, pageSize);
+                                                                  @PathVariable int page, @PathVariable int pageSize, @PathVariable int flag_ar) {
+        return customCompanyOfferRepo.getCompanyHistoryPagination(companyId, page, pageSize, flag_ar);
     }
 
-    @PreAuthorize("hasAuthority('company')")
-    @GetMapping("/company/offer/history2/{companyId}")
-    public List<CompanyHistoryDto2> getCompanyHistory2(@PathVariable int companyId) {
-        return customCompanyOfferRepo.getCompanyHistory2(companyId);
+    @PreAuthorize("hasAuthority('company') or hasAuthority('admin') or hasAuthority('school')")
+    @GetMapping("/company/offer/history2/{companyId}/{flag_ar}")
+    public List<CompanyHistoryDto2> getCompanyHistory2(@PathVariable int companyId, @PathVariable int flag_ar) {
+        return customCompanyOfferRepo.getCompanyHistory2(companyId, flag_ar);
     }
 
     @PreAuthorize("hasAuthority('school')")
@@ -2473,7 +2513,7 @@ public class DasboardsAPIControll {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
         }
         int res = takatafTenderRequestRepo.add$Request(model.getRequest_school_id(), model.getRequest_tender_id(),
-                model.getIs_aproved(), model.getDate(), model.getCategory());
+                model.getIs_aproved(), model.getDate(), model.getCategory(), model.getFlag_ar());
         if (res == 1) {
             ObjectNode objectNode = mapper.createObjectNode();
             //objectNode.put("request_id", model.getRequest_id());
@@ -2553,12 +2593,12 @@ public class DasboardsAPIControll {
     }
 
     @PreAuthorize("hasAuthority('company')")
-    @PostMapping("/company/offer/")
+    @PostMapping("/company/offer/{flag_ar}")
     public ResponseEntity<ObjectNode> addCompanyOffers(@RequestParam("image1") MultipartFile image1,
                                                        @RequestParam(value = "image2", required = false) MultipartFile image2,
                                                        @RequestParam(value = "image3", required = false) MultipartFile image3,
                                                        @RequestParam(value = "image4", required = false) MultipartFile image4,
-                                                       @RequestPart @Valid String customCompanyOfferModelString, Errors errors) {
+                                                       @RequestPart @Valid String customCompanyOfferModelString, Errors errors, @PathVariable int flag_ar) {
 
         try {
 
@@ -2602,7 +2642,7 @@ public class DasboardsAPIControll {
 
                 int res = customCompanyOfferRepo.addOfferEdeited(image1Url, image2Url, image3Url, image4Url, model.getOffer_title(), model.getOffer_explaination(),
                         model.getOffer_cost(), model.getOffer_display_date(), model.getOffer_expired_date(), model.getOffer_deliver_date(),
-                        model.getCompany_id(), model.getOffer_count(), model.getCity(), model.getArea(), model.getLng(), model.getLat());
+                        model.getCompany_id(), model.getOffer_count(), model.getCity(), model.getArea(), model.getLng(), model.getLat(), flag_ar);
                 if (res == 1) {
                     ObjectNode objectNode = mapper.createObjectNode();
                     objectNode.put("status", 200);
@@ -2615,6 +2655,7 @@ public class DasboardsAPIControll {
                     objectNode.put("offer_deliver_date", model.getOffer_deliver_date().toString());
                     objectNode.put("company_id", model.getCompany_id());
                     objectNode.put("offer_count", model.getOffer_count());
+                    objectNode.put("flag_ar", flag_ar);
                     return ResponseEntity.status(HttpStatus.OK).body(objectNode);
                 } else {
                     ObjectNode objectNode = mapper.createObjectNode();
@@ -2633,12 +2674,12 @@ public class DasboardsAPIControll {
 
     }
 
-    @PreAuthorize("hasAuthority('company')")
-    @PostMapping("/company/offer/image/")
+    @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
+    @PostMapping("/company/offer/image/{flag_ar}")
     public ResponseEntity<ObjectNode> addCompanyOffersWitImage(@RequestParam("image_one") MultipartFile
                                                                        image1, @RequestParam("image_two") MultipartFile image12,
                                                                @RequestParam("image_three") MultipartFile image13, @RequestParam("image_four") MultipartFile image4,
-                                                               @RequestPart @Valid String offerModelString, Errors errors) {
+                                                               @RequestPart @Valid String offerModelString, Errors errors, @PathVariable  int flag_ar) {
 
         try {
             CustomCompanyOfferModelWithImage model = new ObjectMapper().readValue(offerModelString, CustomCompanyOfferModelWithImage.class);
@@ -2684,7 +2725,7 @@ public class DasboardsAPIControll {
 
                 int res = customCompanyOfferRepo.addOfferEdeitedWithImage(logoUrl, "", "", "", model.getOffer_title(), model.getOffer_explaination(),
                         model.getOffer_cost(), model.getOffer_display_date(), model.getOffer_expired_date(), model.getOffer_deliver_date(),
-                        model.getCompany_id(), model.getOffer_count(), model.getCity(), model.getArea(), model.getLng(), model.getLat());
+                        model.getCompany_id(), model.getOffer_count(), model.getCity(), model.getArea(), model.getLng(), model.getLat(), flag_ar);
                 if (res == 1) {
                     ObjectNode objectNode = mapper.createObjectNode();
                     objectNode.put("status", 200);
@@ -2697,6 +2738,8 @@ public class DasboardsAPIControll {
                     objectNode.put("offer_deliver_date", model.getOffer_deliver_date().toString());
                     objectNode.put("company_id", model.getCompany_id());
                     objectNode.put("offer_count", model.getOffer_count());
+                    objectNode.put("flag_ar", flag_ar);
+
                     return ResponseEntity.status(HttpStatus.OK).body(objectNode);
                 } else {
                     ObjectNode objectNode = mapper.createObjectNode();
@@ -2733,10 +2776,10 @@ public class DasboardsAPIControll {
 
 
     @PreAuthorize("hasAuthority('company')")
-    @GetMapping("/company/offer/{id}")
-    public ResponseEntity<getCustomeOffer2> getCompanyOfferWithDesc(@PathVariable int id) {
+    @GetMapping("/company/offer/{id}/{flag_ar}")
+    public ResponseEntity<getCustomeOffer2> getCompanyOfferWithDesc(@PathVariable int id, @PathVariable int flag_ar) {
         if (customCompanyOfferRepo.checkIfExist(id)) {
-            CustomCompanyModelWithViewAndDescRes model = customCompanyOfferRepo.getCompanyOfferWithDesc(id);
+            CustomCompanyModelWithViewAndDescRes model = customCompanyOfferRepo.getCompanyOfferWithDesc(id, flag_ar);
 
             return ResponseEntity.status(HttpStatus.OK).body(new getCustomeOffer2("200", model));
 
@@ -2748,9 +2791,9 @@ public class DasboardsAPIControll {
 
     ///getCompanyOffersWithDesc
     @PreAuthorize("hasAuthority('company')")
-    @GetMapping("/company/offer/{id}/company")
-    public ResponseEntity<getCustomeCompanyOffer2Model> getSingleCompanyOfferWithDesc(@PathVariable int id) {
-        List<CustomeCompanyOfferModel2DToModel> offers = customCompanyOfferRepo.getCompanyOffersWithDesc(id);
+    @GetMapping("/company/offer/{id}/company/{flag_ar}")
+    public ResponseEntity<getCustomeCompanyOffer2Model> getSingleCompanyOfferWithDesc(@PathVariable int id, @PathVariable int flag_ar) {
+        List<CustomeCompanyOfferModel2DToModel> offers = customCompanyOfferRepo.getCompanyOffersWithDesc(id, flag_ar);
         if (offers != null) {
             return ResponseEntity.status(HttpStatus.OK).body(new getCustomeCompanyOffer2Model("200", offers));
         } else {
@@ -2781,27 +2824,9 @@ public class DasboardsAPIControll {
             } else {
 
 
-                String s = logo.getOriginalFilename().replace("\\s+", "");
-                MultipartFile multipartFile = new MockMultipartFile("file",
-                        logo.getOriginalFilename().replace(logo.getOriginalFilename(),
-                                FilenameUtils.getBaseName(s.replaceAll("\\s+", "")).replaceAll("\\s+", "")
-                                        .concat(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())) + "." +
-                                        FilenameUtils.getExtension(logo.getOriginalFilename())).toLowerCase().replaceAll("\\s+", ""), "image/*", logo.getInputStream());
-                System.out.println(MvcUriComponentsBuilder
-                        .fromMethodName(UploadController.class, "getFile", multipartFile.getOriginalFilename()).build().toString());
-                try {
-                    if (Files.isDirectory(rootLocation)) {
 
-                    } else {
-                        Files.createDirectory(rootLocation);
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException("Could not initialize storage!");
-                }
-                storageService.store(multipartFile);
-                String logoImage = MvcUriComponentsBuilder
-                        .fromMethodName(UploadController.class, "getFile", multipartFile.getOriginalFilename()).build().toString();
-
+                String logoImage = imageUrl(logo, rootLocation);
+                TimeUnit.MILLISECONDS.sleep(11);
 
                 String coverImage = imageUrl(cover, rootLocation);
 
@@ -2884,7 +2909,7 @@ public class DasboardsAPIControll {
                 objectNode.put("message", "Validation Failed");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
             }
-            if (repo.isExist(model.getCompany_id())) {
+            if (multiCategoryProfileRepo.isExist(model.getCompany_id())) {
 
 
                 String logoUrl = "";
@@ -3136,10 +3161,11 @@ public class DasboardsAPIControll {
         }
     }
 
-    @PutMapping("company/profil/")
+    @PutMapping("company/profil/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
-    public ResponseEntity<ObjectNode> updateProfile2(@RequestParam(value = "logo", required = false) MultipartFile logo, @RequestParam(value = "cover", required = false) MultipartFile cover,
-                                                     @Valid @RequestPart String newProfileDto3String, Errors errors) {
+    public ResponseEntity<ObjectNode> updateProfile2(@RequestParam(value = "logo", required = false) MultipartFile logo,
+                                                     @RequestParam(value = "cover", required = false) MultipartFile cover,
+                                                     @Valid @RequestPart String newProfileDto3String, Errors errors, @PathVariable int flag_ar) {
 
 
         try {
@@ -3152,7 +3178,7 @@ public class DasboardsAPIControll {
                 objectNode.put(MESSAGE, "Validation Failed");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
             }
-            if (repo.isExist(model.getCompanyId())) {
+            if (newProfileRepo.isExist(model.getCompanyId())) {
 
 
                 String logoUrl = "";
@@ -3176,7 +3202,7 @@ public class DasboardsAPIControll {
                         int res = newProfileRepo.updateProfile(model.getCompanyId(), model.getCompanyName(), model.getCompanyLogoImage(), model.getCompanyAddress(),
                                 model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                                 model.getCompanyLat(), model.getCompanyCoverImage(), model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                                model.getCity(), model.getArea(), model.getCategory());
+                                model.getCity(), model.getArea(), model.getCategory(), flag_ar);
                         if (res == 1) {
                             ArrayNode category = mapper.createArrayNode();
 
@@ -3217,7 +3243,7 @@ public class DasboardsAPIControll {
                         int res = newProfileRepo.updateProfile(model.getCompanyId(), model.getCompanyName(), coverUrl, model.getCompanyAddress(),
                                 model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                                 model.getCompanyLat(), model.getCompanyCoverImage(), model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                                model.getCity(), model.getArea(), model.getCategory());
+                                model.getCity(), model.getArea(), model.getCategory(), flag_ar);
                         if (res == 1) {
                             ArrayNode category = mapper.createArrayNode();
 
@@ -3260,7 +3286,7 @@ public class DasboardsAPIControll {
                         int res = newProfileRepo.updateProfile(model.getCompanyId(), model.getCompanyName(), model.getCompanyLogoImage(), model.getCompanyAddress(),
                                 model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                                 model.getCompanyLat(), model.getCompanyCoverImage(), model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                                model.getCity(), model.getArea(), model.getCategory());
+                                model.getCity(), model.getArea(), model.getCategory(), flag_ar);
                         if (res == 1) {
                             ArrayNode category = mapper.createArrayNode();
 
@@ -3302,7 +3328,7 @@ public class DasboardsAPIControll {
                         int res = newProfileRepo.updateProfile(model.getCompanyId(), model.getCompanyName(), logoUrl, model.getCompanyAddress(),
                                 model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                                 model.getCompanyLat(), model.getCompanyCoverImage(), model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                                model.getCity(), model.getArea(), model.getCategory());
+                                model.getCity(), model.getArea(), model.getCategory(), flag_ar);
                         if (res == 1) {
                             ArrayNode category = mapper.createArrayNode();
 
@@ -3342,7 +3368,7 @@ public class DasboardsAPIControll {
                     int res = newProfileRepo.updateProfile(model.getCompanyId(), model.getCompanyName(), logoUrl, model.getCompanyAddress(),
                             model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                             model.getCompanyLat(), coverUrl, model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                            model.getCity(), model.getArea(), model.getCategory());
+                            model.getCity(), model.getArea(), model.getCategory(), flag_ar);
                     if (res == 1) {
                         ArrayNode category = mapper.createArrayNode();
 
@@ -3382,7 +3408,7 @@ public class DasboardsAPIControll {
             } else {
                 ObjectNode objectNode = mapper.createObjectNode();
                 objectNode.put(STATUS, 400);
-                objectNode.put(MESSAGE, "already has profile in this id");
+                objectNode.put(MESSAGE, "already has no profile in this id");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
             }
         } catch (Exception e) {
@@ -3393,10 +3419,10 @@ public class DasboardsAPIControll {
     }
 
 
-    @PutMapping("/s/")
+    @PutMapping("/s/{flag_ar}")
     @PreAuthorize("hasAuthority('super_admin') or hasAuthority('admin') or hasAuthority('company') or hasAuthority('school')")
     public ResponseEntity<ObjectNode> updateProfile2x(@RequestParam(value = "logo", required = false) MultipartFile logo, @RequestParam(value = "cover", required = false) MultipartFile cover,
-                                                      @Valid @RequestPart String newProfileDto3DTOString, Errors errors) {
+                                                      @Valid @RequestPart String newProfileDto3DTOString, Errors errors ,@PathVariable int flag_ar) {
 
 
         try {
@@ -3430,7 +3456,7 @@ public class DasboardsAPIControll {
                         int res = newProfileRepo.updateProfile2(model.getCompanyId(), model.getCompanyName(), model.getCompanyLogoImage(), model.getCompanyAddress(),
                                 model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                                 model.getCompanyLat(), model.getCompanyCoverImage(), model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                                model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory());
+                                model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory(), flag_ar);
                         if (res == 1) {
                             ArrayNode category = mapper.createArrayNode();
 
@@ -3474,7 +3500,7 @@ public class DasboardsAPIControll {
                         int res = newProfileRepo.updateProfile2(model.getCompanyId(), model.getCompanyName(), model.getCompanyLogoImage(), model.getCompanyAddress(),
                                 model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                                 model.getCompanyLat(), coverUrl, model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                                model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory());
+                                model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory(), flag_ar);
                         if (res == 1) {
                             ArrayNode category = mapper.createArrayNode();
 
@@ -3521,7 +3547,7 @@ public class DasboardsAPIControll {
                         int res = newProfileRepo.updateProfile2(model.getCompanyId(), model.getCompanyName(), model.getCompanyLogoImage(), model.getCompanyAddress(),
                                 model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                                 model.getCompanyLat(), model.getCompanyCoverImage(), model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                                model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory());
+                                model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory(), flag_ar);
                         if (res == 1) {
                             ArrayNode category = mapper.createArrayNode();
 
@@ -3564,7 +3590,7 @@ public class DasboardsAPIControll {
                         int res = newProfileRepo.updateProfile2(model.getCompanyId(), model.getCompanyName(), logoUrl, model.getCompanyAddress(),
                                 model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                                 model.getCompanyLat(), model.getCompanyCoverImage(), model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                                model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory());
+                                model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory(), flag_ar);
                         if (res == 1) {
                             ArrayNode category = mapper.createArrayNode();
 
@@ -3611,7 +3637,7 @@ public class DasboardsAPIControll {
                     int res = newProfileRepo.updateProfile2(model.getCompanyId(), model.getCompanyName(), logoUrl, model.getCompanyAddress(),
                             model.getCompanyLinkYoutube(), model.getCompanyWebsiteUrl(), model.getCompanyLng(),
                             model.getCompanyLat(), coverUrl, model.getCompanyPhoneNumber(), model.getCompanyDesc(),
-                            model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory());
+                            model.getCity(), model.getArea(), model.getLng(), model.getLat(), model.getCategory(), flag_ar);
                     if (res == 1) {
                         ArrayNode category = mapper.createArrayNode();
 
@@ -3668,14 +3694,14 @@ public class DasboardsAPIControll {
 
 
     @PreAuthorize("hasAuthority('company')")
-    @GetMapping("/company/offer/{id}/company/page/{page}/{pageSize}")
+    @GetMapping("/company/offer/{id}/company/page/{page}/{pageSize}/{flag_ar}")
     public ResponseEntity<CustomeCompanyOfferModel2DToModelPagination> getSingleCompanyOfferWithDescPagination(
-            @PathVariable int id, @PathVariable int page, @PathVariable int pageSize) {
-        return customCompanyOfferRepo.getCompanyOffersWithDescPagination(id, page, pageSize);
+            @PathVariable int id, @PathVariable int page, @PathVariable int pageSize, @PathVariable int flag_ar) {
+        return customCompanyOfferRepo.getCompanyOffersWithDescPagination(id, page, pageSize, flag_ar);
     }
 
 
-    @PreAuthorize("hasAuthority('company')")
+    @PreAuthorize("hasAuthority('company') ")
     @GetMapping("/company/offer/{id}/companies")
     public ResponseEntity<getCustomeCompanyOffer> getSingleCompanyOffer(@PathVariable int id) {
         List<CustomeCompanyOfferModel2> offers = customCompanyOfferRepo.getCompanyOffers(id);
@@ -3689,13 +3715,13 @@ public class DasboardsAPIControll {
 
 
     @PreAuthorize("hasAuthority('company')")
-    @PutMapping("/company/offer/")
+    @PutMapping("/company/offer/{flag_ar}")
     public ResponseEntity<JsonNode> updateCompanyOfferWithImage
             (@RequestParam(value = "image1", required = false) MultipartFile
                      image1, @RequestParam(value = "image2", required = false) MultipartFile image2,
              @RequestParam(value = "image3", required = false) MultipartFile
                      image3, @RequestParam(value = "image4", required = false) MultipartFile image4,
-             @RequestPart @Valid String customCompanyOfferModelWithImageString, Errors errors) {
+             @RequestPart @Valid String customCompanyOfferModelWithImageString, Errors errors, @PathVariable int flag_ar) {
 
 
         try {
@@ -3739,7 +3765,7 @@ public class DasboardsAPIControll {
                     int res = customCompanyOfferRepo.updateCompanyOfferWithImages(model.getOffer_id(), model.getImage_one(), image2Url, image3Url, image4Url,
                             model.getOffer_title(), model.getOffer_explaination(), model.getOffer_cost(), model.getOffer_display_date(),
                             model.getOffer_expired_date(), model.getOffer_deliver_date(), model.getCompany_id(), model.getOffer_count(), model.getCity(), model.getArea(),
-                            model.getLng(), model.getLat());
+                            model.getLng(), model.getLat(), flag_ar);
 
                     if (res == 1) {
                         ObjectNode objectNode = mapper.createObjectNode();
@@ -3773,7 +3799,7 @@ public class DasboardsAPIControll {
                     int res = customCompanyOfferRepo.updateCompanyOfferWithImages(model.getOffer_id(), image1Url, image2Url, image3Url, image4Url,
                             model.getOffer_title(), model.getOffer_explaination(), model.getOffer_cost(), model.getOffer_display_date(),
                             model.getOffer_expired_date(), model.getOffer_deliver_date(), model.getCompany_id(), model.getOffer_count(), model.getCity(), model.getArea(),
-                            model.getLng(), model.getLat());
+                            model.getLng(), model.getLat(), flag_ar);
 
                     if (res == 1) {
                         ObjectNode objectNode = mapper.createObjectNode();
@@ -3971,7 +3997,7 @@ public class DasboardsAPIControll {
         MultipartFile multipartFile = new MockMultipartFile("file",
                 file.getOriginalFilename().replace(file.getOriginalFilename(),
                         FilenameUtils.getBaseName(s.replaceAll("\\s+", "")).replaceAll("\\s+", "")
-                                .concat(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())) + "." +
+                                .concat(new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date())) + "." +
                                 FilenameUtils.getExtension(file.getOriginalFilename())).toLowerCase().replaceAll("\\s+", ""), "image/*", file.getInputStream());
         System.out.println(MvcUriComponentsBuilder
                 .fromMethodName(UploadController.class, "getFile", multipartFile.getOriginalFilename()).build().toString());

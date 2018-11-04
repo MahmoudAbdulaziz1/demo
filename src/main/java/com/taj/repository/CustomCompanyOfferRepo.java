@@ -45,7 +45,7 @@ public class CustomCompanyOfferRepo {
 
     public int addOfferEdeited(String image_one, String image_two, String image_third, String image_four, String offer_title, String offer_explaination, double offer_cost,
                                long offer_display_date, long offer_expired_date, long offer_deliver_date, int company_id, int offer_count, String city, String area,
-                               float lng, float lat) {
+                               float lng, float lat, int flag_ar) {
 
         KeyHolder key = new GeneratedKeyHolder();
         jdbcTemplate.update(new PreparedStatementCreator() {
@@ -89,8 +89,23 @@ public class CustomCompanyOfferRepo {
             }, key2);
             int offer_id = key2.getKey().intValue();
 
-            return jdbcTemplate.update("INSERT INTO efaz_company_offer_place VALUES (?,?,?,?,?)", offer_id, city, area, lng,
-                    lat);
+            if (flag_ar == 0) {
+
+                int city_id = jdbcTemplate.queryForObject("SELECT city_id FROM city WHERE city_name LIKE ?;", Integer.class, city);
+                System.out.println("city " + city_id);
+                int area_id = jdbcTemplate.queryForObject("SELECT area_id FROM area WHERE area_name LIKE ?;", Integer.class, area);
+                return jdbcTemplate.update("INSERT INTO efaz_company_offer_place VALUES (?,?,?,?,?)", offer_id, city_id, area_id, lng,
+                        lat);
+            } else {
+
+                int city_id = jdbcTemplate.queryForObject("SELECT city_id FROM city WHERE city_name_ar LIKE ?;", Integer.class, city);
+                System.out.println("city " + city_id);
+                int area_id = jdbcTemplate.queryForObject("SELECT area_id FROM area WHERE area_name_ar LIKE ?;", Integer.class, area);
+                return jdbcTemplate.update("INSERT INTO efaz_company_offer_place VALUES (?,?,?,?,?)", offer_id, city_id, area_id, lng,
+                        lat);
+            }
+
+
         } else {
             return 0;
         }
@@ -101,7 +116,7 @@ public class CustomCompanyOfferRepo {
     public int addOfferEdeitedWithImage(String image_one, String image_two, String image_third, String image_four, String offer_title,
                                         String offer_explaination, double offer_cost, long offer_display_date, long offer_expired_date,
                                         long offer_deliver_date, int company_id, int offer_count, String city, String area,
-                                        float lng, float lat) {
+                                        float lng, float lat, int flag_ar) {
 
         KeyHolder key = new GeneratedKeyHolder();
         jdbcTemplate.update(new PreparedStatementCreator() {
@@ -145,8 +160,23 @@ public class CustomCompanyOfferRepo {
             }, key2);
             int offer_id = key2.getKey().intValue();
 
-            return jdbcTemplate.update("INSERT INTO efaz_company_offer_place VALUES (?,?,?,?,?)", offer_id, city, area, lng,
-                    lat);
+            if (flag_ar == 0) {
+
+                int city_id = jdbcTemplate.queryForObject("SELECT city_id FROM city WHERE city_name LIKE ?;", Integer.class, city);
+                System.out.println("city " + city_id);
+                int area_id = jdbcTemplate.queryForObject("SELECT area_id FROM area WHERE area_name LIKE ?;", Integer.class, area);
+                return jdbcTemplate.update("INSERT INTO efaz_company_offer_place VALUES (?,?,?,?,?)", offer_id, city_id, area_id, lng,
+                        lat);
+            } else {
+
+                int city_id = jdbcTemplate.queryForObject("SELECT city_id FROM city WHERE city_name_ar LIKE ?;", Integer.class, city);
+                System.out.println("city " + city_id);
+                int area_id = jdbcTemplate.queryForObject("SELECT area_id FROM area WHERE area_name_ar LIKE ?;", Integer.class, area);
+                return jdbcTemplate.update("INSERT INTO efaz_company_offer_place VALUES (?,?,?,?,?)", offer_id, city_id, area_id, lng,
+                        lat);
+            }
+
+
         } else {
             return 0;
         }
@@ -189,33 +219,68 @@ public class CustomCompanyOfferRepo {
     }
 
 
-    public CustomCompanyModelWithViewAndDescRes getCompanyOfferWithDesc(int id) {
-        String sql = "SELECT\n" +
-                "\toffer_id,\n" +
-                "\toffer_image_id,\n" +
-                "\toffer_title,\n" +
-                "\toffer_explaination,\n" +
-                "\toffer_cost,\n" +
-                "\toffer_display_date,\n" +
-                "\toffer_expired_date,\n" +
-                "\toffer_deliver_date,\n" +
-                "\toffer_company_id,\n" +
-                "\toffer_count,\n" +
-                "\tcount( request_id ) AS request_count,\n" +
-                "\tCOUNT( seen_id ) AS view_count,\n" +
-                "\tcity,\n" +
-                "\tarea,\n" +
-                "\tlng,\n" +
-                "\tlat \n" +
-                "FROM\n" +
-                "\tefaz_company_offer AS offer\n" +
-                "\tLEFT JOIN efaz_school_request_offer AS req ON offer.offer_id = req.requsted_offer_id\n" +
-                "\tLEFT JOIN efaz_school_see_offer AS see ON offer.offer_id = see.seen_offer_id\n" +
-                "\tLEFT JOIN efaz_company_offer_place AS d ON offer.offer_id = d.id \n" +
-                "WHERE\n" +
-                "\toffer_id = ? \n" +
-                "GROUP BY\n" +
-                "\toffer.offer_id;";
+    public CustomCompanyModelWithViewAndDescRes getCompanyOfferWithDesc(int id, int flag_ar) {
+        String sql = "";
+        if (flag_ar == 0) {
+            sql = "SELECT\n" +
+                    "\toffer_id,\n" +
+                    "\toffer_image_id,\n" +
+                    "\toffer_title,\n" +
+                    "\toffer_explaination,\n" +
+                    "\toffer_cost,\n" +
+                    "\toffer_display_date,\n" +
+                    "\toffer_expired_date,\n" +
+                    "\toffer_deliver_date,\n" +
+                    "\toffer_company_id,\n" +
+                    "\toffer_count,\n" +
+                    "\tcount( request_id ) AS request_count,\n" +
+                    "\tCOUNT( seen_id ) AS view_count,\n" +
+                    " IFNULL( city_name, '' ) AS city,\n" +
+                    "\tIFNULL( area_name, '' ) AS area,\n" +
+                    "\tlng,\n" +
+                    "\tlat \n" +
+                    "FROM\n" +
+                    "\tefaz_company_offer AS offer\n" +
+                    "\tLEFT JOIN efaz_school_request_offer AS req ON offer.offer_id = req.requsted_offer_id\n" +
+                    "\tLEFT JOIN efaz_school_see_offer AS see ON offer.offer_id = see.seen_offer_id\n" +
+                    "\tLEFT JOIN efaz_company_offer_place AS d ON offer.offer_id = d.id \n" +
+                    " LEFT JOIN area AS a ON d.area = a.area_id " +
+                    " LEFT JOIN city AS c ON d.city = c.city_id " +
+                    "WHERE\n" +
+                    "\toffer_id = ? \n" +
+                    "GROUP BY\n" +
+                    "\toffer.offer_id;";
+        } else {
+            sql = "SELECT\n" +
+                    "\toffer_id,\n" +
+                    "\toffer_image_id,\n" +
+                    "\toffer_title,\n" +
+                    "\toffer_explaination,\n" +
+                    "\toffer_cost,\n" +
+                    "\toffer_display_date,\n" +
+                    "\toffer_expired_date,\n" +
+                    "\toffer_deliver_date,\n" +
+                    "\toffer_company_id,\n" +
+                    "\toffer_count,\n" +
+                    "\tcount( request_id ) AS request_count,\n" +
+                    "\tCOUNT( seen_id ) AS view_count,\n" +
+                    " IFNULL( city_name_ar, '' ) AS city,\n" +
+                    "\tIFNULL( area_name_ar, '' ) AS area,\n" +
+                    "\tlng,\n" +
+                    "\tlat \n" +
+                    "FROM\n" +
+                    "\tefaz_company_offer AS offer\n" +
+                    "\tLEFT JOIN efaz_school_request_offer AS req ON offer.offer_id = req.requsted_offer_id\n" +
+                    "\tLEFT JOIN efaz_school_see_offer AS see ON offer.offer_id = see.seen_offer_id\n" +
+                    "\tLEFT JOIN efaz_company_offer_place AS d ON offer.offer_id = d.id \n" +
+                    " LEFT JOIN area AS a ON d.area = a.area_id " +
+                    " LEFT JOIN city AS c ON d.city = c.city_id " +
+                    "WHERE\n" +
+                    "\toffer_id = ? \n" +
+                    "GROUP BY\n" +
+                    "\toffer.offer_id;";
+        }
+
 
         CustomCompanyModelWithViewAndDesc data = jdbcTemplate.queryForObject(sql, new Object[]{id},
                 (resultSet, i) -> new CustomCompanyModelWithViewAndDesc(resultSet.getInt(1), resultSet.getInt(2), resultSet.getString(3)
@@ -383,35 +448,66 @@ public class CustomCompanyOfferRepo {
     }
 
 
-    public ResponseEntity<CustomeCompanyOfferModel2DToModelPagination> getCompanyOffersWithDescPagination(int id, int page, int pageSize) {
+    public ResponseEntity<CustomeCompanyOfferModel2DToModelPagination> getCompanyOffersWithDescPagination(int id, int page, int pageSize, int flag_ar) {
 
         int pages = (int) Math.ceil(((float) getCompanyOffersWithDescPaginationCount(id)) / ((float) pageSize));
         System.out.println("Page Size =   " + pages);
         int limitOffset = (page - 1) * pageSize;
 
+        String sql = "";
 
-        String sql = "SELECT\n" +
-                "\toffer_id,\n" +
-                "\toffer_image_id,\n" +
-                "\toffer_title,\n" +
-                "\toffer_explaination,\n" +
-                "\toffer_cost,\n" +
-                "\toffer_display_date,\n" +
-                "\toffer_expired_date,\n" +
-                "\toffer_deliver_date,\n" +
-                "\toffer_company_id,\n" +
-                "\toffer_count,\n" +
-                "\tcity,\n" +
-                "\tarea,\n" +
-                "\tlng,\n" +
-                "\tlat, " +
-                " (SELECT COUNT(*) FROM  efaz_school_request_offer WHERE requsted_offer_id = offer_id)AS request_count " +
-                "FROM\n" +
-                "\tefaz_company_offer AS offer\n" +
-                "\tLEFT JOIN efaz_company_offer_place AS d ON offer.offer_id = d.id \n" +
-                "WHERE\n" +
-                "\toffer_company_id = ? " +
-                " LIMIT ?,?;";
+        if (flag_ar == 0) {
+            sql = "SELECT\n" +
+                    "\toffer_id,\n" +
+                    "\toffer_image_id,\n" +
+                    "\toffer_title,\n" +
+                    "\toffer_explaination,\n" +
+                    "\toffer_cost,\n" +
+                    "\toffer_display_date,\n" +
+                    "\toffer_expired_date,\n" +
+                    "\toffer_deliver_date,\n" +
+                    "\toffer_company_id,\n" +
+                    "\toffer_count,\n" +
+                    " IFNULL( city_name, '' ) AS city,\n" +
+                    "\tIFNULL( area_name, '' ) AS area,\n" +
+                    "\tlng,\n" +
+                    "\tlat, " +
+                    " (SELECT COUNT(*) FROM  efaz_school_request_offer WHERE requsted_offer_id = offer_id)AS request_count " +
+                    "FROM\n" +
+                    "\tefaz_company_offer AS offer\n" +
+                    "\tLEFT JOIN efaz_company_offer_place AS d ON offer.offer_id = d.id \n" +
+                    " LEFT JOIN area AS a ON d.area = a.area_id " +
+                    " LEFT JOIN city AS c ON d.city = c.city_id " +
+                    "WHERE\n" +
+                    "\toffer_company_id = ? " +
+                    " LIMIT ?,?;";
+        } else {
+            sql = "SELECT\n" +
+                    "\toffer_id,\n" +
+                    "\toffer_image_id,\n" +
+                    "\toffer_title,\n" +
+                    "\toffer_explaination,\n" +
+                    "\toffer_cost,\n" +
+                    "\toffer_display_date,\n" +
+                    "\toffer_expired_date,\n" +
+                    "\toffer_deliver_date,\n" +
+                    "\toffer_company_id,\n" +
+                    "\toffer_count,\n" +
+                    " IFNULL( city_name_ar, '' ) AS city,\n" +
+                    "\tIFNULL( area_name_ar, '' ) AS area,\n" +
+                    "\tlng,\n" +
+                    "\tlat, " +
+                    " (SELECT COUNT(*) FROM  efaz_school_request_offer WHERE requsted_offer_id = offer_id)AS request_count " +
+                    "FROM\n" +
+                    "\tefaz_company_offer AS offer\n" +
+                    "\tLEFT JOIN efaz_company_offer_place AS d ON offer.offer_id = d.id \n" +
+                    " LEFT JOIN area AS a ON d.area = a.area_id " +
+                    " LEFT JOIN city AS c ON d.city = c.city_id " +
+                    "WHERE\n" +
+                    "\toffer_company_id = ? " +
+                    " LIMIT ?,?;";
+        }
+
 
         List<CompanyOfferModelDtoModel> list = jdbcTemplate.query(sql, new Object[]{id, limitOffset, pageSize},
                 (resultSet, i) -> new CompanyOfferModelDtoModel(resultSet.getInt(1), resultSet.getInt(2), resultSet.getString(3)
@@ -455,29 +551,58 @@ public class CustomCompanyOfferRepo {
     }
 
 
-    public List<CustomeCompanyOfferModel2DToModel> getCompanyOffersWithDesc(int id) {
+    public List<CustomeCompanyOfferModel2DToModel> getCompanyOffersWithDesc(int id, int flag_ar) {
+        String sql = "";
+        if (flag_ar == 0) {
+            sql = "SELECT\n" +
+                    "\toffer_id,\n" +
+                    "\toffer_image_id,\n" +
+                    "\toffer_title,\n" +
+                    "\toffer_explaination,\n" +
+                    "\toffer_cost,\n" +
+                    "\toffer_display_date,\n" +
+                    "\toffer_expired_date,\n" +
+                    "\toffer_deliver_date,\n" +
+                    "\toffer_company_id,\n" +
+                    "\toffer_count,\n" +
+                    " IFNULL( city_name, '' ) AS city,\n" +
+                    "\tIFNULL( area_name, '' ) AS area,\n" +
+                    "\tlng,\n" +
+                    "\tlat, " +
+                    " (SELECT COUNT(*) FROM  efaz_school_request_offer WHERE requsted_offer_id = offer_id)AS request_count " +
+                    "FROM\n" +
+                    "\tefaz_company_offer AS offer\n" +
+                    "\tLEFT JOIN efaz_company_offer_place AS d ON offer.offer_id = d.id \n" +
+                    " LEFT JOIN area AS a ON d.area = a.area_id " +
+                    " LEFT JOIN city AS c ON d.city = c.city_id " +
+                    "WHERE\n" +
+                    "\toffer_company_id = ?;";
+        } else {
+            sql = "SELECT\n" +
+                    "\toffer_id,\n" +
+                    "\toffer_image_id,\n" +
+                    "\toffer_title,\n" +
+                    "\toffer_explaination,\n" +
+                    "\toffer_cost,\n" +
+                    "\toffer_display_date,\n" +
+                    "\toffer_expired_date,\n" +
+                    "\toffer_deliver_date,\n" +
+                    "\toffer_company_id,\n" +
+                    "\toffer_count,\n" +
+                    " IFNULL( city_name_ar, '' ) AS city,\n" +
+                    "\tIFNULL( area_name_ar, '' ) AS area,\n" +
+                    "\tlng,\n" +
+                    "\tlat, " +
+                    " (SELECT COUNT(*) FROM  efaz_school_request_offer WHERE requsted_offer_id = offer_id)AS request_count " +
+                    "FROM\n" +
+                    "\tefaz_company_offer AS offer\n" +
+                    "\tLEFT JOIN efaz_company_offer_place AS d ON offer.offer_id = d.id \n" +
+                    " LEFT JOIN area AS a ON d.area = a.area_id " +
+                    " LEFT JOIN city AS c ON d.city = c.city_id " +
+                    "WHERE\n" +
+                    "\toffer_company_id = ?;";
+        }
 
-        String sql = "SELECT\n" +
-                "\toffer_id,\n" +
-                "\toffer_image_id,\n" +
-                "\toffer_title,\n" +
-                "\toffer_explaination,\n" +
-                "\toffer_cost,\n" +
-                "\toffer_display_date,\n" +
-                "\toffer_expired_date,\n" +
-                "\toffer_deliver_date,\n" +
-                "\toffer_company_id,\n" +
-                "\toffer_count,\n" +
-                "\tcity,\n" +
-                "\tarea,\n" +
-                "\tlng,\n" +
-                "\tlat, " +
-                " (SELECT COUNT(*) FROM  efaz_school_request_offer WHERE requsted_offer_id = offer_id)AS request_count " +
-                "FROM\n" +
-                "\tefaz_company_offer AS offer\n" +
-                "\tLEFT JOIN efaz_company_offer_place AS d ON offer.offer_id = d.id \n" +
-                "WHERE\n" +
-                "\toffer_company_id = ?;";
 
         List<CompanyOfferModelDtoModel> list = jdbcTemplate.query(sql, new Object[]{id},
                 (resultSet, i) -> new CompanyOfferModelDtoModel(resultSet.getInt(1), resultSet.getInt(2), resultSet.getString(3)
@@ -609,7 +734,7 @@ public class CustomCompanyOfferRepo {
 
     public int updateCompanyOfferWithImages(int offer_id, String image_one, String image_two, String image_third, String image_four, String offer_title, String offer_explaination, double offer_cost,
                                             long offer_display_date, long offer_expired_date, long offer_deliver_date, int company_id, int offer_count,
-                                            String city, String area, float lng, float lat) {
+                                            String city, String area, float lng, float lat, int flag_ar) {
 
         int image_id = jdbcTemplate.queryForObject("SELECT offer_image_id FROM efaz_company_offer WHERE offer_id=?", Integer.class, offer_id);
         int res = jdbcTemplate.update("update company_offer_images set image_one=?," +
@@ -622,8 +747,20 @@ public class CustomCompanyOfferRepo {
                         "offer_deliver_date=?, offer_company_id=?, offer_count=?" + " where offer_id=?", image_id, offer_title,
                 offer_explaination, offer_cost, new Timestamp(offer_display_date), new Timestamp(offer_expired_date), new Timestamp(offer_deliver_date),
                 company_id, offer_count, offer_id);
-        return jdbcTemplate.update("UPDATE efaz_company_offer_place SET city=?, area=?, lng=?, lat=? WHERE id=?",
-                city, area, lng, lat, offer_id);
+        if (flag_ar == 0) {
+            int city_id = jdbcTemplate.queryForObject("SELECT city_id FROM city WHERE city_name LIKE ?;", Integer.class, city);
+            System.out.println("city " + city_id);
+            int area_id = jdbcTemplate.queryForObject("SELECT area_id FROM area WHERE area_name LIKE ?;", Integer.class, area);
+            return jdbcTemplate.update("UPDATE efaz_company_offer_place SET city=?, area=?, lng=?, lat=? WHERE id=?",
+                    city_id, area_id, lng, lat, offer_id);
+        } else {
+            int city_id = jdbcTemplate.queryForObject("SELECT city_id FROM city WHERE city_name_ar LIKE ?;", Integer.class,  city );
+            System.out.println("city " + city_id);
+            int area_id = jdbcTemplate.queryForObject("SELECT area_id FROM area WHERE area_name_ar LIKE ?;", Integer.class,  area );
+            return jdbcTemplate.update("UPDATE efaz_company_offer_place SET city=?, area=?, lng=?, lat=? WHERE id=?",
+                    city_id, area_id, lng, lat, offer_id);
+        }
+
 //        } else {
 //            return 0;
 //        }
@@ -648,60 +785,118 @@ public class CustomCompanyOfferRepo {
     }
 
 
-    public CompanyHistoryDtoPaginatin getCompanyHistoryPagination(int companyId, int page, int pageSize) {
+    public CompanyHistoryDtoPaginatin getCompanyHistoryPagination(int companyId, int page, int pageSize, int flag_ar) {
         int pages = (int) Math.ceil(((float) getCompanyHistoryPaginationCount(companyId)) / ((float) pageSize));
         System.out.println("Page Size =   " + pages);
         int limitOffset = (page - 1) * pageSize;
 
-        String sql = "SELECT\n" +
-                "\toffer_id,\n" +
-                "\timage_one,\n" +
-                "\timage_two,\n" +
-                "\timage_three,\n" +
-                "\timage_four,\n" +
-                "\toffer_title,\n" +
-                "\toffer_explaination,\n" +
-                "\toffer_cost,\n" +
-                "\toffer_display_date,\n" +
-                "\tdate,\n" +
-                "\toffer_count,\n" +
-                "\tcity,\n" +
-                "\tarea,\n" +
-                "\tlng,\n" +
-                "\tlat,\n" +
-                "\trequest_id,\n" +
-                "\trequsted_school_id,\n" +
-                "\trequest_offer_count,\n" +
-                "\tcount( requsted_offer_id ) AS request_count \n" +
-                "FROM\n" +
-                "\tefaz_company_offer AS offer\n" +
-                "\tLEFT JOIN company_offer_images AS img ON img.images_id = offer.offer_image_id\n" +
-                "\tLEFT JOIN efaz_company_offer_place AS p ON p.id = offer_id\n" +
-                "\tLEFT JOIN efaz_school_request_offer_date AS d ON d.id = offer_id\n" +
-                "\tLEFT JOIN efaz_school_request_offer AS res ON res.requsted_offer_id = offer_id \n" +
-                "WHERE\n" +
-                "\toffer_company_id = ? \n" +
-                "\tAND is_accepted = 1 \n" +
-                "GROUP BY\n" +
-                "\toffer_id,\n" +
-                "\timage_one,\n" +
-                "\timage_two,\n" +
-                "\timage_three,\n" +
-                "\timage_four,\n" +
-                "\toffer_title,\n" +
-                "\toffer_explaination,\n" +
-                "\toffer_cost,\n" +
-                "\toffer_display_date,\n" +
-                "\tdate,\n" +
-                "\toffer_count,\n" +
-                "\tcity,\n" +
-                "\tarea,\n" +
-                "\tlng,\n" +
-                "\tlat,\n" +
-                "\trequest_id,\n" +
-                "\trequsted_school_id,\n" +
-                "\trequest_offer_count " +
-                " LIMIT ?,?;";
+        String sql = "";
+        if (flag_ar == 0) {
+            sql = "SELECT\n" +
+                    "\toffer_id,\n" +
+                    "\timage_one,\n" +
+                    "\timage_two,\n" +
+                    "\timage_three,\n" +
+                    "\timage_four,\n" +
+                    "\toffer_title,\n" +
+                    "\toffer_explaination,\n" +
+                    "\toffer_cost,\n" +
+                    "\toffer_display_date,\n" +
+                    "\tdate,\n" +
+                    "\toffer_count,\n" +
+                    "IFNULL( city_name, '' ) AS city,\n" +
+                    "\tIFNULL( area_name, '' ) AS area,\n" +
+                    "\tlng,\n" +
+                    "\tlat,\n" +
+                    "\trequest_id,\n" +
+                    "\trequsted_school_id,\n" +
+                    "\trequest_offer_count,\n" +
+                    "\tcount( requsted_offer_id ) AS request_count \n" +
+                    "FROM\n" +
+                    "\tefaz_company_offer AS offer\n" +
+                    "\tLEFT JOIN company_offer_images AS img ON img.images_id = offer.offer_image_id\n" +
+                    "\tLEFT JOIN efaz_company_offer_place AS p ON p.id = offer_id\n" +
+                    "\tLEFT JOIN efaz_school_request_offer_date AS d ON d.id = offer_id\n" +
+                    "\tLEFT JOIN efaz_school_request_offer AS res ON res.requsted_offer_id = offer_id \n" +
+                    " LEFT JOIN area AS a ON p.area = a.area_id " +
+                    " LEFT JOIN city AS c ON p.city = c.city_id " +
+                    "WHERE\n" +
+                    "\toffer_company_id = ? \n" +
+                    "\tAND is_accepted = 1 \n" +
+                    "GROUP BY\n" +
+                    "\toffer_id,\n" +
+                    "\timage_one,\n" +
+                    "\timage_two,\n" +
+                    "\timage_three,\n" +
+                    "\timage_four,\n" +
+                    "\toffer_title,\n" +
+                    "\toffer_explaination,\n" +
+                    "\toffer_cost,\n" +
+                    "\toffer_display_date,\n" +
+                    "\tdate,\n" +
+                    "\toffer_count,\n" +
+                    "\tcity,\n" +
+                    "\tarea,\n" +
+                    "\tlng,\n" +
+                    "\tlat,\n" +
+                    "\trequest_id,\n" +
+                    "\trequsted_school_id,\n" +
+                    "\trequest_offer_count " +
+                    " LIMIT ?,?;";
+        } else {
+            sql = "SELECT\n" +
+                    "\toffer_id,\n" +
+                    "\timage_one,\n" +
+                    "\timage_two,\n" +
+                    "\timage_three,\n" +
+                    "\timage_four,\n" +
+                    "\toffer_title,\n" +
+                    "\toffer_explaination,\n" +
+                    "\toffer_cost,\n" +
+                    "\toffer_display_date,\n" +
+                    "\tdate,\n" +
+                    "\toffer_count,\n" +
+                    "IFNULL( city_name_ar, '' ) AS city,\n" +
+                    "\tIFNULL( area_name_ar, '' ) AS area,\n" +
+                    "\tlng,\n" +
+                    "\tlat,\n" +
+                    "\trequest_id,\n" +
+                    "\trequsted_school_id,\n" +
+                    "\trequest_offer_count,\n" +
+                    "\tcount( requsted_offer_id ) AS request_count \n" +
+                    "FROM\n" +
+                    "\tefaz_company_offer AS offer\n" +
+                    "\tLEFT JOIN company_offer_images AS img ON img.images_id = offer.offer_image_id\n" +
+                    "\tLEFT JOIN efaz_company_offer_place AS p ON p.id = offer_id\n" +
+                    "\tLEFT JOIN efaz_school_request_offer_date AS d ON d.id = offer_id\n" +
+                    "\tLEFT JOIN efaz_school_request_offer AS res ON res.requsted_offer_id = offer_id \n" +
+                    " LEFT JOIN area AS a ON p.area = a.area_id " +
+                    " LEFT JOIN city AS c ON p.city = c.city_id " +
+                    "WHERE\n" +
+                    "\toffer_company_id = ? \n" +
+                    "\tAND is_accepted = 1 \n" +
+                    "GROUP BY\n" +
+                    "\toffer_id,\n" +
+                    "\timage_one,\n" +
+                    "\timage_two,\n" +
+                    "\timage_three,\n" +
+                    "\timage_four,\n" +
+                    "\toffer_title,\n" +
+                    "\toffer_explaination,\n" +
+                    "\toffer_cost,\n" +
+                    "\toffer_display_date,\n" +
+                    "\tdate,\n" +
+                    "\toffer_count,\n" +
+                    "\tcity,\n" +
+                    "\tarea,\n" +
+                    "\tlng,\n" +
+                    "\tlat,\n" +
+                    "\trequest_id,\n" +
+                    "\trequsted_school_id,\n" +
+                    "\trequest_offer_count " +
+                    " LIMIT ?,?;";
+        }
+
         List<CompanyHistoryDto> offers = jdbcTemplate.query(sql, new Object[]{companyId, limitOffset, pageSize},
                 (resultSet, i) -> new CompanyHistoryDto(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4),
                         resultSet.getString(5), resultSet.getString(6), resultSet.getString(7), resultSet.getDouble(8), resultSet.getTimestamp(9).getTime(),
@@ -711,56 +906,113 @@ public class CustomCompanyOfferRepo {
         return new CompanyHistoryDtoPaginatin(getCompanyHistoryPaginationCount(companyId), pages, offers);
     }
 
-    public List<CompanyHistoryDto> getCompanyHistory(int companyId) {
+    public List<CompanyHistoryDto> getCompanyHistory(int companyId, int flag_ar) {
 
-        String sql = "SELECT\n" +
-                "\toffer_id,\n" +
-                "\timage_one,\n" +
-                "\timage_two,\n" +
-                "\timage_three,\n" +
-                "\timage_four,\n" +
-                "\toffer_title,\n" +
-                "\toffer_explaination,\n" +
-                "\toffer_cost,\n" +
-                "\toffer_display_date,\n" +
-                "\tdate,\n" +
-                "\toffer_count,\n" +
-                "\tcity,\n" +
-                "\tarea,\n" +
-                "\tlng,\n" +
-                "\tlat,\n" +
-                "\trequest_id,\n" +
-                "\trequsted_school_id,\n" +
-                "\trequest_offer_count,\n" +
-                "\tcount( requsted_offer_id ) AS request_count \n" +
-                "FROM\n" +
-                "\tefaz_company_offer AS offer\n" +
-                "\tLEFT JOIN company_offer_images AS img ON img.images_id = offer.offer_image_id\n" +
-                "\tLEFT JOIN efaz_company_offer_place AS p ON p.id = offer_id\n" +
-                "\tLEFT JOIN efaz_school_request_offer_date AS d ON d.id = offer_id\n" +
-                "\tLEFT JOIN efaz_school_request_offer AS res ON res.requsted_offer_id = offer_id \n" +
-                "WHERE\n" +
-                "\toffer_company_id = ? \n" +
-                "\tAND is_accepted = 1 \n" +
-                "GROUP BY\n" +
-                "\toffer_id,\n" +
-                "\timage_one,\n" +
-                "\timage_two,\n" +
-                "\timage_three,\n" +
-                "\timage_four,\n" +
-                "\toffer_title,\n" +
-                "\toffer_explaination,\n" +
-                "\toffer_cost,\n" +
-                "\toffer_display_date,\n" +
-                "\tdate,\n" +
-                "\toffer_count,\n" +
-                "\tcity,\n" +
-                "\tarea,\n" +
-                "\tlng,\n" +
-                "\tlat,\n" +
-                "\trequest_id,\n" +
-                "\trequsted_school_id,\n" +
-                "\trequest_offer_count;";
+        String sql = "";
+        if (flag_ar == 0) {
+            sql = "SELECT\n" +
+                    "\toffer_id,\n" +
+                    "\timage_one,\n" +
+                    "\timage_two,\n" +
+                    "\timage_three,\n" +
+                    "\timage_four,\n" +
+                    "\toffer_title,\n" +
+                    "\toffer_explaination,\n" +
+                    "\toffer_cost,\n" +
+                    "\toffer_display_date,\n" +
+                    "\tdate,\n" +
+                    "\toffer_count,\n" +
+                    "IFNULL( city_name, '' ) AS city,\n" +
+                    "\tIFNULL( area_name, '' ) AS area,\n" +
+                    "\tlng,\n" +
+                    "\tlat,\n" +
+                    "\trequest_id,\n" +
+                    "\trequsted_school_id,\n" +
+                    "\trequest_offer_count,\n" +
+                    "\tcount( requsted_offer_id ) AS request_count \n" +
+                    "FROM\n" +
+                    "\tefaz_company_offer AS offer\n" +
+                    "\tLEFT JOIN company_offer_images AS img ON img.images_id = offer.offer_image_id\n" +
+                    "\tLEFT JOIN efaz_company_offer_place AS p ON p.id = offer_id\n" +
+                    "\tLEFT JOIN efaz_school_request_offer_date AS d ON d.id = offer_id\n" +
+                    "\tLEFT JOIN efaz_school_request_offer AS res ON res.requsted_offer_id = offer_id \n" +
+                    " LEFT JOIN area AS a ON p.area = a.area_id " +
+                    " LEFT JOIN city AS c ON p.city = c.city_id " +
+                    "WHERE\n" +
+                    "\toffer_company_id = ? \n" +
+                    "\tAND is_accepted = 1 \n" +
+                    "GROUP BY\n" +
+                    "\toffer_id,\n" +
+                    "\timage_one,\n" +
+                    "\timage_two,\n" +
+                    "\timage_three,\n" +
+                    "\timage_four,\n" +
+                    "\toffer_title,\n" +
+                    "\toffer_explaination,\n" +
+                    "\toffer_cost,\n" +
+                    "\toffer_display_date,\n" +
+                    "\tdate,\n" +
+                    "\toffer_count,\n" +
+                    "\tcity,\n" +
+                    "\tarea,\n" +
+                    "\tlng,\n" +
+                    "\tlat,\n" +
+                    "\trequest_id,\n" +
+                    "\trequsted_school_id,\n" +
+                    "\trequest_offer_count;";
+        } else {
+            sql = "SELECT\n" +
+                    "\toffer_id,\n" +
+                    "\timage_one,\n" +
+                    "\timage_two,\n" +
+                    "\timage_three,\n" +
+                    "\timage_four,\n" +
+                    "\toffer_title,\n" +
+                    "\toffer_explaination,\n" +
+                    "\toffer_cost,\n" +
+                    "\toffer_display_date,\n" +
+                    "\tdate,\n" +
+                    "\toffer_count,\n" +
+                    "IFNULL( city_name_ar, '' ) AS city,\n" +
+                    "\tIFNULL( area_name_ar, '' ) AS area,\n" +
+                    "\tlng,\n" +
+                    "\tlat,\n" +
+                    "\trequest_id,\n" +
+                    "\trequsted_school_id,\n" +
+                    "\trequest_offer_count,\n" +
+                    "\tcount( requsted_offer_id ) AS request_count \n" +
+                    "FROM\n" +
+                    "\tefaz_company_offer AS offer\n" +
+                    "\tLEFT JOIN company_offer_images AS img ON img.images_id = offer.offer_image_id\n" +
+                    "\tLEFT JOIN efaz_company_offer_place AS p ON p.id = offer_id\n" +
+                    "\tLEFT JOIN efaz_school_request_offer_date AS d ON d.id = offer_id\n" +
+                    "\tLEFT JOIN efaz_school_request_offer AS res ON res.requsted_offer_id = offer_id \n" +
+                    " LEFT JOIN area AS a ON p.area = a.area_id " +
+                    " LEFT JOIN city AS c ON p.city = c.city_id " +
+                    "WHERE\n" +
+                    "\toffer_company_id = ? \n" +
+                    "\tAND is_accepted = 1 \n" +
+                    "GROUP BY\n" +
+                    "\toffer_id,\n" +
+                    "\timage_one,\n" +
+                    "\timage_two,\n" +
+                    "\timage_three,\n" +
+                    "\timage_four,\n" +
+                    "\toffer_title,\n" +
+                    "\toffer_explaination,\n" +
+                    "\toffer_cost,\n" +
+                    "\toffer_display_date,\n" +
+                    "\tdate,\n" +
+                    "\toffer_count,\n" +
+                    "\tcity,\n" +
+                    "\tarea,\n" +
+                    "\tlng,\n" +
+                    "\tlat,\n" +
+                    "\trequest_id,\n" +
+                    "\trequsted_school_id,\n" +
+                    "\trequest_offer_count;";
+        }
+
         return jdbcTemplate.query(sql, new Object[]{companyId},
                 (resultSet, i) -> new CompanyHistoryDto(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4),
                         resultSet.getString(5), resultSet.getString(6), resultSet.getString(7), resultSet.getDouble(8), resultSet.getTimestamp(9).getTime(),
@@ -769,61 +1021,123 @@ public class CustomCompanyOfferRepo {
     }
 
 
-    public List<CompanyHistoryDto2> getCompanyHistory2(int companyId) {
+    public List<CompanyHistoryDto2> getCompanyHistory2(int companyId, int flag_ar) {
 
-        String sql = "SELECT\n" +
-                "\toffer_id,\n" +
-                "\timage_one,\n" +
-                "\timage_two,\n" +
-                "\timage_three,\n" +
-                "\timage_four,\n" +
-                "\toffer_title,\n" +
-                "\toffer_explaination,\n" +
-                "\toffer_cost,\n" +
-                "\toffer_display_date,\n" +
-                "\tdate,\n" +
-                "\toffer_count,\n" +
-                "\tcity,\n" +
-                "\tarea,\n" +
-                "\tlng,\n" +
-                "\tlat,\n" +
-                "\trequest_id,\n" +
-                "\trequest_offer_count,\n" +
-                "\tcount( requsted_offer_id ) AS request_count,\n" +
-                "\tschool_id,\n" +
-                "\tschool_name,\n" +
-                "\tschool_logo_image \n" +
-                "FROM\n" +
-                "\tefaz_company_offer AS offer\n" +
-                "\tLEFT JOIN company_offer_images AS img ON img.images_id = offer.offer_image_id\n" +
-                "\tLEFT JOIN efaz_company_offer_place AS p ON p.id = offer_id\n" +
-                "\tLEFT JOIN efaz_school_request_offer_date AS d ON d.id = offer_id\n" +
-                "\tLEFT JOIN efaz_school_request_offer AS res ON res.requsted_offer_id = offer_id\n" +
-                "\tLEFT JOIN efaz_school_profile AS sp ON sp.school_id = requsted_school_id \n" +
-                "WHERE\n" +
-                "\toffer_company_id = ? \n" +
-                "\tAND is_accepted = 1 \n" +
-                "GROUP BY\n" +
-                "\toffer_id,\n" +
-                "\timage_one,\n" +
-                "\timage_two,\n" +
-                "\timage_three,\n" +
-                "\timage_four,\n" +
-                "\toffer_title,\n" +
-                "\toffer_explaination,\n" +
-                "\toffer_cost,\n" +
-                "\toffer_display_date,\n" +
-                "\tdate,\n" +
-                "\toffer_count,\n" +
-                "\tcity,\n" +
-                "\tarea,\n" +
-                "\tlng,\n" +
-                "\tlat,\n" +
-                "\trequest_id,\n" +
-                "\trequest_offer_count,\n" +
-                "\tschool_id,\n" +
-                "\tschool_name,\n" +
-                "\tschool_logo_image;";
+        String sql = "";
+        if (flag_ar == 0) {
+            sql = "SELECT\n" +
+                    "\toffer_id,\n" +
+                    "\timage_one,\n" +
+                    "\timage_two,\n" +
+                    "\timage_three,\n" +
+                    "\timage_four,\n" +
+                    "\toffer_title,\n" +
+                    "\toffer_explaination,\n" +
+                    "\toffer_cost,\n" +
+                    "\toffer_display_date,\n" +
+                    "\tdate,\n" +
+                    "\toffer_count,\n" +
+                    "IFNULL( city_name, '' ) AS city,\n" +
+                    "\tIFNULL( area_name, '' ) AS area,\n" +
+                    "\tlng,\n" +
+                    "\tlat,\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_offer_count,\n" +
+                    "\tcount( requsted_offer_id ) AS request_count,\n" +
+                    "\tschool_id,\n" +
+                    "\tschool_name,\n" +
+                    "\tschool_logo_image \n" +
+                    "FROM\n" +
+                    "\tefaz_company_offer AS offer\n" +
+                    "\tLEFT JOIN company_offer_images AS img ON img.images_id = offer.offer_image_id\n" +
+                    "\tLEFT JOIN efaz_company_offer_place AS p ON p.id = offer_id\n" +
+                    "\tLEFT JOIN efaz_school_request_offer_date AS d ON d.id = offer_id\n" +
+                    "\tLEFT JOIN efaz_school_request_offer AS res ON res.requsted_offer_id = offer_id\n" +
+                    "\tLEFT JOIN efaz_school_profile AS sp ON sp.school_id = requsted_school_id \n" +
+                    " LEFT JOIN area AS a ON p.area = a.area_id " +
+                    " LEFT JOIN city AS c ON p.city = c.city_id " +
+                    "WHERE\n" +
+                    "\toffer_company_id = ? \n" +
+                    "\tAND is_accepted = 1 \n" +
+                    "GROUP BY\n" +
+                    "\toffer_id,\n" +
+                    "\timage_one,\n" +
+                    "\timage_two,\n" +
+                    "\timage_three,\n" +
+                    "\timage_four,\n" +
+                    "\toffer_title,\n" +
+                    "\toffer_explaination,\n" +
+                    "\toffer_cost,\n" +
+                    "\toffer_display_date,\n" +
+                    "\tdate,\n" +
+                    "\toffer_count,\n" +
+                    "\tcity,\n" +
+                    "\tarea,\n" +
+                    "\tlng,\n" +
+                    "\tlat,\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_offer_count,\n" +
+                    "\tschool_id,\n" +
+                    "\tschool_name,\n" +
+                    "\tschool_logo_image;";
+        } else {
+            sql = "SELECT\n" +
+                    "\toffer_id,\n" +
+                    "\timage_one,\n" +
+                    "\timage_two,\n" +
+                    "\timage_three,\n" +
+                    "\timage_four,\n" +
+                    "\toffer_title,\n" +
+                    "\toffer_explaination,\n" +
+                    "\toffer_cost,\n" +
+                    "\toffer_display_date,\n" +
+                    "\tdate,\n" +
+                    "\toffer_count,\n" +
+                    "IFNULL( city_name_ar, '' ) AS city,\n" +
+                    "\tIFNULL( area_name_ar, '' ) AS area,\n" +
+                    "\tlng,\n" +
+                    "\tlat,\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_offer_count,\n" +
+                    "\tcount( requsted_offer_id ) AS request_count,\n" +
+                    "\tschool_id,\n" +
+                    "\tschool_name,\n" +
+                    "\tschool_logo_image \n" +
+                    "FROM\n" +
+                    "\tefaz_company_offer AS offer\n" +
+                    "\tLEFT JOIN company_offer_images AS img ON img.images_id = offer.offer_image_id\n" +
+                    "\tLEFT JOIN efaz_company_offer_place AS p ON p.id = offer_id\n" +
+                    "\tLEFT JOIN efaz_school_request_offer_date AS d ON d.id = offer_id\n" +
+                    "\tLEFT JOIN efaz_school_request_offer AS res ON res.requsted_offer_id = offer_id\n" +
+                    "\tLEFT JOIN efaz_school_profile AS sp ON sp.school_id = requsted_school_id \n" +
+                    " LEFT JOIN area AS a ON p.area = a.area_id " +
+                    " LEFT JOIN city AS c ON p.city = c.city_id " +
+                    "WHERE\n" +
+                    "\toffer_company_id = ? \n" +
+                    "\tAND is_accepted = 1 \n" +
+                    "GROUP BY\n" +
+                    "\toffer_id,\n" +
+                    "\timage_one,\n" +
+                    "\timage_two,\n" +
+                    "\timage_three,\n" +
+                    "\timage_four,\n" +
+                    "\toffer_title,\n" +
+                    "\toffer_explaination,\n" +
+                    "\toffer_cost,\n" +
+                    "\toffer_display_date,\n" +
+                    "\tdate,\n" +
+                    "\toffer_count,\n" +
+                    "\tcity,\n" +
+                    "\tarea,\n" +
+                    "\tlng,\n" +
+                    "\tlat,\n" +
+                    "\trequest_id,\n" +
+                    "\trequest_offer_count,\n" +
+                    "\tschool_id,\n" +
+                    "\tschool_name,\n" +
+                    "\tschool_logo_image;";
+        }
+
         return jdbcTemplate.query(sql, new Object[]{companyId},
                 (resultSet, i) -> new CompanyHistoryDto2(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4),
                         resultSet.getString(5), resultSet.getString(6), resultSet.getString(7), resultSet.getDouble(8), resultSet.getTimestamp(9).getTime(),

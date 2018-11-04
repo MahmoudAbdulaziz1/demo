@@ -136,7 +136,7 @@ public class CollectiveTenderDetailsForCompanyRepo {
                     "\tIFNULL( tender_company_expired_date, '1970-01-01 02:00:00' ) AS tender_company_expired_date,\n" +
                     "\tCOUNT( DISTINCT request_id ) AS response_count,\n" +
                     "\tt_category_id AS cat_id,\n" +
-                    "\tIFNULL( category_name, 0 ) AS category_name,\n" +
+                    "\tIFNULL( category_name, '' ) AS category_name,\n" +
                     "\tIFNULL( SUM( DISTINCT tr2.count ), 0 ) AS sum \n" +
                     "FROM\n" +
                     "\ttakatf_tender AS t\n" +
@@ -174,7 +174,7 @@ public class CollectiveTenderDetailsForCompanyRepo {
                     "\tIFNULL( tender_company_expired_date, '1970-01-01 02:00:00' ) AS tender_company_expired_date,\n" +
                     "\tCOUNT( DISTINCT request_id ) AS response_count,\n" +
                     "\tt_category_id AS cat_id,\n" +
-                    "\tIFNULL( category_name_ar, 0 ) AS category_name,\n" +
+                    "\tIFNULL( category_name_ar, '' ) AS category_name,\n" +
                     "\tIFNULL( SUM( DISTINCT tr2.count ), 0 ) AS sum \n" +
                     "FROM\n" +
                     "\ttakatf_tender AS t\n" +

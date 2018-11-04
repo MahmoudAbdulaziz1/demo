@@ -94,26 +94,53 @@ public class NewSchoolProfileRepo {
     }
 
 
-    public NewSchoolProfileModel getSchoolProfile(int id) {
+    public NewSchoolProfileModel getSchoolProfile(int id, int flag_ar) {
 
-        String sql = "SELECT\n" +
-                "\tschool_id,\n" +
-                "\tschool_name,\n" +
-                "\tschool_logo_image,\n" +
-                "\tschool_address,\n" +
-                "\tschool_service_desc,\n" +
-                "\tschool_link_youtube,\n" +
-                "\tschool_website_url,\n" +
-                "\tschool_lng,\n" +
-                "\tschool_lat,\n" +
-                "\tschool_cover_image,\n" +
-                "\tschool_phone_number,\n" +
-                "\tcity,\n" +
-                "\tarea \n" +
-                "FROM\n" +
-                "\tefaz_school_profile AS pro\n" +
-                "\tLEFT JOIN efaz_login AS login ON pro.school_id = login.login_id" +
-                " WHERE   school_id=?;";
+        String sql = "";
+        if (flag_ar == 0){
+            sql = "SELECT\n" +
+                    "\tschool_id,\n" +
+                    "\tschool_name,\n" +
+                    "\tschool_logo_image,\n" +
+                    "\tschool_address,\n" +
+                    "\tschool_service_desc,\n" +
+                    "\tschool_link_youtube,\n" +
+                    "\tschool_website_url,\n" +
+                    "\tschool_lng,\n" +
+                    "\tschool_lat,\n" +
+                    "\tschool_cover_image,\n" +
+                    "\tschool_phone_number,\n" +
+                    " IFNULL( city_name, '' ) AS city,\n" +
+                    "\tIFNULL( area_name, '' ) AS area \n" +
+                    "FROM\n" +
+                    "\tefaz_school_profile AS pro\n" +
+                    "\tLEFT JOIN efaz_login AS login ON pro.school_id = login.login_id" +
+                    " LEFT JOIN area AS a ON login.area = a.area_id " +
+                    " LEFT JOIN city AS c ON login.city = c.city_id " +
+                    " WHERE   school_id=?;";
+        }else {
+            sql = "SELECT\n" +
+                    "\tschool_id,\n" +
+                    "\tschool_name,\n" +
+                    "\tschool_logo_image,\n" +
+                    "\tschool_address,\n" +
+                    "\tschool_service_desc,\n" +
+                    "\tschool_link_youtube,\n" +
+                    "\tschool_website_url,\n" +
+                    "\tschool_lng,\n" +
+                    "\tschool_lat,\n" +
+                    "\tschool_cover_image,\n" +
+                    "\tschool_phone_number,\n" +
+                    "IFNULL( city_name_ar, '' ) AS city,\n" +
+                    "\tIFNULL( area_name_ar, '' ) AS area \n" +
+                    "FROM\n" +
+                    "\tefaz_school_profile AS pro\n" +
+                    "\tLEFT JOIN efaz_login AS login ON pro.school_id = login.login_id " +
+                    " LEFT JOIN area AS a ON login.area = a.area_id " +
+                    " LEFT JOIN city AS c ON login.city = c.city_id " +
+                    " WHERE   school_id=?;";
+        }
+
         return jdbcTemplate.queryForObject(sql,
                 new Object[]{id}, (resultSet, i) -> new NewSchoolProfileModel(resultSet.getInt(1), resultSet.getString(2),
                         resultSet.getBytes(3), resultSet.getString(4), resultSet.getString(5),
@@ -238,26 +265,55 @@ public class NewSchoolProfileRepo {
                         resultSet.getFloat(16), resultSet.getInt(14)));
     }
 
-    public NewSchoolProfileModelDTO getSchoolProfile2(int id) {
+    public NewSchoolProfileModelDTO getSchoolProfile2(int id, int flag_ar) {
 
-        String sql = "SELECT\n" +
-                "\tschool_id,\n" +
-                "\tschool_name,\n" +
-                "\tschool_logo_image,\n" +
-                "\tschool_address,\n" +
-                "\tschool_service_desc,\n" +
-                "\tschool_link_youtube,\n" +
-                "\tschool_website_url,\n" +
-                "\tschool_lng,\n" +
-                "\tschool_lat,\n" +
-                "\tschool_cover_image,\n" +
-                "\tschool_phone_number,\n" +
-                "\tcity,\n" +
-                "\tarea, lng, lat \n" +
-                "FROM\n" +
-                "\tefaz_school_profile AS pro\n" +
-                "\tLEFT JOIN efaz_login AS login ON pro.school_id = login.login_id" +
-                " WHERE   school_id=?;";
+        String sql = "";
+        if (flag_ar == 0){
+            sql = "SELECT\n" +
+                    "\tschool_id,\n" +
+                    "\tschool_name,\n" +
+                    "\tschool_logo_image,\n" +
+                    "\tschool_address,\n" +
+                    "\tschool_service_desc,\n" +
+                    "\tschool_link_youtube,\n" +
+                    "\tschool_website_url,\n" +
+                    "\tschool_lng,\n" +
+                    "\tschool_lat,\n" +
+                    "\tschool_cover_image,\n" +
+                    "\tschool_phone_number,\n" +
+                    "IFNULL( city_name, '' ) AS city,\n" +
+                    "\tIFNULL( area_name, '' ) AS area,\n" +
+                    " lng, lat \n" +
+                    "FROM\n" +
+                    "\tefaz_school_profile AS pro\n" +
+                    "\tLEFT JOIN efaz_login AS login ON pro.school_id = login.login_id" +
+                    " LEFT JOIN area AS a ON login.area = a.area_id " +
+                    " LEFT JOIN city AS c ON login.city = c.city_id " +
+                    " WHERE   school_id=?;";
+        }else {
+            sql = "SELECT\n" +
+                    "\tschool_id,\n" +
+                    "\tschool_name,\n" +
+                    "\tschool_logo_image,\n" +
+                    "\tschool_address,\n" +
+                    "\tschool_service_desc,\n" +
+                    "\tschool_link_youtube,\n" +
+                    "\tschool_website_url,\n" +
+                    "\tschool_lng,\n" +
+                    "\tschool_lat,\n" +
+                    "\tschool_cover_image,\n" +
+                    "\tschool_phone_number,\n" +
+                    "IFNULL( city_name_ar, '' ) AS city,\n" +
+                    "\tIFNULL( area_name_ar, '' ) AS area,\n" +
+                    " lng, lat \n" +
+                    "FROM\n" +
+                    "\tefaz_school_profile AS pro\n" +
+                    "\tLEFT JOIN efaz_login AS login ON pro.school_id = login.login_id" +
+                    " LEFT JOIN area AS a ON login.area = a.area_id " +
+                    " LEFT JOIN city AS c ON login.city = c.city_id " +
+                    " WHERE   school_id=?;";
+        }
+
         return jdbcTemplate.queryForObject(sql,
                 new Object[]{id}, (resultSet, i) -> new NewSchoolProfileModelDTO(resultSet.getInt(1), resultSet.getString(2),
                         resultSet.getString(3), resultSet.getString(4), resultSet.getString(5),
@@ -282,26 +338,56 @@ public class NewSchoolProfileRepo {
 
     }
 
-    public NewCustomSchoolProfileModelDTO getSchoolProfileForAdmin2(int id) {
+    public NewCustomSchoolProfileModelDTO getSchoolProfileForAdmin2(int id, int flag_ar) {
 
-        String sql = "SELECT\n" +
-                "\tschool_id,\n" +
-                "\tschool_name,\n" +
-                "\tschool_logo_image,\n" +
-                "\tschool_address,\n" +
-                "\tschool_service_desc,\n" +
-                "\tschool_link_youtube,\n" +
-                "\tschool_website_url,\n" +
-                "\tschool_lng,\n" +
-                "\tschool_lat,\n" +
-                "\tschool_cover_image,\n" +
-                "\tschool_phone_number,\n" +
-                "\tcity,\n" +
-                "\tarea, lng ,lat \n" +
-                "FROM\n" +
-                "\tefaz_school_profile AS pro\n" +
-                "\tLEFT JOIN efaz_login AS login ON pro.school_id = login.login_id" +
-                " WHERE   school_id=?;";
+        String sql = "";
+        if (flag_ar == 0){
+            sql = "SELECT\n" +
+                    "\tschool_id,\n" +
+                    "\tschool_name,\n" +
+                    "\tschool_logo_image,\n" +
+                    "\tschool_address,\n" +
+                    "\tschool_service_desc,\n" +
+                    "\tschool_link_youtube,\n" +
+                    "\tschool_website_url,\n" +
+                    "\tschool_lng,\n" +
+                    "\tschool_lat,\n" +
+                    "\tschool_cover_image,\n" +
+                    "\tschool_phone_number,\n" +
+                    "IFNULL( city_name, '' ) AS city,\n" +
+                    "\tIFNULL( area_name, '' ) AS area,\n" +
+                    "lng ,lat \n" +
+                    "FROM\n" +
+                    "\tefaz_school_profile AS pro\n" +
+                    "\tLEFT JOIN efaz_login AS login ON pro.school_id = login.login_id" +
+                    " LEFT JOIN area AS a ON login.area = a.area_id " +
+                    " LEFT JOIN city AS c ON login.city = c.city_id " +
+                    " WHERE   school_id=?;";
+        }else {
+            sql = "SELECT\n" +
+                    "\tschool_id,\n" +
+                    "\tschool_name,\n" +
+                    "\tschool_logo_image,\n" +
+                    "\tschool_address,\n" +
+                    "\tschool_service_desc,\n" +
+                    "\tschool_link_youtube,\n" +
+                    "\tschool_website_url,\n" +
+                    "\tschool_lng,\n" +
+                    "\tschool_lat,\n" +
+                    "\tschool_cover_image,\n" +
+                    "\tschool_phone_number,\n" +
+                    "IFNULL( city_name_ar, '' ) AS city,\n" +
+                    "\tIFNULL( area_name_ar, '' ) AS area,\n" +
+                    "lng ,lat \n" +
+                    "FROM\n" +
+                    "\tefaz_school_profile AS pro\n" +
+                    "\tLEFT JOIN efaz_login AS login ON pro.school_id = login.login_id" +
+                    " LEFT JOIN area AS a ON login.area = a.area_id " +
+                    " LEFT JOIN city AS c ON login.city = c.city_id " +
+                    " WHERE   school_id=?;";
+        }
+
+
 
         return jdbcTemplate.queryForObject(sql,
                 new Object[]{id}, (resultSet, i) -> new NewCustomSchoolProfileModelDTO(resultSet.getInt(1), resultSet.getString(2),
@@ -313,15 +399,33 @@ public class NewSchoolProfileRepo {
 
     public int updateProfileForAdmin2(int id, String school_name, String school_logo_image, String school_address, String school_service_desc,
                                       String school_link_youtube, String school_website_url,
-                                      String school_cover_image, String school_phone_number, String city, String area, float lng, float lat) {
+                                      String school_cover_image, String school_phone_number, String city, String area, float lng, float lat, int flag_ar) {
 
         float schoolLat = jdbcTemplate.queryForObject("SELECT school_lat FROM efaz_school_profile WHERE  school_id=?;",
                 Float.class, id);
         float schoolLng = jdbcTemplate.queryForObject("SELECT school_lng FROM efaz_school_profile WHERE  school_id=?;",
                 Float.class, id);
-        jdbcTemplate.update("update efaz_login set city=?," +
-                "area=?, lng=?, lat=? " +
-                " where login_id=?;", city, area, lng, lat, id);
+        if (flag_ar == 0){
+            int city_id = jdbcTemplate.queryForObject("SELECT city_id FROM city WHERE city_name LIKE ?;", Integer.class,  city );
+            System.out.println("city " + city_id);
+            int area_id = jdbcTemplate.queryForObject("SELECT area_id FROM area WHERE area_name LIKE ?;", Integer.class,  area );
+
+
+            jdbcTemplate.update("update efaz_login set city=?," +
+                    "area=?, lng=?, lat=? " +
+                    " where login_id=?;", city_id, area_id, lng, lat, id);
+        }else {
+            int city_id = jdbcTemplate.queryForObject("SELECT city_id FROM city WHERE city_name_ar LIKE ?;", Integer.class,  city );
+            System.out.println("city " + city_id);
+            int area_id = jdbcTemplate.queryForObject("SELECT area_id FROM area WHERE area_name_ar LIKE ?;", Integer.class,  area );
+
+
+            jdbcTemplate.update("update efaz_login set city=?," +
+                    "area=?, lng=?, lat=? " +
+                    " where login_id=?;", city_id, area_id, lng, lat, id);
+        }
+
+
 
         return jdbcTemplate.update("update efaz_school_profile set school_name=?," +
                         "school_logo_image=?, school_address=?," +

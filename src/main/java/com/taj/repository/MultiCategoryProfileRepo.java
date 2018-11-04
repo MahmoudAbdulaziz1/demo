@@ -123,12 +123,12 @@ public class MultiCategoryProfileRepo {
             for (int i = 0; i < category.size(); i++) {
                 if (flag_ar == 0){
                     int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
-                            Integer.class, "%" + category.get(i).getCategory_name().trim() + "%");
+                            Integer.class,  category.get(i).getCategory_name().trim());
 
                     jdbcTemplate.update("INSERT INTO efaz_company_profile_cats VALUES  (?,?,?)", null, profileID, categorys);
                 }else {
                     int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name_ar LIKE ?;",
-                            Integer.class, "%" + category.get(i).getCategory_name().trim() + "%");
+                            Integer.class, category.get(i).getCategory_name().trim()) ;
 
                     jdbcTemplate.update("INSERT INTO efaz_company_profile_cats VALUES  (?,?,?)", null, profileID, categorys);
                 }
@@ -262,12 +262,12 @@ public class MultiCategoryProfileRepo {
         for (int i = 0; i < category.size(); i++) {
             if (flag_ar == 0){
                 int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name LIKE ?;",
-                        Integer.class, "%" + category.get(i).getCategory_name().trim() + "%");
+                        Integer.class,  category.get(i).getCategory_name().trim() );
 
                 jdbcTemplate.update("INSERT INTO efaz_company_profile_cats VALUES  (?,?,?)", null, company_id, categorys);
             }else {
                 int categorys = jdbcTemplate.queryForObject("SELECT category_id  FROM  efaz_company_category WHERE  category_name_ar LIKE ?;",
-                        Integer.class, "%" + category.get(i).getCategory_name().trim() + "%");
+                        Integer.class,  category.get(i).getCategory_name().trim() );
 
                 jdbcTemplate.update("INSERT INTO efaz_company_profile_cats VALUES  (?,?,?)", null, company_id, categorys);
             }

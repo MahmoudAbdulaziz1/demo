@@ -1,8 +1,6 @@
 package com.taj.controller.test_image;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.taj.model.test_image.CustomCompanyOfferModelWithImage;
 import com.taj.model.test_image.TestImage2;
 import com.taj.model.test_image.TestImageModel;
 import com.taj.repository.CustomCompanyOfferRepo;
@@ -19,17 +17,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
-import javax.validation.Valid;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -133,99 +126,99 @@ public class UploadController {
     @Autowired
     ObjectMapper mapper;
 
-
-    @PostMapping("/company/offer/images/")
-    public ResponseEntity<ObjectNode> addCompanyOffersWitImage(@RequestParam("image_one") MultipartFile image1, @RequestParam("image_two") MultipartFile image12,
-                                                               @RequestParam("image_three") MultipartFile image13, @RequestParam("image_four") MultipartFile image4,
-                                                               @RequestPart @Valid String offerModelString, Errors errors) {
-
-        try {
-            CustomCompanyOfferModelWithImage model = new ObjectMapper().readValue(offerModelString, CustomCompanyOfferModelWithImage.class);
-
-            if (errors.hasErrors()) {
-                ObjectNode objectNode = mapper.createObjectNode();
-                objectNode.put("state", 400);
-                objectNode.put("message", "Validation Failed");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
-            } else {
-                if (model.getOffer_display_date() < new Timestamp(System.currentTimeMillis()).getTime()
-                        || model.getOffer_expired_date() < new Timestamp(System.currentTimeMillis()).getTime()) {
-                    ObjectNode objectNode = mapper.createObjectNode();
-                    objectNode.put("state", 400);
-                    objectNode.put("message", "Validation Failed offer date in past");
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
-                }
-
-                if (model.getOffer_display_date() >= model.getOffer_expired_date()) {
-                    ObjectNode objectNode = mapper.createObjectNode();
-                    objectNode.put("state", 400);
-                    objectNode.put("message", "Validation Failed offer display date is greater than  expired date");
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
-                }
-
-
-
-                String s = image1.getOriginalFilename().replace("\\s+", "");
-                MultipartFile multipartFile = new MockMultipartFile("file",
-                        image1.getOriginalFilename().replace(image1.getOriginalFilename(),
-                                FilenameUtils.getBaseName(s.replaceAll("\\s+", "")).replaceAll("\\s+", "")
-                                        .concat(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())) + "." +
-                                        FilenameUtils.getExtension(image1.getOriginalFilename())).toLowerCase().replaceAll("\\s+", ""), "image/*", image1.getInputStream());
-                System.out.println(MvcUriComponentsBuilder
-                        .fromMethodName(UploadController.class, "getFile", multipartFile.getOriginalFilename()).build().toString());
-                try {
-                    if (Files.isDirectory(rootLocation)) {
-
-                    } else {
-                        Files.createDirectory(rootLocation);
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException("Could not initialize storage!");
-                }
-                storageService.store(multipartFile);
-                String image = MvcUriComponentsBuilder
-                        .fromMethodName(UploadController.class, "getFile", multipartFile.getOriginalFilename()).build().toString();
-//                System.out.println(file.getName() + "     " + file.getOriginalFilename());
-//                files.add(f.replace("\\s+", ""));
-
-
-
-
-
-
-                int res = customCompanyOfferRepo.addOfferEdeitedWithImage(image, "", "", "", model.getOffer_title(), model.getOffer_explaination(),
-                        model.getOffer_cost(), model.getOffer_display_date(), model.getOffer_expired_date(), model.getOffer_deliver_date(),
-                        model.getCompany_id(), model.getOffer_count(), model.getCity(), model.getArea(), model.getLng(), model.getLat());
-                if (res == 1) {
-                    ObjectNode objectNode = mapper.createObjectNode();
-                    objectNode.put("status", 200);
-                    //objectNode.put("offer_images_id", model.getOffer_images_id());
-                    objectNode.put("offer_title", model.getOffer_title());
-                    objectNode.put("offer_explaination", model.getOffer_explaination());
-                    objectNode.put("offer_cost", model.getOffer_cost());
-                    objectNode.put("offer_display_date", model.getOffer_display_date().toString());
-                    objectNode.put("offer_expired_date", model.getOffer_expired_date().toString());
-                    objectNode.put("offer_deliver_date", model.getOffer_deliver_date().toString());
-                    objectNode.put("company_id", model.getCompany_id());
-                    objectNode.put("offer_count", model.getOffer_count());
-                    return ResponseEntity.status(HttpStatus.OK).body(objectNode);
-                } else {
-                    ObjectNode objectNode = mapper.createObjectNode();
-                    objectNode.put("status", 400);
-                    objectNode.put("message", "not success");
-
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
-                }
-            }
-        } catch (Exception e) {
-            ObjectNode objectNode = mapper.createObjectNode();
-            objectNode.put("status", 400);
-            objectNode.put("message", "not success exception \n"+ e.getMessage());
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
-        }
-
-    }
+//
+//    @PostMapping("/company/offer/images/")
+//    public ResponseEntity<ObjectNode> addCompanyOffersWitImage(@RequestParam("image_one") MultipartFile image1, @RequestParam("image_two") MultipartFile image12,
+//                                                               @RequestParam("image_three") MultipartFile image13, @RequestParam("image_four") MultipartFile image4,
+//                                                               @RequestPart @Valid String offerModelString, Errors errors) {
+//
+//        try {
+//            CustomCompanyOfferModelWithImage model = new ObjectMapper().readValue(offerModelString, CustomCompanyOfferModelWithImage.class);
+//
+//            if (errors.hasErrors()) {
+//                ObjectNode objectNode = mapper.createObjectNode();
+//                objectNode.put("state", 400);
+//                objectNode.put("message", "Validation Failed");
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
+//            } else {
+//                if (model.getOffer_display_date() < new Timestamp(System.currentTimeMillis()).getTime()
+//                        || model.getOffer_expired_date() < new Timestamp(System.currentTimeMillis()).getTime()) {
+//                    ObjectNode objectNode = mapper.createObjectNode();
+//                    objectNode.put("state", 400);
+//                    objectNode.put("message", "Validation Failed offer date in past");
+//                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
+//                }
+//
+//                if (model.getOffer_display_date() >= model.getOffer_expired_date()) {
+//                    ObjectNode objectNode = mapper.createObjectNode();
+//                    objectNode.put("state", 400);
+//                    objectNode.put("message", "Validation Failed offer display date is greater than  expired date");
+//                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
+//                }
+//
+//
+//
+//                String s = image1.getOriginalFilename().replace("\\s+", "");
+//                MultipartFile multipartFile = new MockMultipartFile("file",
+//                        image1.getOriginalFilename().replace(image1.getOriginalFilename(),
+//                                FilenameUtils.getBaseName(s.replaceAll("\\s+", "")).replaceAll("\\s+", "")
+//                                        .concat(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())) + "." +
+//                                        FilenameUtils.getExtension(image1.getOriginalFilename())).toLowerCase().replaceAll("\\s+", ""), "image/*", image1.getInputStream());
+//                System.out.println(MvcUriComponentsBuilder
+//                        .fromMethodName(UploadController.class, "getFile", multipartFile.getOriginalFilename()).build().toString());
+//                try {
+//                    if (Files.isDirectory(rootLocation)) {
+//
+//                    } else {
+//                        Files.createDirectory(rootLocation);
+//                    }
+//                } catch (IOException e) {
+//                    throw new RuntimeException("Could not initialize storage!");
+//                }
+//                storageService.store(multipartFile);
+//                String image = MvcUriComponentsBuilder
+//                        .fromMethodName(UploadController.class, "getFile", multipartFile.getOriginalFilename()).build().toString();
+////                System.out.println(file.getName() + "     " + file.getOriginalFilename());
+////                files.add(f.replace("\\s+", ""));
+//
+//
+//
+//
+//
+//
+//                int res = customCompanyOfferRepo.addOfferEdeitedWithImage(image, "", "", "", model.getOffer_title(), model.getOffer_explaination(),
+//                        model.getOffer_cost(), model.getOffer_display_date(), model.getOffer_expired_date(), model.getOffer_deliver_date(),
+//                        model.getCompany_id(), model.getOffer_count(), model.getCity(), model.getArea(), model.getLng(), model.getLat());
+//                if (res == 1) {
+//                    ObjectNode objectNode = mapper.createObjectNode();
+//                    objectNode.put("status", 200);
+//                    //objectNode.put("offer_images_id", model.getOffer_images_id());
+//                    objectNode.put("offer_title", model.getOffer_title());
+//                    objectNode.put("offer_explaination", model.getOffer_explaination());
+//                    objectNode.put("offer_cost", model.getOffer_cost());
+//                    objectNode.put("offer_display_date", model.getOffer_display_date().toString());
+//                    objectNode.put("offer_expired_date", model.getOffer_expired_date().toString());
+//                    objectNode.put("offer_deliver_date", model.getOffer_deliver_date().toString());
+//                    objectNode.put("company_id", model.getCompany_id());
+//                    objectNode.put("offer_count", model.getOffer_count());
+//                    return ResponseEntity.status(HttpStatus.OK).body(objectNode);
+//                } else {
+//                    ObjectNode objectNode = mapper.createObjectNode();
+//                    objectNode.put("status", 400);
+//                    objectNode.put("message", "not success");
+//
+//                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
+//                }
+//            }
+//        } catch (Exception e) {
+//            ObjectNode objectNode = mapper.createObjectNode();
+//            objectNode.put("status", 400);
+//            objectNode.put("message", "not success exception \n"+ e.getMessage());
+//
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectNode);
+//        }
+//
+//    }
 
 
 
